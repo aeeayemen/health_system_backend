@@ -1,0 +1,1454 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Health & Nutrition API",
+    "dateExported": "2025-11-23T20:00:00.000Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "auth-folder",
+            "name": "Authentication",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "doctors-folder",
+            "name": "Doctors",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "patients-folder",
+            "name": "Patients",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "diet-plans-folder",
+            "name": "Diet Plans",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "measurements-folder",
+            "name": "Measurements",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 50000
+        },
+        {
+            "_id": "consultations-folder",
+            "name": "Consultations",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 60000
+        },
+        {
+            "_id": "subscriptions-folder",
+            "name": "Subscriptions",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 70000
+        },
+        {
+            "_id": "chat-folder",
+            "name": "Chat",
+            "containerId": "",
+            "created": "2025-11-23T20:00:00.000Z",
+            "sortNum": 80000
+        },
+        {
+            "_id": "dashboard-folder",
+            "name": "Dashboard",
+            "containerId": "",
+            "created": "2025-11-24T18:35:58+00:00",
+            "sortNum": 15000
+        },
+        {
+            "_id": "users-folder",
+            "name": "Users",
+            "containerId": "",
+            "created": "2025-11-24T18:35:58+00:00",
+            "sortNum": 18000
+        },
+        {
+            "_id": "invoices-folder",
+            "name": "Invoices",
+            "containerId": "",
+            "created": "2025-11-24T18:35:58+00:00",
+            "sortNum": 75000
+        },
+        {
+            "_id": "admin-chat-folder",
+            "name": "Admin Chat",
+            "containerId": "",
+            "created": "2025-11-24T18:35:58+00:00",
+            "sortNum": 85000
+        },
+        {
+            "_id": "settings-folder",
+            "name": "Settings",
+            "containerId": "",
+            "created": "2025-11-24T18:35:58+00:00",
+            "sortNum": 90000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "req-register",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Register (Patient)",
+            "url": "{{baseUrl}}/register",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"New Patient\",\n  \"email\": \"new_patient@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"phone\": \"1112223333\",\n  \"role\": \"patient\",\n  \"gender\": \"male\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-login",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Login",
+            "url": "{{baseUrl}}/login",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"password\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "json.token",
+                    "action": "setto",
+                    "value": "{{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-me",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Get Current User",
+            "url": "{{baseUrl}}/me",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-logout",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Logout",
+            "url": "{{baseUrl}}/logout",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-list-doctors",
+            "colId": "health-nutrition-api",
+            "containerId": "doctors-folder",
+            "name": "List Doctors",
+            "url": "{{baseUrl}}/doctors",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-update-doctor",
+            "colId": "health-nutrition-api",
+            "containerId": "doctors-folder",
+            "name": "Update Doctor Profile",
+            "url": "{{baseUrl}}/doctors/1",
+            "method": "PUT",
+            "sortNum": 20000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"specialization\": \"Nutritionist\",\n  \"bio\": \"Expert in weight loss\",\n  \"consultation_fee\": 100.00\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-list-patients",
+            "colId": "health-nutrition-api",
+            "containerId": "patients-folder",
+            "name": "List Patients",
+            "url": "{{baseUrl}}/patients",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-update-patient",
+            "colId": "health-nutrition-api",
+            "containerId": "patients-folder",
+            "name": "Update Patient Profile",
+            "url": "{{baseUrl}}/patients/1",
+            "method": "PUT",
+            "sortNum": 20000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"current_weight\": 85.5,\n  \"target_weight\": 75.0,\n  \"height\": 175\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-create-diet-plan",
+            "colId": "health-nutrition-api",
+            "containerId": "diet-plans-folder",
+            "name": "Create Diet Plan",
+            "url": "{{baseUrl}}/diet-plans",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"patient_id\": 1,\n  \"title\": \"Weight Loss Plan\",\n  \"daily_calories\": 2000,\n  \"duration_days\": 30,\n  \"start_date\": \"2025-12-01\",\n  \"end_date\": \"2025-12-30\",\n  \"meals\": [\n    {\n      \"day_number\": 1,\n      \"meal_type\": \"breakfast\",\n      \"meal_name\": \"Oatmeal\",\n      \"calories\": 300\n    }\n  ]\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-list-diet-plans",
+            "colId": "health-nutrition-api",
+            "containerId": "diet-plans-folder",
+            "name": "List Diet Plans",
+            "url": "{{baseUrl}}/diet-plans",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-create-measurement",
+            "colId": "health-nutrition-api",
+            "containerId": "measurements-folder",
+            "name": "Add Measurement",
+            "url": "{{baseUrl}}/measurements",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"weight\": 85.5,\n  \"measurement_date\": \"2025-12-01\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-list-measurements",
+            "colId": "health-nutrition-api",
+            "containerId": "measurements-folder",
+            "name": "List Measurements",
+            "url": "{{baseUrl}}/measurements",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-create-consultation",
+            "colId": "health-nutrition-api",
+            "containerId": "consultations-folder",
+            "name": "Book Consultation",
+            "url": "{{baseUrl}}/consultations",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"doctor_id\": 1,\n  \"consultation_type\": \"initial\",\n  \"scheduled_date\": \"2025-12-05 10:00:00\",\n  \"notes\": \"Initial checkup\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-create-subscription",
+            "colId": "health-nutrition-api",
+            "containerId": "subscriptions-folder",
+            "name": "Create Subscription",
+            "url": "{{baseUrl}}/subscriptions",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"doctor_id\": 1,\n  \"plan_type\": \"basic\",\n  \"price\": 100.00,\n  \"duration_months\": 1,\n  \"start_date\": \"2025-12-01\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-send-message",
+            "colId": "health-nutrition-api",
+            "containerId": "chat-folder",
+            "name": "Send Message",
+            "url": "{{baseUrl}}/chat/send",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"receiver_id\": 2,\n  \"message\": \"Hello Doctor!\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-get-messages",
+            "colId": "health-nutrition-api",
+            "containerId": "chat-folder",
+            "name": "Get Messages",
+            "url": "{{baseUrl}}/chat/messages/2",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2025-11-23T20:00:00.000Z",
+            "modified": "2025-11-23T20:00:00.000Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf08d9",
+            "colId": "health-nutrition-api",
+            "containerId": "admin-chat-folder",
+            "name": "Admin/chats",
+            "url": "{{baseUrl}}/admin/chats",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0917",
+            "colId": "health-nutrition-api",
+            "containerId": "admin-chat-folder",
+            "name": "Admin/chats/{id}",
+            "url": "{{baseUrl}}/admin/chats/{id}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0925",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Admin/messages/{id}",
+            "url": "{{baseUrl}}/admin/messages/{id}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0961",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Chat/messages/{userId}",
+            "url": "{{baseUrl}}/chat/messages/{userId}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf098a",
+            "colId": "health-nutrition-api",
+            "containerId": "consultations-folder",
+            "name": "Consultations Index",
+            "url": "{{baseUrl}}/consultations",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf09b7",
+            "colId": "health-nutrition-api",
+            "containerId": "consultations-folder",
+            "name": "Consultations Show",
+            "url": "{{baseUrl}}/consultations/{consultation}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf09ca",
+            "colId": "health-nutrition-api",
+            "containerId": "consultations-folder",
+            "name": "Consultations Update",
+            "url": "{{baseUrl}}/consultations/{consultation}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf09f1",
+            "colId": "health-nutrition-api",
+            "containerId": "consultations-folder",
+            "name": "Consultations Destroy",
+            "url": "{{baseUrl}}/consultations/{consultation}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0a07",
+            "colId": "health-nutrition-api",
+            "containerId": "dashboard-folder",
+            "name": "Dashboard/stats",
+            "url": "{{baseUrl}}/dashboard/stats",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0a33",
+            "colId": "health-nutrition-api",
+            "containerId": "diet-plans-folder",
+            "name": "Diet Plans Show",
+            "url": "{{baseUrl}}/diet-plans/{diet_plan}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0a45",
+            "colId": "health-nutrition-api",
+            "containerId": "diet-plans-folder",
+            "name": "Diet Plans Update",
+            "url": "{{baseUrl}}/diet-plans/{diet_plan}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0a57",
+            "colId": "health-nutrition-api",
+            "containerId": "diet-plans-folder",
+            "name": "Diet Plans Destroy",
+            "url": "{{baseUrl}}/diet-plans/{diet_plan}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0a72",
+            "colId": "health-nutrition-api",
+            "containerId": "doctors-folder",
+            "name": "Doctors Store",
+            "url": "{{baseUrl}}/doctors",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0a87",
+            "colId": "health-nutrition-api",
+            "containerId": "doctors-folder",
+            "name": "Doctors Show",
+            "url": "{{baseUrl}}/doctors/{doctor}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0a98",
+            "colId": "health-nutrition-api",
+            "containerId": "doctors-folder",
+            "name": "Doctors Update",
+            "url": "{{baseUrl}}/doctors/{doctor}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0aa9",
+            "colId": "health-nutrition-api",
+            "containerId": "doctors-folder",
+            "name": "Doctors Destroy",
+            "url": "{{baseUrl}}/doctors/{doctor}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0ac5",
+            "colId": "health-nutrition-api",
+            "containerId": "invoices-folder",
+            "name": "Invoices Index",
+            "url": "{{baseUrl}}/invoices",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0adc",
+            "colId": "health-nutrition-api",
+            "containerId": "invoices-folder",
+            "name": "Invoices Store",
+            "url": "{{baseUrl}}/invoices",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0af6",
+            "colId": "health-nutrition-api",
+            "containerId": "invoices-folder",
+            "name": "Invoices Show",
+            "url": "{{baseUrl}}/invoices/{invoice}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0b0a",
+            "colId": "health-nutrition-api",
+            "containerId": "invoices-folder",
+            "name": "Invoices Update",
+            "url": "{{baseUrl}}/invoices/{invoice}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0b20",
+            "colId": "health-nutrition-api",
+            "containerId": "invoices-folder",
+            "name": "Invoices Destroy",
+            "url": "{{baseUrl}}/invoices/{invoice}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0b59",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Measurements Show",
+            "url": "{{baseUrl}}/measurements/{measurement}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0b6a",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Measurements Update",
+            "url": "{{baseUrl}}/measurements/{measurement}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0b7b",
+            "colId": "health-nutrition-api",
+            "containerId": "auth-folder",
+            "name": "Measurements Destroy",
+            "url": "{{baseUrl}}/measurements/{measurement}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0b9b",
+            "colId": "health-nutrition-api",
+            "containerId": "patients-folder",
+            "name": "Patients Store",
+            "url": "{{baseUrl}}/patients",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0bb3",
+            "colId": "health-nutrition-api",
+            "containerId": "patients-folder",
+            "name": "Patients Show",
+            "url": "{{baseUrl}}/patients/{patient}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0bc8",
+            "colId": "health-nutrition-api",
+            "containerId": "patients-folder",
+            "name": "Patients Update",
+            "url": "{{baseUrl}}/patients/{patient}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0bdd",
+            "colId": "health-nutrition-api",
+            "containerId": "patients-folder",
+            "name": "Patients Destroy",
+            "url": "{{baseUrl}}/patients/{patient}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0bff",
+            "colId": "health-nutrition-api",
+            "containerId": "settings-folder",
+            "name": "Settings",
+            "url": "{{baseUrl}}/settings",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0c1b",
+            "colId": "health-nutrition-api",
+            "containerId": "settings-folder",
+            "name": "Settings",
+            "url": "{{baseUrl}}/settings",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0c36",
+            "colId": "health-nutrition-api",
+            "containerId": "subscriptions-folder",
+            "name": "Subscriptions Index",
+            "url": "{{baseUrl}}/subscriptions",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0c60",
+            "colId": "health-nutrition-api",
+            "containerId": "subscriptions-folder",
+            "name": "Subscriptions Show",
+            "url": "{{baseUrl}}/subscriptions/{subscription}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0c77",
+            "colId": "health-nutrition-api",
+            "containerId": "subscriptions-folder",
+            "name": "Subscriptions Update",
+            "url": "{{baseUrl}}/subscriptions/{subscription}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0c8d",
+            "colId": "health-nutrition-api",
+            "containerId": "subscriptions-folder",
+            "name": "Subscriptions Destroy",
+            "url": "{{baseUrl}}/subscriptions/{subscription}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0ca6",
+            "colId": "health-nutrition-api",
+            "containerId": "users-folder",
+            "name": "Users Index",
+            "url": "{{baseUrl}}/users",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0cbb",
+            "colId": "health-nutrition-api",
+            "containerId": "users-folder",
+            "name": "Users Store",
+            "url": "{{baseUrl}}/users",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0cd5",
+            "colId": "health-nutrition-api",
+            "containerId": "users-folder",
+            "name": "Users Show",
+            "url": "{{baseUrl}}/users/{user}",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "req-6924a5bbf0ce9",
+            "colId": "health-nutrition-api",
+            "containerId": "users-folder",
+            "name": "Users Update",
+            "url": "{{baseUrl}}/users/{user}",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            }
+        },
+        {
+            "_id": "req-6924a5bbf0cfd",
+            "colId": "health-nutrition-api",
+            "containerId": "users-folder",
+            "name": "Users Destroy",
+            "url": "{{baseUrl}}/users/{user}",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2025-11-24T18:36:43+00:00",
+            "modified": "2025-11-24T18:36:43+00:00",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        }
+    ]
+}
