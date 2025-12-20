@@ -93,4 +93,23 @@ class SubscriptionController extends Controller
 
         return response()->json(['message' => 'Subscription deleted successfully']);
     }
+
+    /**
+     * Update subscription status.
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $subscription = Subscription::findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|in:active,inactive,expired,cancelled',
+        ]);
+
+        $subscription->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'message' => 'Subscription status updated successfully',
+            'subscription' => $subscription->load(['doctor', 'patient'])
+        ]);
+    }
 }

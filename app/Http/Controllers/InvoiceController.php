@@ -66,4 +66,23 @@ class InvoiceController extends Controller
 
         return response()->json(['message' => 'Invoice deleted successfully']);
     }
+
+    /**
+     * Update invoice payment status.
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $invoice = Invoice::findOrFail($id);
+
+        $validated = $request->validate([
+            'payment_status' => 'required|in:pending,paid,failed,refunded',
+        ]);
+
+        $invoice->update(['payment_status' => $validated['payment_status']]);
+
+        return response()->json([
+            'message' => 'Invoice status updated successfully',
+            'invoice' => $invoice->load(['patient', 'subscription'])
+        ]);
+    }
 }

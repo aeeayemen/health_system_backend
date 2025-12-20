@@ -14,9 +14,9 @@ class ForumController extends Controller
         if ($request->has('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        
+
         $forums = $query->paginate(10);
-        
+
         // Transform to include users array directly
         $forums->getCollection()->transform(function ($forum) {
             $forum->users = $forum->members->map(function ($member) {
@@ -25,7 +25,7 @@ class ForumController extends Controller
             unset($forum->members);
             return $forum;
         });
-        
+
         return response()->json($forums);
     }
 
@@ -93,5 +93,52 @@ class ForumController extends Controller
             ->filter();
 
         return response()->json($members);
+    }
+
+    /**
+     * Join a forum (current user)
+     */
+    public function join(Request $request, $forumId)
+    {
+        $forum = Forum::findOrFail($forumId);
+        $userId = $request->user()->id;
+
+        // Check if already a member
+        $existing = ForumMember::where('forum_id', $forumId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($existing) {
+            return response()->json(['message' => 'Already a member of this forum'], 400);
+        }
+
+        $member = ForumMember::create([
+            'forum_id' => $forumId,
+            'user_id' => $userId,
+        ]);
+
+        return response()->json([
+            'message' => 'Joined forum successfully',
+            'member' => $member
+        ], 201);
+    }
+
+    /**
+     * Leave a forum (current user)
+     */
+    public function leave(Request $request, $forumId)
+    {
+        $forum = Forum::findOrFail($forumId);
+        $userId = $request->user()->id;
+
+        $deleted = ForumMember::where('forum_id', $forumId)
+            ->where('user_id', $userId)
+            ->delete();
+
+        if (!$deleted) {
+            return response()->json(['message' => 'Not a member of this forum'], 400);
+        }
+
+        return response()->json(['message' => 'Left forum successfully']);
     }
 }

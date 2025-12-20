@@ -112,4 +112,80 @@ class ChatController extends Controller
         Message::destroy($id);
         return response()->json(['message' => 'Message deleted']);
     }
+
+    /**
+     * Mark a message as read
+     */
+    public function markAsRead(Request $request, $id)
+    {
+        $message = Message::findOrFail($id);
+        $message->update(['read' => 'true']);
+
+        return response()->json([
+            'message' => 'Message marked as read',
+            'data' => $message
+        ]);
+    }
+
+    /**
+     * Mark all messages in a conversation as read
+     */
+    public function markConversationAsRead(Request $request, $conversationId)
+    {
+        $user = $request->user();
+
+        if ($user->type === 'doctor') {
+            Message::where('doctor_id', $user->doctor->id ?? 0)
+                ->where('user_id', $conversationId)
+                ->update(['read' => 'true']);
+        } else {
+            Message::where('user_id', $user->id)
+                ->where('doctor_id', $conversationId)
+                ->update(['read' => 'true']);
+        }
+
+        return response()->json(['message' => 'All messages marked as read']);
+    }
+
+    /**
+     * Get chat history with a specific user/doctor
+     */
+    public function getHistory(Request $request, $userId)
+    {
+        $user = $request->user();
+
+        if ($user->type === 'doctor') {
+            $messages = Message::where('doctor_id', $user->doctor->id ?? 0)
+                ->where('user_id', $userId)
+                ->orderBy('created_at', 'asc')
+                ->paginate(50);
+        } else {
+            $messages = Message::where('user_id', $user->id)
+                ->where('doctor_id', $userId)
+                ->orderBy('created_at', 'asc')
+                ->paginate(50);
+        }
+
+        return response()->json($messages);
+    }
+
+    /**
+     * Get unread message count
+     */
+    public function unreadCount(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->type === 'doctor') {
+            $count = Message::where('doctor_id', $user->doctor->id ?? 0)
+                ->where('read', 'false')
+                ->count();
+        } else {
+            $count = Message::where('user_id', $user->id)
+                ->where('read', 'false')
+                ->count();
+        }
+
+        return response()->json(['unread_count' => $count]);
+    }
 }
