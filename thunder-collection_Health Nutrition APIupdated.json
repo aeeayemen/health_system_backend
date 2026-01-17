@@ -88,7 +88,7 @@
             "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
             "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
             "name": "Register",
-            "url": "http://localhost:8000/api/register",
+            "url": "https://health-system-backend-c9pb.onrender.com/api/register",
             "method": "POST",
             "sortNum": 10000,
             "created": "2026-01-17T16:20:45.239Z",

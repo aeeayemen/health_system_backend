@@ -29,7 +29,7 @@ This project includes a Docker setup for easy development and deployment.
 
 4.  **Access the application:**
 
-    The API will be available at `http://localhost:8000`.
+    The API will be available at `https://health-system-backend-c9pb.onrender.com`.
 
 ## Services
 
