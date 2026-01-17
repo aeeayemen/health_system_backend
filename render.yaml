@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: health-nutrition-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    region: frankfurt
+    plan: free
+    healthCheckPath: /api/public/tips
+    envVars:
+      - key: APP_NAME
+        value: "Health Nutrition API"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        fromService:
+          type: web
+          name: health-nutrition-api
+          property: url
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: health-nutrition-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: APP_KEY
+        generateValue: true
+
+databases:
+  - name: health-nutrition-db
+    databaseName: health_nutrition
+    user: health_user
+    region: frankfurt
+    plan: free

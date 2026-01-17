@@ -6,7 +6,7 @@
   "variables": [
     {
       "name": "baseUrl",
-      "value": "https://health-system-backend-c9pb.onrender.com/api"
+      "value": "http://localhost:8000/api"
     },
     {
       "name": "token",
