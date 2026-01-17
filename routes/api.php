@@ -34,6 +34,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\CalculationController;
 use App\Http\Controllers\ForumPostController;
 use App\Http\Controllers\DietPeriodController;
+use App\Http\Controllers\ReminderController;
 
 /*
 |--------------------------------------------------------------------------

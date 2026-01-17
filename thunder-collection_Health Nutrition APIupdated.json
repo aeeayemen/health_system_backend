@@ -1,0 +1,2298 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Health Nutrition API",
+    "dateExported": "2026-01-17T16:32:29.082Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Auth",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.239Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Public",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.240Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "fe724811-ceaa-42dd-ab26-24735323e38e",
+            "name": "Dashboard",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.241Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Users",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.242Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Doctors",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.243Z",
+            "sortNum": 50000
+        },
+        {
+            "_id": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Diets",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.244Z",
+            "sortNum": 60000
+        },
+        {
+            "_id": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Forums",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.245Z",
+            "sortNum": 70000
+        },
+        {
+            "_id": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Chat",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.246Z",
+            "sortNum": 80000
+        },
+        {
+            "_id": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Content",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.247Z",
+            "sortNum": 90000
+        },
+        {
+            "_id": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "Payments",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.248Z",
+            "sortNum": 100000
+        },
+        {
+            "_id": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Notifications",
+            "containerId": "",
+            "created": "2026-01-17T16:20:45.249Z",
+            "sortNum": 110000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "62b0bf1d-648a-4f09-b911-af58bf3b8344",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Register",
+            "url": "http://localhost:8000/api/register",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.239Z",
+            "modified": "2026-01-17T16:25:57.536Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"type\": \"user\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b6686d3f-b9e8-46f8-8f92-af37595a1eb1",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Public Tips",
+            "url": "{{baseUrl}}/api/public/tips",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.245Z",
+            "modified": "2026-01-17T16:29:44.283Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "3f69222d-95fd-49ec-ac46-bbfb45044c90",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "fe724811-ceaa-42dd-ab26-24735323e38e",
+            "name": "Dashboard Stats",
+            "url": "{{baseUrl}}/dashboard/stats",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.252Z",
+            "modified": "2026-01-17T16:20:45.252Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "fe13cb28-59cb-4562-a3a1-15ed5c1ecc18",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "List All Users",
+            "url": "{{baseUrl}}/users",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.256Z",
+            "modified": "2026-01-17T16:20:45.256Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "46a1b39e-7321-4ba2-9a8f-428095f0b9ca",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "List Doctors",
+            "url": "{{baseUrl}}/doctors",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.264Z",
+            "modified": "2026-01-17T16:20:45.264Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "c008f494-1662-4dc7-a55c-2dc118eda4a6",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "List Diets",
+            "url": "{{baseUrl}}/diets",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.277Z",
+            "modified": "2026-01-17T16:20:45.277Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "667e4a04-08a5-4a5f-a230-dd94042b49f7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "List Forums",
+            "url": "{{baseUrl}}/forums",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.294Z",
+            "modified": "2026-01-17T16:20:45.294Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "4c41f7a0-7398-4da6-a939-67e662e7ffce",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Conversations",
+            "url": "{{baseUrl}}/chat/conversations",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.305Z",
+            "modified": "2026-01-17T16:20:45.305Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "9a84a143-8c50-412a-9be2-56e6b5215df1",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "List Tips",
+            "url": "{{baseUrl}}/tips",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.311Z",
+            "modified": "2026-01-17T16:20:45.311Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "07bf6a99-0a96-4600-b7a2-f2902f60c59b",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "List Subscriptions",
+            "url": "{{baseUrl}}/subscriptions",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.321Z",
+            "modified": "2026-01-17T16:20:45.321Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "cf041990-53d3-4bd1-b530-c49192817fb7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "List Notifications",
+            "url": "{{baseUrl}}/notifications",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2026-01-17T16:20:45.328Z",
+            "modified": "2026-01-17T16:20:45.328Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "f3a1cf18-6559-44db-8810-584a3b945796",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Login",
+            "url": "{{baseUrl}}/api/login",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.240Z",
+            "modified": "2026-01-17T16:29:18.465Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "4580559c-9854-4392-9244-25cc39dabac6",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Public Doctors",
+            "url": "{{baseUrl}}/public/doctors",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.246Z",
+            "modified": "2026-01-17T16:20:45.246Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                }
+            ]
+        },
+        {
+            "_id": "6533c212-08d4-4be6-ad76-6c81061b3f43",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "fe724811-ceaa-42dd-ab26-24735323e38e",
+            "name": "Recent Activity",
+            "url": "{{baseUrl}}/dashboard/recent-activity",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.253Z",
+            "modified": "2026-01-17T16:20:45.253Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "56da320a-28b5-4df1-87e2-f76c6ea6aea7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Payed Users",
+            "url": "{{baseUrl}}/api/users/payed",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.257Z",
+            "modified": "2026-01-17T16:30:27.570Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "285f6013-6b21-4212-8355-584daabdb265",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Approved Doctors",
+            "url": "{{baseUrl}}/doctors/approved",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.265Z",
+            "modified": "2026-01-17T16:20:45.265Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "e68995f1-90bb-49ab-acd4-7b9a4c7a67bf",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Get Diet",
+            "url": "{{baseUrl}}/diets/1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.278Z",
+            "modified": "2026-01-17T16:20:45.278Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "62752599-04c5-4ef5-bc89-ad1cbf7a6200",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Get Forum",
+            "url": "{{baseUrl}}/forums/1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.295Z",
+            "modified": "2026-01-17T16:20:45.295Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "35eb25bd-ab6e-44ba-9ed7-28871d74b83f",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Conversation Messages",
+            "url": "{{baseUrl}}/chat/conversations/1/messages",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.306Z",
+            "modified": "2026-01-17T16:20:45.306Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "aa94152d-dd33-49bc-87f1-518b93b20cf7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Create Tip",
+            "url": "{{baseUrl}}/tips",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.312Z",
+            "modified": "2026-01-17T16:20:45.312Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"title\": \"Health Tip\",\n  \"content\": \"Drink 8 glasses of water daily\",\n  \"category_id\": 1\n}"
+            }
+        },
+        {
+            "_id": "1da49c8f-0513-482b-b40b-e1b74af2e5f2",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "Create Subscription",
+            "url": "{{baseUrl}}/subscriptions",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.322Z",
+            "modified": "2026-01-17T16:20:45.322Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 1,\n  \"plan\": \"premium\",\n  \"start_date\": \"2026-01-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            }
+        },
+        {
+            "_id": "822b75b9-0208-4055-8700-18c4272e7bbb",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "My Notifications",
+            "url": "{{baseUrl}}/notifications/my",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2026-01-17T16:20:45.329Z",
+            "modified": "2026-01-17T16:20:45.329Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "936dd177-23ab-4fb8-8534-714caaccfd20",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Forgot Password",
+            "url": "{{baseUrl}}/api/forgot-password",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.241Z",
+            "modified": "2026-01-17T16:29:23.190Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"test@example.com\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "8830685b-7210-4f77-b8d6-75c7c2540ada",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Public Ads",
+            "url": "{{baseUrl}}/public/ads",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.247Z",
+            "modified": "2026-01-17T16:20:45.247Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                }
+            ]
+        },
+        {
+            "_id": "ce61ff77-59a2-46d7-af96-aa4a2872f931",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "fe724811-ceaa-42dd-ab26-24735323e38e",
+            "name": "Reports Usage",
+            "url": "{{baseUrl}}/reports/usage",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.254Z",
+            "modified": "2026-01-17T16:20:45.254Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "8213783b-3a6c-4b68-922d-01ff1b03db26",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Normal Users",
+            "url": "{{baseUrl}}/users/normal",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.258Z",
+            "modified": "2026-01-17T16:20:45.258Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "f2d7cff7-ba67-4a32-80b9-5efeede677af",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Pending Doctors",
+            "url": "{{baseUrl}}/doctors/pending",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.266Z",
+            "modified": "2026-01-17T16:20:45.266Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "90255d88-987f-4308-8c18-662451b78786",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Create Diet",
+            "url": "{{baseUrl}}/diets",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.279Z",
+            "modified": "2026-01-17T16:20:45.279Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Keto Diet\",\n  \"description\": \"Low carb high fat diet\",\n  \"doctor_id\": 1,\n  \"patient_id\": 1\n}"
+            }
+        },
+        {
+            "_id": "3562785d-06f2-475b-b844-1bec7584f2e9",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Create Forum",
+            "url": "{{baseUrl}}/forums",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.296Z",
+            "modified": "2026-01-17T16:20:45.296Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"General Discussion\",\n  \"description\": \"A forum for general topics\"\n}"
+            }
+        },
+        {
+            "_id": "9405ccaa-bd12-486b-9790-6b54d95737b1",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Send Message",
+            "url": "{{baseUrl}}/chat/messages",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.307Z",
+            "modified": "2026-01-17T16:20:45.307Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"conversation_id\": 1,\n  \"message\": \"Hello!\"\n}"
+            }
+        },
+        {
+            "_id": "9aba6258-94a5-4b12-93cb-407756880964",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Tip Categories",
+            "url": "{{baseUrl}}/tips-categories",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.313Z",
+            "modified": "2026-01-17T16:20:45.313Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "5c47dcd2-00cc-4099-b02c-4a44f15d9079",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "List Invoices",
+            "url": "{{baseUrl}}/invoices",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.323Z",
+            "modified": "2026-01-17T16:20:45.323Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "749e9668-2627-4ecb-a754-a2aabe1e36c9",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Unread Count",
+            "url": "{{baseUrl}}/notifications/unread-count",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2026-01-17T16:20:45.330Z",
+            "modified": "2026-01-17T16:20:45.330Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "71bf67d6-ae28-4ce5-a6b4-0f55fb41ce05",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Reset Password",
+            "url": "{{baseUrl}}/reset-password",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.242Z",
+            "modified": "2026-01-17T16:20:45.242Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"test@example.com\",\n  \"token\": \"reset_token\",\n  \"password\": \"newpassword\",\n  \"password_confirmation\": \"newpassword\"\n}"
+            }
+        },
+        {
+            "_id": "d23ba2c3-79ef-4087-babc-65d64c1573ac",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Public Forums",
+            "url": "{{baseUrl}}/public/forums",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.248Z",
+            "modified": "2026-01-17T16:20:45.248Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                }
+            ]
+        },
+        {
+            "_id": "86f9d546-82bd-463d-8232-f494631f788d",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "fe724811-ceaa-42dd-ab26-24735323e38e",
+            "name": "Reports Ratings",
+            "url": "{{baseUrl}}/reports/ratings",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.255Z",
+            "modified": "2026-01-17T16:20:45.255Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "5c3664fd-d063-42da-bb10-66501f38e618",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Get User",
+            "url": "{{baseUrl}}/api/users/1",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.259Z",
+            "modified": "2026-01-17T16:30:36.828Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "887a9bb1-712a-4c18-9d62-5ab4b38bef4a",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Get Doctor",
+            "url": "{{baseUrl}}/doctors/1",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.267Z",
+            "modified": "2026-01-17T16:20:45.267Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "9138298c-6a6c-44b2-bf06-e1a387cfb375",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Update Diet",
+            "url": "{{baseUrl}}/diets/1",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.280Z",
+            "modified": "2026-01-17T16:20:45.280Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Updated Diet Name\"\n}"
+            }
+        },
+        {
+            "_id": "c1a33804-e288-41f0-aa82-8efc724994f7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Forum Members",
+            "url": "{{baseUrl}}/forums/1/members",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.297Z",
+            "modified": "2026-01-17T16:20:45.297Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "932eeaba-e94e-4c09-a07b-6a8b93bf0028",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Mark Message Read",
+            "url": "{{baseUrl}}/chat/messages/1/read",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.308Z",
+            "modified": "2026-01-17T16:20:45.308Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "23f2bf61-d262-433d-867a-030dc5e42849",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "List Meals",
+            "url": "{{baseUrl}}/meals",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.314Z",
+            "modified": "2026-01-17T16:20:45.314Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "415901db-2156-4649-95e7-c0ef3f7976d5",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "Create Invoice",
+            "url": "{{baseUrl}}/invoices",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.324Z",
+            "modified": "2026-01-17T16:20:45.324Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 1,\n  \"amount\": 100,\n  \"status\": \"pending\"\n}"
+            }
+        },
+        {
+            "_id": "fec74c4e-51d9-4834-b595-1aea9bfaa2f4",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Send Notification",
+            "url": "{{baseUrl}}/notifications/send",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2026-01-17T16:20:45.331Z",
+            "modified": "2026-01-17T16:20:45.331Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 1,\n  \"title\": \"New Message\",\n  \"body\": \"You have a new message\"\n}"
+            }
+        },
+        {
+            "_id": "09fdbb13-938b-4a90-9e2a-70415f780fc1",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Logout",
+            "url": "{{baseUrl}}/api/logout",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.243Z",
+            "modified": "2026-01-17T16:29:31.535Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "60591b0f-1148-4b85-b6e2-750ef2e1f8df",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Public Forum Posts",
+            "url": "{{baseUrl}}/public/forums/1/posts",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.249Z",
+            "modified": "2026-01-17T16:20:45.249Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                }
+            ]
+        },
+        {
+            "_id": "8cccb287-fa5b-43bd-8a05-49ec4d98ed59",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Create User",
+            "url": "{{baseUrl}}/users",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.260Z",
+            "modified": "2026-01-17T16:20:45.260Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password\",\n  \"type\": \"user\"\n}"
+            }
+        },
+        {
+            "_id": "d2a9bf59-b094-43a2-957e-2002b91e2751",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Create Doctor",
+            "url": "{{baseUrl}}/doctors",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.268Z",
+            "modified": "2026-01-17T16:20:45.268Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 1,\n  \"name\": \"Dr. Ahmed\",\n  \"specialization\": \"General\",\n  \"degree\": \"MD\",\n  \"gender\": \"male\",\n  \"phone_number\": \"0501234567\"\n}"
+            }
+        },
+        {
+            "_id": "6e965b0d-311c-4a7f-84d4-f83ab46b4372",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Delete Diet",
+            "url": "{{baseUrl}}/diets/1",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.281Z",
+            "modified": "2026-01-17T16:20:45.281Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "812bc3b5-af4d-4611-abcc-04310f4e8241",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Add User to Forum",
+            "url": "{{baseUrl}}/forums/1/users",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.298Z",
+            "modified": "2026-01-17T16:20:45.298Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 1\n}"
+            }
+        },
+        {
+            "_id": "9135b068-125e-4ea1-b5d1-347989cb2902",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Unread Count",
+            "url": "{{baseUrl}}/chat/unread-count",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.309Z",
+            "modified": "2026-01-17T16:20:45.309Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "2230b756-d5c6-4e5a-9c13-3faeb4cf4874",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Create Meal",
+            "url": "{{baseUrl}}/meals",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.315Z",
+            "modified": "2026-01-17T16:20:45.315Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Grilled Chicken\",\n  \"calories\": 250,\n  \"protein\": 30,\n  \"carbs\": 5,\n  \"fat\": 10,\n  \"category_id\": 1\n}"
+            }
+        },
+        {
+            "_id": "50e56ce3-2b18-44b2-98b6-f75fbcb0d1ff",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "List Payments",
+            "url": "{{baseUrl}}/payments",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.325Z",
+            "modified": "2026-01-17T16:20:45.325Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "9037cd5e-4bab-4527-addc-db87b66f79da",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Mark Read",
+            "url": "{{baseUrl}}/notifications/1/read",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2026-01-17T16:20:45.333Z",
+            "modified": "2026-01-17T16:20:45.333Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "81f72829-1890-4ba9-813f-a4f5c59b9ecd",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "9ecbbf71-785c-4137-b630-d8a5da9cea85",
+            "name": "Me",
+            "url": "{{baseUrl}}/api/me",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.244Z",
+            "modified": "2026-01-17T16:29:37.029Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "4d1fa85a-a2a9-4abc-a878-a4ad5171dd0d",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "66c06b5c-b544-4b68-ac70-58656373f8ab",
+            "name": "Diets Preview",
+            "url": "{{baseUrl}}/public/diets-preview",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.251Z",
+            "modified": "2026-01-17T16:20:45.251Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                }
+            ]
+        },
+        {
+            "_id": "3176f6e5-7eb1-4edf-b51f-09ed3dcddc32",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Update User",
+            "url": "{{baseUrl}}/users/1",
+            "method": "PUT",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.261Z",
+            "modified": "2026-01-17T16:20:45.261Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            }
+        },
+        {
+            "_id": "e4f43f3b-2b48-44b0-9ad1-6ecf95f962c0",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Update Doctor",
+            "url": "{{baseUrl}}/doctors/1",
+            "method": "PUT",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.269Z",
+            "modified": "2026-01-17T16:20:45.269Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"specialization\": \"Cardiology\"\n}"
+            }
+        },
+        {
+            "_id": "bebbec16-ff66-451a-ad30-5366a396b9e2",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Update Diet Status",
+            "url": "{{baseUrl}}/diets/1/status",
+            "method": "PUT",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.282Z",
+            "modified": "2026-01-17T16:20:45.282Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"status\": \"active\"\n}"
+            }
+        },
+        {
+            "_id": "a4632fca-4233-4e4b-ba35-4dae0135823c",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Remove User from Forum",
+            "url": "{{baseUrl}}/forums/1/users/1",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.299Z",
+            "modified": "2026-01-17T16:20:45.299Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "131be8b0-f094-45c8-b0fe-0f571d1f2b54",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5bc9cd60-1a0e-485e-917a-939b5e34f8f6",
+            "name": "Chat History",
+            "url": "{{baseUrl}}/chat/history/1",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.310Z",
+            "modified": "2026-01-17T16:20:45.310Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "0ddb63e7-f6c6-4683-b7a1-8c3a1d2e9f7b",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Meal Categories",
+            "url": "{{baseUrl}}/meal-categories",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.316Z",
+            "modified": "2026-01-17T16:20:45.316Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "d22797a3-e72e-4f65-b4d0-3becb3b01e45",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "Create Payment",
+            "url": "{{baseUrl}}/payments",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.326Z",
+            "modified": "2026-01-17T16:20:45.326Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"invoice_id\": 1,\n  \"amount\": 100,\n  \"method\": \"credit_card\"\n}"
+            }
+        },
+        {
+            "_id": "26bc85c3-02b0-49f1-9237-e21b28fc8055",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Mark All Read",
+            "url": "{{baseUrl}}/notifications/read-all",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2026-01-17T16:20:45.334Z",
+            "modified": "2026-01-17T16:20:45.334Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "5cfb80de-0f89-4878-9d5c-ff78e4c35ab7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Delete User",
+            "url": "{{baseUrl}}/users/1",
+            "method": "DELETE",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.262Z",
+            "modified": "2026-01-17T16:20:45.262Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "833c8ab7-a18e-4a0c-aab5-fcd46d02cf98",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Approve Doctor",
+            "url": "{{baseUrl}}/doctors/1/approve",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.270Z",
+            "modified": "2026-01-17T16:20:45.270Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "50a30137-331a-48a1-b9ad-ba92880ddd72",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "My Diet",
+            "url": "{{baseUrl}}/my-diet",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.283Z",
+            "modified": "2026-01-17T16:20:45.283Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "ba773a00-1672-4b8b-a002-6ce9fd39c890",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Join Forum",
+            "url": "{{baseUrl}}/forums/1/join",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.300Z",
+            "modified": "2026-01-17T16:20:45.300Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "7064fb62-6d97-427d-8eff-92d4920b4ed3",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "List Ads",
+            "url": "{{baseUrl}}/advertisements",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.317Z",
+            "modified": "2026-01-17T16:20:45.317Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "0f5f8d8f-95f5-42e3-b4d0-71456975359a",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "0f1b16b4-3e6e-473b-a93b-4eded267574f",
+            "name": "Payment Methods",
+            "url": "{{baseUrl}}/payment-methods",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.327Z",
+            "modified": "2026-01-17T16:20:45.327Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "aa3c71cc-06e9-413a-9ee3-4199ef4a8b23",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Medical Tests",
+            "url": "{{baseUrl}}/medical-tests",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2026-01-17T16:20:45.335Z",
+            "modified": "2026-01-17T16:20:45.335Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "2ed308ef-2326-4be9-b0cf-460bff55a98a",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "1965f33a-03a1-4eb6-bb21-5451ca94c500",
+            "name": "Toggle Ban",
+            "url": "{{baseUrl}}/users/1/toggle-ban",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2026-01-17T16:20:45.263Z",
+            "modified": "2026-01-17T16:20:45.263Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "ed64d873-b0cb-43bb-9ef5-c56bcbe6c1dd",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Reject Doctor",
+            "url": "{{baseUrl}}/doctors/1/reject",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2026-01-17T16:20:45.271Z",
+            "modified": "2026-01-17T16:20:45.271Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "63ea8ee0-f672-4145-b2ad-b2e915de9c04",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "My Diet Periods",
+            "url": "{{baseUrl}}/my-diet/periods",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2026-01-17T16:20:45.284Z",
+            "modified": "2026-01-17T16:20:45.284Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "4036d383-6bbd-41bb-9e3f-b3b14779e55d",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Leave Forum",
+            "url": "{{baseUrl}}/forums/1/leave",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2026-01-17T16:20:45.301Z",
+            "modified": "2026-01-17T16:20:45.301Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "24f84dae-2ee9-418b-9d64-bfd3195547be",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Create Ad",
+            "url": "{{baseUrl}}/advertisements",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2026-01-17T16:20:45.318Z",
+            "modified": "2026-01-17T16:20:45.318Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"title\": \"New Product\",\n  \"description\": \"Check our new product\",\n  \"link\": \"https://example.com\"\n}"
+            }
+        },
+        {
+            "_id": "0649ee24-79a5-47f8-87a7-ec9726c4ceda",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Weekly Calculations",
+            "url": "{{baseUrl}}/weekly-calculations",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2026-01-17T16:20:45.336Z",
+            "modified": "2026-01-17T16:20:45.336Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "77a63405-0bb3-42bf-8574-e6acaa4d2d91",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Delete Doctor",
+            "url": "{{baseUrl}}/doctors/1",
+            "method": "DELETE",
+            "sortNum": 90000,
+            "created": "2026-01-17T16:20:45.272Z",
+            "modified": "2026-01-17T16:20:45.272Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "f67a63e9-1ddb-4db6-ac98-8cbca03bdb3b",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "My Diet Meals",
+            "url": "{{baseUrl}}/my-diet/meals",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2026-01-17T16:20:45.285Z",
+            "modified": "2026-01-17T16:20:45.285Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "aab25bf5-cdc8-480a-bea5-a65d2cfcf0cc",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Forum Posts",
+            "url": "{{baseUrl}}/forums/1/posts",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2026-01-17T16:20:45.302Z",
+            "modified": "2026-01-17T16:20:45.302Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "a64aa8fe-7144-4169-97b4-b88656d24d90",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Settings",
+            "url": "{{baseUrl}}/settings",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2026-01-17T16:20:45.319Z",
+            "modified": "2026-01-17T16:20:45.319Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "8e0b722d-4653-41f0-8f52-06a3ce0bf1b0",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "Main Calculations",
+            "url": "{{baseUrl}}/main-calculations",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2026-01-17T16:20:45.337Z",
+            "modified": "2026-01-17T16:20:45.337Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "548c0d2b-93b1-4839-a05c-5e45d788b8f6",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Doctor Profile",
+            "url": "{{baseUrl}}/doctor/profile",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2026-01-17T16:20:45.273Z",
+            "modified": "2026-01-17T16:20:45.273Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "5660a04d-ded6-425f-b28f-bcfe96c31af7",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Diet Notes",
+            "url": "{{baseUrl}}/diet-notes",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2026-01-17T16:20:45.286Z",
+            "modified": "2026-01-17T16:20:45.286Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "051a973e-160e-4e90-b52b-890359a32411",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Create Post",
+            "url": "{{baseUrl}}/forums/1/posts",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2026-01-17T16:20:45.303Z",
+            "modified": "2026-01-17T16:20:45.303Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"content\": \"Hello everyone!\"\n}"
+            }
+        },
+        {
+            "_id": "4621746e-a8ab-4bb3-a182-53d4a563a119",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "5f6c600b-1442-49f3-b52c-cd6b94599334",
+            "name": "Update Settings",
+            "url": "{{baseUrl}}/settings",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2026-01-17T16:20:45.320Z",
+            "modified": "2026-01-17T16:20:45.320Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"site_name\": \"Health App\"\n}"
+            }
+        },
+        {
+            "_id": "7bc779fd-55c2-4bdd-bcc4-344677624e99",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "16b01266-4415-4f56-b98d-d323e72f61ea",
+            "name": "System Logs",
+            "url": "{{baseUrl}}/logs",
+            "method": "GET",
+            "sortNum": 100000,
+            "created": "2026-01-17T16:20:45.338Z",
+            "modified": "2026-01-17T16:20:45.338Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "197bd851-e56f-44f0-94b8-ba4929389253",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Doctor Patients",
+            "url": "{{baseUrl}}/doctor/patients",
+            "method": "GET",
+            "sortNum": 110000,
+            "created": "2026-01-17T16:20:45.274Z",
+            "modified": "2026-01-17T16:20:45.274Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "3c392611-3aba-49ae-9460-8f9d6ccea7e9",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Diet Components",
+            "url": "{{baseUrl}}/diet-components",
+            "method": "GET",
+            "sortNum": 110000,
+            "created": "2026-01-17T16:20:45.287Z",
+            "modified": "2026-01-17T16:20:45.287Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "10f06476-8201-4c5e-a6d4-816271aba932",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "bb439521-7b06-4c21-affe-5293f94f2eb1",
+            "name": "Like Post",
+            "url": "{{baseUrl}}/posts/1/like",
+            "method": "POST",
+            "sortNum": 110000,
+            "created": "2026-01-17T16:20:45.304Z",
+            "modified": "2026-01-17T16:20:45.304Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "10635e62-b0bf-420f-9158-56dbc0336d01",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "dd3726a9-1079-499b-8f7c-eb64b2db1a55",
+            "name": "Rate Doctor",
+            "url": "{{baseUrl}}/doctors/1/rate",
+            "method": "POST",
+            "sortNum": 120000,
+            "created": "2026-01-17T16:20:45.276Z",
+            "modified": "2026-01-17T16:20:45.276Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent doctor!\"\n}"
+            }
+        },
+        {
+            "_id": "1c602092-6329-4dd3-84b9-58a5eeb4005a",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Diet Periods",
+            "url": "{{baseUrl}}/diet-periods",
+            "method": "GET",
+            "sortNum": 120000,
+            "created": "2026-01-17T16:20:45.288Z",
+            "modified": "2026-01-17T16:20:45.288Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        },
+        {
+            "_id": "0daa1d26-e9ea-4caa-bd7b-7070702d5191",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Calculate BMI",
+            "url": "{{baseUrl}}/calculations/bmi",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2026-01-17T16:20:45.289Z",
+            "modified": "2026-01-17T16:20:45.289Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"weight\": 70,\n  \"height\": 175\n}"
+            }
+        },
+        {
+            "_id": "3bb98e10-7a84-4ae3-a41f-a15eeb0ea561",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Calculate BMR",
+            "url": "{{baseUrl}}/calculations/bmr",
+            "method": "POST",
+            "sortNum": 140000,
+            "created": "2026-01-17T16:20:45.290Z",
+            "modified": "2026-01-17T16:20:45.290Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"weight\": 70,\n  \"height\": 175,\n  \"age\": 25,\n  \"gender\": \"male\"\n}"
+            }
+        },
+        {
+            "_id": "d90d9109-8dee-4b91-aa84-effffe2ba1e0",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Calculate Calories",
+            "url": "{{baseUrl}}/calculations/calories",
+            "method": "POST",
+            "sortNum": 150000,
+            "created": "2026-01-17T16:20:45.291Z",
+            "modified": "2026-01-17T16:20:45.291Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"bmr\": 1700,\n  \"activity_level\": \"moderate\"\n}"
+            }
+        },
+        {
+            "_id": "e4660807-0ee4-4e6f-a042-3644d8197a1b",
+            "colId": "63ba35e0-ad73-4719-8b8a-9e4e24d653f9",
+            "containerId": "2eb8dd93-2b23-439a-8df1-c894c8eae794",
+            "name": "Calculations History",
+            "url": "{{baseUrl}}/calculations/history",
+            "method": "GET",
+            "sortNum": 160000,
+            "created": "2026-01-17T16:20:45.292Z",
+            "modified": "2026-01-17T16:20:45.292Z",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "value": "application/json"
+                },
+                {
+                    "name": "Authorization",
+                    "value": "Bearer {{token}}"
+                }
+            ]
+        }
+    ]
+}

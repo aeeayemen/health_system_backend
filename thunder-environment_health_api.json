@@ -1,0 +1,16 @@
+{
+  "client": "Thunder Client",
+  "environmentName": "Health API - Local",
+  "dateExported": "2026-01-17T19:19:00",
+  "version": "1.1",
+  "variables": [
+    {
+      "name": "baseUrl",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "name": "token",
+      "value": ""
+    }
+  ]
+}

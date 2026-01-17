@@ -4,80 +4,56 @@ namespace App\Http\Controllers;
 
 use App\Models\Reminder;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ReminderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index(): JsonResponse
     {
-        $query = Reminder::with('user');
-
-        // Filter by user for non-admin users
-        if ($request->user()->role !== 'admin') {
-            $query->where('user_id', $request->user()->id);
-        }
-
-        // Optional filter by user_id for admins
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        return response()->json($query->orderBy('time', 'asc')->get());
+        $reminders = Reminder::where('user_id', auth()->id())->get();
+        return response()->json(['data' => $reminders]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'time' => 'required|string|max:100',
-            'describtion' => 'nullable|string|max:255',
-            'user_id' => 'nullable|exists:users,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'reminder_time' => 'required|date',
+            'type' => 'nullable|string',
         ]);
 
-        // If user_id not provided, use authenticated user
-        if (!isset($validated['user_id'])) {
-            $validated['user_id'] = $request->user()->id;
-        }
-
+        $validated['user_id'] = auth()->id();
         $reminder = Reminder::create($validated);
 
-        return response()->json($reminder->load('user'), 201);
+        return response()->json(['data' => $reminder, 'message' => 'Reminder created'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Reminder $reminder)
+    public function show($id): JsonResponse
     {
-        return response()->json($reminder->load('user'));
+        $reminder = Reminder::where('user_id', auth()->id())->findOrFail($id);
+        return response()->json(['data' => $reminder]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Reminder $reminder)
+    public function update(Request $request, $id): JsonResponse
     {
+        $reminder = Reminder::where('user_id', auth()->id())->findOrFail($id);
+
         $validated = $request->validate([
-            'time' => 'sometimes|string|max:100',
-            'describtion' => 'nullable|string|max:255',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'reminder_time' => 'sometimes|date',
+            'type' => 'nullable|string',
         ]);
 
         $reminder->update($validated);
-
-        return response()->json($reminder->load('user'));
+        return response()->json(['data' => $reminder, 'message' => 'Reminder updated']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Reminder $reminder)
+    public function destroy($id): JsonResponse
     {
+        $reminder = Reminder::where('user_id', auth()->id())->findOrFail($id);
         $reminder->delete();
-
-        return response()->json(['message' => 'Reminder deleted successfully']);
+        return response()->json(['message' => 'Reminder deleted']);
     }
 }

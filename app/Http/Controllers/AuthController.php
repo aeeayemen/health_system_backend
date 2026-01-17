@@ -20,28 +20,30 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'required|string|max:20',
-            'role' => 'required|in:patient,doctor',
+            'phone' => 'nullable|string|max:20',
+            'type' => 'nullable|in:user,patient,doctor,admin,payed',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'],
-            'role' => $validated['role'],
+            'phone' => $validated['phone'] ?? null,
+            'type' => $validated['type'] ?? 'user',
         ]);
 
-        // Create Patient or Doctor profile
-        if ($validated['role'] === 'patient') {
+        $role = $validated['type'] ?? 'user';
+
+        // Create Patient or Doctor profile if needed
+        if ($role === 'patient') {
             Patient::create([
                 'user_id' => $user->id,
-                'gender' => $request->gender ?? 'male', // Default or validate
+                'gender' => $request->gender ?? 'male',
             ]);
-        } elseif ($validated['role'] === 'doctor') {
+        } elseif ($role === 'doctor') {
             Doctor::create([
                 'user_id' => $user->id,
-                'specialization' => $request->specialization ?? 'General', // Default or validate
+                'specialization' => $request->specialization ?? 'General',
                 'license_number' => $request->license_number ?? 'PENDING-' . time(),
             ]);
         }
