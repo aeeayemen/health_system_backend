@@ -10,9 +10,11 @@ class Patient extends Model
     use HasFactory;
 
     protected $table = 'subscribed_users';
+    public $incrementing = false;
 
     protected $fillable = [
         'id', // Since it's a foreign key to users and primary key, we might need to set it manually or let the controller handle it via relationship
+        'user_id',
         'fullname',
         'gender',
         'height',

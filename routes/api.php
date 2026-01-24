@@ -35,6 +35,7 @@ use App\Http\Controllers\CalculationController;
 use App\Http\Controllers\ForumPostController;
 use App\Http\Controllers\DietPeriodController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\DietTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,6 +128,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('diet-notes', DietNoteController::class);
     Route::apiResource('diet-components', DietComponentController::class);
     Route::apiResource('diet-periods', DietPeriodController::class);
+
+    // === Diet Types ===
+    Route::apiResource('diet-types', DietTypeController::class);
+    Route::post('/diet-types/{dietType}/toggle-status', [DietTypeController::class, 'toggleStatus']);
 
     // === Weekly Calculations ===
     Route::apiResource('weekly-calculations', WeeklyCalculationController::class);

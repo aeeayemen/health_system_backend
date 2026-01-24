@@ -36,8 +36,23 @@ class SubscriptionController extends Controller
             'start_date' => 'required|date',
         ]);
 
+        $user = $request->user();
+        $patient = $user->patient;
+
+        if (!$patient) {
+            // Create a default patient record if it doesn't exist
+            $patient = \App\Models\Patient::create([
+                'id' => $user->id,
+                'user_id' => $user->id,
+                'fullname' => $user->name,
+                // Add other default fields if necessary, but they are nullable in migration
+            ]);
+            // Refresh user relationship
+            $user->load('patient');
+        }
+
         $subscription = Subscription::create([
-            'patient_id' => $request->user()->patient->id,
+            'patient_id' => $patient->id,
             'doctor_id' => $validated['doctor_id'],
             'plan_type' => $validated['plan_type'],
             'price' => $validated['price'],
