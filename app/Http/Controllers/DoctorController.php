@@ -51,10 +51,26 @@ class DoctorController extends Controller
             'degree' => 'nullable|string',
             'bank_account' => 'nullable|string',
             'phone_number' => 'nullable|string',
-            'CV' => 'nullable|string',
-            'profile_image' => 'nullable|string',
+            'CV' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'admin_id' => 'nullable|exists:users,id',
         ]);
+
+        // Handle CV upload
+        if ($request->hasFile('CV')) {
+            $cv = $request->file('CV');
+            $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+            $cv->move(public_path('uploads/doctors/cv'), $cvName);
+            $validated['CV'] = 'uploads/doctors/cv/' . $cvName;
+        }
+
+        // Handle profile image upload
+        if ($request->hasFile('profile_image')) {
+            $image = $request->file('profile_image');
+            $imageName = time() . '_profile_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/doctors/profile'), $imageName);
+            $validated['profile_image'] = 'uploads/doctors/profile/' . $imageName;
+        }
 
         $doctor = Doctor::create($validated);
 
@@ -86,10 +102,34 @@ class DoctorController extends Controller
             'degree' => 'nullable|string',
             'bank_account' => 'nullable|string',
             'phone_number' => 'nullable|string',
-            'CV' => 'nullable|string',
-            'profile_image' => 'nullable|string',
+            'CV' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'admin_id' => 'nullable|exists:users,id',
         ]);
+
+        // Handle CV upload
+        if ($request->hasFile('CV')) {
+            // Delete old CV if exists
+            if ($doctor->CV && file_exists(public_path($doctor->CV))) {
+                unlink(public_path($doctor->CV));
+            }
+            $cv = $request->file('CV');
+            $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+            $cv->move(public_path('uploads/doctors/cv'), $cvName);
+            $validated['CV'] = 'uploads/doctors/cv/' . $cvName;
+        }
+
+        // Handle profile image upload
+        if ($request->hasFile('profile_image')) {
+            // Delete old image if exists
+            if ($doctor->profile_image && file_exists(public_path($doctor->profile_image))) {
+                unlink(public_path($doctor->profile_image));
+            }
+            $image = $request->file('profile_image');
+            $imageName = time() . '_profile_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/doctors/profile'), $imageName);
+            $validated['profile_image'] = 'uploads/doctors/profile/' . $imageName;
+        }
 
         $doctor->update($validated);
 
@@ -101,6 +141,15 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor)
     {
+        // Delete CV if exists
+        if ($doctor->CV && file_exists(public_path($doctor->CV))) {
+            unlink(public_path($doctor->CV));
+        }
+        // Delete profile image if exists
+        if ($doctor->profile_image && file_exists(public_path($doctor->profile_image))) {
+            unlink(public_path($doctor->profile_image));
+        }
+
         $doctor->delete();
 
         return response()->json(['message' => 'Doctor deleted successfully']);
@@ -200,8 +249,20 @@ class DoctorController extends Controller
             'is_available' => 'sometimes|boolean',
             'years_of_experience' => 'nullable|integer',
             'phone_number' => 'nullable|string',
-            'profile_image' => 'nullable|string',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Handle profile image upload
+        if ($request->hasFile('profile_image')) {
+            // Delete old image if exists
+            if ($doctor->profile_image && file_exists(public_path($doctor->profile_image))) {
+                unlink(public_path($doctor->profile_image));
+            }
+            $image = $request->file('profile_image');
+            $imageName = time() . '_profile_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/doctors/profile'), $imageName);
+            $validated['profile_image'] = 'uploads/doctors/profile/' . $imageName;
+        }
 
         $doctor->update($validated);
 

@@ -30,11 +30,19 @@ class AdvertisementController extends Controller
         $validated = $request->validate([
 
             'describtion' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'phone_number' => 'required|string',
             'type' => 'required|in:عرض,ترويج', // حسب القيم في الواجهة
             'GPS' => 'nullable|string',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/advertisements'), $imageName);
+            $validated['image'] = 'uploads/advertisements/' . $imageName;
+        }
 
         // إضافة admin_id من المستخدم الحالي إذا كان مسجلاً
         // إضافة admin_id من المستخدم الحالي إذا كان مسجلاً، وإلا القيمة الافتراضية 1
@@ -55,11 +63,24 @@ class AdvertisementController extends Controller
         $ad = Advertisement::findOrFail($id);
         $validated = $request->validate([
             'describtion' => 'string',
-            'image' => 'string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'phone_number' => 'string',
             'type' => 'in:عرض,ترويج',
             'GPS' => 'nullable|string',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($ad->image && file_exists(public_path($ad->image))) {
+                unlink(public_path($ad->image));
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/advertisements'), $imageName);
+            $validated['image'] = 'uploads/advertisements/' . $imageName;
+        }
 
         $ad->update($validated);
         return response()->json($ad);
@@ -67,7 +88,14 @@ class AdvertisementController extends Controller
 
     public function destroy($id)
     {
-        Advertisement::destroy($id);
+        $ad = Advertisement::findOrFail($id);
+
+        // Delete image if exists
+        if ($ad->image && file_exists(public_path($ad->image))) {
+            unlink(public_path($ad->image));
+        }
+
+        $ad->delete();
         return response()->json(null, 204);
     }
 }
