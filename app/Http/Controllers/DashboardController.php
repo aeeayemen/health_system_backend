@@ -74,17 +74,22 @@ class DashboardController extends Controller
             ->get();
 
         // Get monthly revenue chart data (last 6 months)
+        // Get monthly revenue chart data (last 6 months)
         $monthly_revenue = Invoice::where('payment_status', 'paid')
             ->where('created_at', '>=', now()->subMonths(6))
-            ->select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('SUM(amount) as total')
-            )
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get();
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->groupBy(function ($date) {
+                return \Carbon\Carbon::parse($date->created_at)->format('Y-m');
+            })
+            ->map(function ($row) {
+                return [
+                    'month' => \Carbon\Carbon::parse($row->first()->created_at)->format('m'),
+                    'year' => \Carbon\Carbon::parse($row->first()->created_at)->format('Y'),
+                    'total' => $row->sum('amount')
+                ];
+            })
+            ->values();
 
         return response()->json([
             'stats' => $stats,
