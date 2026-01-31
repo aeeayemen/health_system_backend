@@ -77,6 +77,15 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->type === 'doctor') {
+            $doctor = $user->doctor;
+            if ($doctor && $doctor->application_status !== 'approved') {
+                return response()->json([
+                    'message' => 'Your account is pending approval.'
+                ], 403);
+            }
+        }
+
         // if (trim(strtolower($user->role)) !== 'admin') {
 
         //     throw ValidationException::withMessages([
