@@ -81,7 +81,7 @@ class AuthController extends Controller
             $doctor = $user->doctor;
             if ($doctor && $doctor->application_status !== 'approved') {
                 return response()->json([
-                    'message' => 'Your account is pending approval.'
+                    'message' => 'حسابك بانتظار الموافقة من قبل الإدارة'
                 ], 403);
             }
         }
