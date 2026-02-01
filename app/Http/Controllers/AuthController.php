@@ -43,6 +43,7 @@ class AuthController extends Controller
         } elseif ($role === 'doctor') {
             Doctor::create([
                 'user_id' => $user->id,
+                'name' => $user->name,
                 'specialization' => $request->specialization ?? 'General',
                 'license_number' => $request->license_number ?? 'PENDING-' . time(),
             ]);
