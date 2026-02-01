@@ -48,6 +48,11 @@ class Patient extends Model
         return $this->hasMany(DietPlan::class);
     }
 
+    public function diets()
+    {
+        return $this->hasMany(Diet::class, 'user_id', 'user_id');
+    }
+
     public function measurements()
     {
         return $this->hasMany(Measurement::class);
