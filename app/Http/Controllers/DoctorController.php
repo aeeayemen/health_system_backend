@@ -317,11 +317,11 @@ class DoctorController extends Controller
             return response()->json(['message' => 'Doctor profile not found'], 404);
         }
 
-        // Get patients through subscriptions or diets
+        // Get patients through subscriptions or diet plans
         $patients = \App\Models\Patient::whereHas('subscriptions', function ($q) use ($doctor) {
             $q->where('doctor_id', $doctor->id);
         })
-            ->orWhereHas('diets', function ($q) use ($doctor) {
+            ->orWhereHas('dietPlans', function ($q) use ($doctor) {
                 $q->where('doctor_id', $doctor->id);
             })
             ->with('user:id,name,email')
@@ -346,7 +346,7 @@ class DoctorController extends Controller
         $patient = \App\Models\Patient::with([
             'user:id,name',
             'measurements',
-            'diets' => function ($q) use ($doctor) {
+            'dietPlans' => function ($q) use ($doctor) {
                 $q->where('doctor_id', $doctor->id);
             }
         ])->find($patientId);
@@ -371,7 +371,7 @@ class DoctorController extends Controller
             'target_weight' => $patient->target_weight,
             'weight_change' => $weightChange,
             'total_measurements' => $measurements->count(),
-            'diets' => $patient->diets,
+            'diet_plans' => $patient->dietPlans,
             'recent_measurements' => $measurements->take(-5)->values()
         ]);
     }
