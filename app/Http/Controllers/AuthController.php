@@ -47,6 +47,10 @@ class AuthController extends Controller
             $doctor->specialization = $request->specialization ?? 'General';
             $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
             $doctor->save();
+
+            // Notify all admins about new doctor application
+            $admins = User::where('type', 'admin')->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewDoctorApplication($doctor));
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

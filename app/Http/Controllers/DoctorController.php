@@ -178,6 +178,11 @@ class DoctorController extends Controller
             'verification_date' => now()
         ]);
 
+        // Notify the doctor about approval
+        if ($doctor->user) {
+            $doctor->user->notify(new \App\Notifications\DoctorApproved());
+        }
+
         return response()->json([
             'message' => 'Doctor application approved successfully',
             'doctor' => new DoctorResource($doctor->load('user'))

@@ -71,6 +71,12 @@ class SubscriptionController extends Controller
             'payment_status' => 'pending',
         ]);
 
+        // Notify the doctor about new patient subscription
+        $doctor = \App\Models\Doctor::find($validated['doctor_id']);
+        if ($doctor && $doctor->user) {
+            $doctor->user->notify(new \App\Notifications\NewPatientSubscription($patient));
+        }
+
         return response()->json($subscription, 201);
     }
     /**

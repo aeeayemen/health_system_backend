@@ -65,6 +65,12 @@ class DietPlanController extends Controller
                 }
             }
 
+            // Notify the patient about new diet plan
+            $patient = \App\Models\Patient::find($validated['patient_id']);
+            if ($patient && $patient->user) {
+                $patient->user->notify(new \App\Notifications\DietPlanAssigned($dietPlan));
+            }
+
             return new DietPlanResource($dietPlan->load('meals'));
         });
     }
