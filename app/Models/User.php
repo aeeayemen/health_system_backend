@@ -76,11 +76,6 @@ class User extends Authenticatable
         return $this->hasOne(Patient::class);
     }
 
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
-    }
-
     public function sentMessages()
     {
         return $this->hasMany(Message::class, 'sender_id');

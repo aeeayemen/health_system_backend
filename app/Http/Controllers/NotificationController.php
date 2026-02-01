@@ -2,46 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
+use App\Models\User;
+use App\Notifications\GeneralNotification;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Notification;
 
 class NotificationController extends Controller
 {
+    /**
+     * Get all notifications (admin)
+     */
     public function index(Request $request)
     {
-        return response()->json(Notification::orderBy('created_at', 'desc')->paginate(10));
+        $notifications = DatabaseNotification::orderBy('created_at', 'desc')->paginate(10);
+
+        return response()->json($notifications);
     }
 
+    /**
+     * Send notifications to users
+     */
     public function send(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string',
             'body' => 'required|string',
+            'type' => 'nullable|string',
             'target_users' => 'nullable|array'
         ]);
 
+        $type = $validated['type'] ?? 'general';
+
         if (!empty($validated['target_users'])) {
-            foreach ($validated['target_users'] as $userId) {
-                Notification::create([
-                    'user_id' => $userId,
-                    'title' => $validated['title'],
-                    'message' => $validated['body'],
-                    'is_read' => false
-                ]);
-            }
+            $users = User::whereIn('id', $validated['target_users'])->get();
+            Notification::send($users, new GeneralNotification(
+                $validated['title'],
+                $validated['body'],
+                $type
+            ));
         }
 
         return response()->json(['message' => 'Notifications sent']);
     }
 
+    /**
+     * Show a specific notification
+     */
     public function show($id)
     {
-        return Notification::findOrFail($id);
+        $notification = DatabaseNotification::findOrFail($id);
+        return response()->json($notification);
     }
 
+    /**
+     * Delete a notification
+     */
     public function destroy($id)
     {
-        Notification::destroy($id);
+        DatabaseNotification::destroy($id);
         return response()->json(null, 204);
     }
 
@@ -50,8 +69,8 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, $id)
     {
-        $notification = Notification::findOrFail($id);
-        $notification->update(['is_read' => true]);
+        $notification = DatabaseNotification::findOrFail($id);
+        $notification->markAsRead();
 
         return response()->json([
             'message' => 'Notification marked as read',
@@ -65,10 +84,7 @@ class NotificationController extends Controller
     public function markAllAsRead(Request $request)
     {
         $user = $request->user();
-
-        Notification::where('user_id', $user->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+        $user->unreadNotifications->markAsRead();
 
         return response()->json(['message' => 'All notifications marked as read']);
     }
@@ -79,9 +95,7 @@ class NotificationController extends Controller
     public function unreadCount(Request $request)
     {
         $user = $request->user();
-        $count = Notification::where('user_id', $user->id)
-            ->where('is_read', false)
-            ->count();
+        $count = $user->unreadNotifications->count();
 
         return response()->json(['unread_count' => $count]);
     }
@@ -92,9 +106,7 @@ class NotificationController extends Controller
     public function myNotifications(Request $request)
     {
         $user = $request->user();
-        $notifications = Notification::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $notifications = $user->notifications()->orderBy('created_at', 'desc')->paginate(20);
 
         return response()->json($notifications);
     }
