@@ -41,12 +41,12 @@ class AuthController extends Controller
                 'gender' => $request->gender ?? 'male',
             ]);
         } elseif ($role === 'doctor') {
-            Doctor::create([
-                'user_id' => $user->id,
-                'name' => $user->name,
-                'specialization' => $request->specialization ?? 'General',
-                'license_number' => $request->license_number ?? 'PENDING-' . time(),
-            ]);
+            $doctor = new Doctor();
+            $doctor->user_id = $user->id;
+            $doctor->name = $user->name;
+            $doctor->specialization = $request->specialization ?? 'General';
+            $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
+            $doctor->save();
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
