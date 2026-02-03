@@ -32,9 +32,19 @@ class PatientController extends Controller
             'height' => 'nullable|numeric',
             'medical_history' => 'nullable|string',
             'allergies' => 'nullable|string',
+            'physical_activity' => 'nullable|string',
         ]);
 
-        $patient = Patient::create($validated);
+        // Map frontend keys to database columns
+        $data = $validated;
+        if (isset($validated['name']))
+            $data['fullname'] = $validated['name'];
+        if (isset($validated['date_of_birth']))
+            $data['birthdate'] = $validated['date_of_birth'];
+        if (isset($validated['current_weight']))
+            $data['weight'] = $validated['current_weight'];
+
+        $patient = Patient::create($data);
 
         return new PatientResource($patient);
     }
@@ -62,9 +72,19 @@ class PatientController extends Controller
             'height' => 'sometimes|numeric',
             'medical_history' => 'sometimes|string',
             'allergies' => 'sometimes|string',
+            'physical_activity' => 'sometimes|string',
         ]);
 
-        $patient->update($validated);
+        // Map frontend keys to database columns
+        $data = $validated;
+        if (isset($validated['name']))
+            $data['fullname'] = $validated['name'];
+        if (isset($validated['date_of_birth']))
+            $data['birthdate'] = $validated['date_of_birth'];
+        if (isset($validated['current_weight']))
+            $data['weight'] = $validated['current_weight'];
+
+        $patient->update($data);
 
         return new PatientResource($patient->load(['user', 'doctor']));
     }
@@ -77,5 +97,43 @@ class PatientController extends Controller
         $patient->delete();
 
         return response()->json(['message' => 'Patient deleted successfully']);
+    }
+    /**
+     * Update current patient's profile
+     */
+    public function updateMyProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $patient = Patient::where('user_id', $user->id)->first();
+
+        if (!$patient) {
+            return response()->json(['message' => 'Patient profile not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'date_of_birth' => 'sometimes|date',
+            'gender' => 'sometimes|in:male,female',
+            'current_weight' => 'sometimes|numeric',
+            'target_weight' => 'sometimes|numeric',
+            'height' => 'sometimes|numeric',
+            'medical_history' => 'sometimes|string',
+            'allergies' => 'sometimes|string',
+            'physical_activity' => 'sometimes|string',
+        ]);
+
+        // Map frontend keys to database columns
+        $data = $validated;
+        if (isset($validated['name']))
+            $data['fullname'] = $validated['name'];
+        if (isset($validated['date_of_birth']))
+            $data['birthdate'] = $validated['date_of_birth'];
+        if (isset($validated['current_weight']))
+            $data['weight'] = $validated['current_weight'];
+
+        $patient->update($data);
+
+        return new PatientResource($patient->load(['user', 'doctor']));
     }
 }
