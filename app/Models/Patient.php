@@ -24,6 +24,9 @@ class Patient extends Model
         'birthdate',
         'physical_activity',
         'medical',
+        'target_weight',
+        'allergies',
+        'current_doctor_id',
     ];
 
     protected $casts = [

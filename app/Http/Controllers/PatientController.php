@@ -44,6 +44,20 @@ class PatientController extends Controller
         if (isset($validated['current_weight']))
             $data['weight'] = $validated['current_weight'];
 
+        // Map medical_history to medical
+        if (isset($validated['medical_history'])) {
+            $data['medical'] = $validated['medical_history'];
+            unset($data['medical_history']);
+        }
+
+        // Pass through new fields if they exist
+        if (isset($validated['target_weight']))
+            $data['target_weight'] = $validated['target_weight'];
+        if (isset($validated['allergies']))
+            $data['allergies'] = $validated['allergies'];
+        if (isset($validated['current_doctor_id']))
+            $data['current_doctor_id'] = $validated['current_doctor_id'];
+
         $patient = Patient::create($data);
 
         return new PatientResource($patient);
@@ -83,6 +97,20 @@ class PatientController extends Controller
             $data['birthdate'] = $validated['date_of_birth'];
         if (isset($validated['current_weight']))
             $data['weight'] = $validated['current_weight'];
+
+        // Map medical_history to medical
+        if (isset($validated['medical_history'])) {
+            $data['medical'] = $validated['medical_history'];
+            unset($data['medical_history']);
+        }
+
+        // Pass through new fields if they exist
+        if (isset($validated['target_weight']))
+            $data['target_weight'] = $validated['target_weight'];
+        if (isset($validated['allergies']))
+            $data['allergies'] = $validated['allergies'];
+        if (isset($validated['current_doctor_id']))
+            $data['current_doctor_id'] = $validated['current_doctor_id'];
 
         $patient->update($data);
 
@@ -131,6 +159,18 @@ class PatientController extends Controller
             $data['birthdate'] = $validated['date_of_birth'];
         if (isset($validated['current_weight']))
             $data['weight'] = $validated['current_weight'];
+
+        // Map medical_history to medical
+        if (isset($validated['medical_history'])) {
+            $data['medical'] = $validated['medical_history'];
+            unset($data['medical_history']);
+        }
+
+        // Pass through new fields if they exist
+        if (isset($validated['target_weight']))
+            $data['target_weight'] = $validated['target_weight'];
+        if (isset($validated['allergies']))
+            $data['allergies'] = $validated['allergies'];
 
         $patient->update($data);
 
