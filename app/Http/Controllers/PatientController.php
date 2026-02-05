@@ -127,6 +127,21 @@ class PatientController extends Controller
         return response()->json(['message' => 'Patient deleted successfully']);
     }
     /**
+     * Get current patient's profile
+     */
+    public function myProfile(Request $request)
+    {
+        $user = $request->user();
+        $patient = Patient::where('user_id', $user->id)->first();
+
+        if (!$patient) {
+            return response()->json(['message' => 'Patient profile not found'], 404);
+        }
+
+        return new PatientResource($patient->load(['user', 'doctor']));
+    }
+
+    /**
      * Update current patient's profile
      */
     public function updateMyProfile(Request $request)

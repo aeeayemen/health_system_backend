@@ -119,7 +119,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // === Patients ===
-    Route::apiResource('patients', PatientController::class);
+    Route::get('patients/profile', [PatientController::class, 'myProfile']);
+    Route::put('patients/profile', [PatientController::class, 'updateMyProfile']);
+    Route::apiResource('patients', PatientController::class)->where(['patient' => '[0-9]+']);
 
     // === Diet Plans (Diets) ===
     Route::apiResource('diet-plans', DietController::class);
