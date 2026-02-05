@@ -135,7 +135,12 @@ class PatientController extends Controller
         $patient = Patient::where('user_id', $user->id)->first();
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient profile not found'], 404);
+            // Auto-create profile if missing
+            $patient = Patient::create([
+                'id' => $user->id,
+                'user_id' => $user->id,
+                'fullname' => $user->name,
+            ]);
         }
 
         return new PatientResource($patient->load(['user', 'doctor']));
@@ -151,7 +156,12 @@ class PatientController extends Controller
         $patient = Patient::where('user_id', $user->id)->first();
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient profile not found'], 404);
+            // Auto-create profile if missing
+            $patient = Patient::create([
+                'id' => $user->id,
+                'user_id' => $user->id,
+                'fullname' => $user->name,
+            ]);
         }
 
         $validated = $request->validate([

@@ -37,6 +37,7 @@ class AuthController extends Controller
         // Create Patient or Doctor profile if needed
         if ($role === 'patient') {
             Patient::create([
+                'id' => $user->id,
                 'user_id' => $user->id,
                 'gender' => $request->gender ?? 'male',
             ]);
