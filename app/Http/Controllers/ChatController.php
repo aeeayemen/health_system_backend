@@ -13,21 +13,47 @@ class ChatController extends Controller
     public function getConversations(Request $request)
     {
         $user = $request->user();
-        // Logic depends on if user is a 'user' or 'doctor' (or admin)
-        // Assuming 'type' column in users table or relationship
 
         if ($user->type === 'doctor') {
-            // Get all users this doctor has chatted with
-            $userIds = Message::where('doctor_id', $user->doctor->id ?? 0) // Assuming doctor relationship
+            $doctorId = $user->doctor->id ?? 0;
+
+            // 1. Get users who have messages with this doctor
+            $messageUserIds = Message::where('doctor_id', $doctorId)
                 ->pluck('user_id')
-                ->unique();
-            $conversations = User::whereIn('id', $userIds)->get();
+                ->toArray();
+
+            // 2. Get users who have active subscriptions with this doctor
+            // Note: Subscription patient_id is actually the user_id in Patient model (subscribed_users table)
+            // We need to get the user_id associated with the patient
+            $subscriptionUserIds = \App\Models\Subscription::where('doctor_id', $doctorId)
+                ->where('status', 'active') // Optional: only active subscriptions?
+                ->with('patient')
+                ->get()
+                ->pluck('patient.user_id')
+                ->toArray();
+
+            // Merge and unique
+            $allUserIds = array_unique(array_merge($messageUserIds, $subscriptionUserIds));
+
+            $conversations = User::whereIn('id', $allUserIds)->get();
+
         } else {
             // Get all doctors this user has chatted with
             $doctorIds = Message::where('user_id', $user->id)
                 ->pluck('doctor_id')
                 ->unique();
-            $conversations = Doctor::whereIn('id', $doctorIds)->get();
+
+            // Also include doctors from active subscriptions
+            $subscriptionDoctorIds = \App\Models\Subscription::whereHas('patient', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+                ->where('status', 'active')
+                ->pluck('doctor_id')
+                ->toArray();
+
+            $allDoctorIds = array_unique(array_merge($doctorIds->toArray(), $subscriptionDoctorIds));
+
+            $conversations = Doctor::whereIn('id', $allDoctorIds)->get();
         }
 
         return response()->json($conversations);
@@ -67,7 +93,8 @@ class ChatController extends Controller
                 'message' => $validated['message'],
                 'time' => now()->toTimeString(),
                 'date' => now()->toDateString(),
-                'read' => 'false'
+                'read' => 'false',
+                'sender_type' => 'doctor'
             ]);
         } else {
             $message = Message::create([
@@ -76,7 +103,8 @@ class ChatController extends Controller
                 'message' => $validated['message'],
                 'time' => now()->toTimeString(),
                 'date' => now()->toDateString(),
-                'read' => 'false'
+                'read' => 'false',
+                'sender_type' => 'user'
             ]);
         }
 

@@ -10,18 +10,20 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('doctors', function (Blueprint $table) {
-            $table->id(); // bigInt (20) PK
-            $table->string('name', 100); // اسم العنصر
-            $table->string('gender', 100)->nullable(); // الجنس
-            $table->string('degree', 100)->nullable(); // الدرجة العلمية
-            $table->string('bank_account', 100)->nullable(); // الحساب البنكي
-            $table->string('phone_number', 100)->nullable(); // رقم الهاتف
-            $table->string('CV', 255)->nullable(); // السيرة الذاتية
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); // Added for Auth link
-            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null'); // معرّف المسؤول
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('doctors')) {
+            Schema::create('doctors', function (Blueprint $table) {
+                $table->id(); // bigInt (20) PK
+                $table->string('name', 100); // اسم العنصر
+                $table->string('gender', 100)->nullable(); // الجنس
+                $table->string('degree', 100)->nullable(); // الدرجة العلمية
+                $table->string('bank_account', 100)->nullable(); // الحساب البنكي
+                $table->string('phone_number', 100)->nullable(); // رقم الهاتف
+                $table->string('CV', 255)->nullable(); // السيرة الذاتية
+                $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); // Added for Auth link
+                $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null'); // معرّف المسؤول
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -16,6 +16,7 @@ class Message extends Model
         'date',
         'read',
         'doctor_id',
+        'sender_type',
     ];
 
     public function user()
