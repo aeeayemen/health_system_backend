@@ -19,5 +19,10 @@ class Meal extends Model
         'fat',
         'energy',
         'category',
+        'diet_plan_id',
+        'day_number',
+        'meal_type',
+        'calories',
+        'meal_name',
     ];
 }

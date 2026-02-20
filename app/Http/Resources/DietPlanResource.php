@@ -16,6 +16,7 @@ class DietPlanResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'test_val' => 'DEBUG_CHECK',
             'title' => $this->title,
             'description' => $this->description,
             'daily_calories' => $this->daily_calories,

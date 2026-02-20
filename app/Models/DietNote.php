@@ -12,6 +12,7 @@ class DietNote extends Model
     protected $fillable = [
         'user_id',
         'doctor_id',
+        'diet_id',
         'note',
     ];
 

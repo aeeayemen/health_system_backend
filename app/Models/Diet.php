@@ -12,6 +12,9 @@ class Diet extends Model
     protected $fillable = [
         'price',
         'doctor_id',
+        'user_id',
+        'subscription_id',
+        'status',
         'periods',
         'states_id',
     ];
@@ -19,5 +22,20 @@ class Diet extends Model
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
+    }
+
+    public function subscription()
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
+    public function components()
+    {
+        return $this->hasMany(DietComponent::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(DietNote::class);
     }
 }
