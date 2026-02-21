@@ -9,7 +9,12 @@ class ForumPost extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'title', 'content', 'likes_count'];
+    protected $fillable = ['forum_id', 'user_id', 'title', 'content', 'likes_count'];
+
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class);
+    }
 
     public function user()
     {

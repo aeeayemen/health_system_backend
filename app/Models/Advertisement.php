@@ -17,5 +17,10 @@ class Advertisement extends Model
         'phone_number',
         'type',
         'GPS',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }
