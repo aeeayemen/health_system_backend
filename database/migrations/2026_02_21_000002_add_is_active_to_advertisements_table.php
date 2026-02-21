@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('advertisements', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true)->after('GPS');
-        });
+        if (!Schema::hasColumn('advertisements', 'is_active')) {
+            Schema::table('advertisements', function (Blueprint $table) {
+                $table->boolean('is_active')->default(true)->after('GPS');
+            });
+        }
     }
 
     /**

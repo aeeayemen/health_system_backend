@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('forum_posts', function (Blueprint $table) {
-            $table->foreignId('forum_id')->nullable()->after('id')->constrained('forums')->onDelete('cascade');
-        });
+        if (!Schema::hasColumn('forum_posts', 'forum_id')) {
+            Schema::table('forum_posts', function (Blueprint $table) {
+                $table->foreignId('forum_id')->nullable()->after('id')->constrained('forums')->onDelete('cascade');
+            });
+        }
     }
 
     /**
