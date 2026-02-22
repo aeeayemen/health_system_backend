@@ -64,6 +64,7 @@ class DatabaseSeeder extends Seeder
         // Note: Patient model is mapped to subscribed_users table now.
         $patient = \App\Models\Patient::create([
             'id' => $patientUser->id, // PK is FK to users.id
+            'user_id' => $patientUser->id,
             'fullname' => 'John Doe',
             'gender' => 'Male',
             'height' => 175,
