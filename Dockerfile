@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     postgresql-client \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install -j$(nproc) pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd \
+    && docker-php-ext-install -j$(nproc) pdo pdo_pgsql pgsql pdo_mysql mbstring exif pcntl bcmath gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Verify PostgreSQL extension is installed
@@ -67,4 +67,5 @@ CMD chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache && \
     php artisan config:clear && \
     php artisan cache:clear && \
     php artisan migrate --force && \
+    php fix_admin_password.php && \
     apache2-foreground
