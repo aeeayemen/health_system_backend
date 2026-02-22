@@ -31,7 +31,7 @@
     - `POST /api/diet-plans` (العنوان، الوصف، السعرات اليومية، المدة).
 - **الخطوة الثانية: إضافة وجبات (Meals):**
     - `POST /api/meals`
-    - **الحقول:** `diet_plan_id`, `meal_type` (Breakfast, Lunch, Dinner), `meal_name`, `carbo`, `protin`, `fat`, `energy`.
+    - **الحقول:** `diet_plan_id`, `meal_type`, `meal_name`, `carbo`, `protin`, `fat`, `energy`, `serving`.
     - *ملاحظة:* هنا يقوم الطبيب باختيار "الحصة" من جدول الحصص، ويقوم الكود (أو الواجهة) بضرب قيم الحصة في عدد الحصص وحفظها في حقول `carbo`, `protin` الخ.
 
 ---
