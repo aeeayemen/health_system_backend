@@ -68,5 +68,4 @@ CMD chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache && \
     php artisan cache:clear && \
     php artisan migrate --force && \
     php artisan db:seed --force && \
-    php fix_admin_password.php && \
     apache2-foreground
