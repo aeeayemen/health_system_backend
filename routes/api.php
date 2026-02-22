@@ -178,6 +178,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('meal-categories', MealCategoryController::class);
     Route::apiResource('advertisements', AdvertisementController::class);
 
+    // === Medical References ===
+    Route::get('/references/nutrition-manuals', [\App\Http\Controllers\RefController::class, 'nutritionManuals']);
+
     // === Forums ===
     Route::apiResource('forums', ForumController::class);
     Route::get('/forums/{forumId}/members', [ForumController::class, 'getMembers']);

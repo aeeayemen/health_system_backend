@@ -44,7 +44,13 @@ class DietPlanController extends Controller
             'meals.*.day_number' => 'required|integer',
             'meals.*.meal_type' => 'required|in:breakfast,lunch,dinner,snack',
             'meals.*.meal_name' => 'required|string',
-            'meals.*.calories' => 'integer',
+            'meals.*.calories' => 'nullable|integer',
+            'meals.*.carbo' => 'nullable|numeric',
+            'meals.*.protin' => 'nullable|numeric',
+            'meals.*.fat' => 'nullable|numeric',
+            'meals.*.serving' => 'nullable|string',
+            'doctor_notes' => 'nullable|array', // Array of clinical notes/instructions
+            'doctor_notes.*' => 'string'
         ]);
 
         return DB::transaction(function () use ($validated, $request) {
@@ -59,9 +65,22 @@ class DietPlanController extends Controller
                 'end_date' => $validated['end_date'],
             ]);
 
+            // Add meals
             if (isset($validated['meals'])) {
                 foreach ($validated['meals'] as $mealData) {
                     $dietPlan->meals()->create($mealData);
+                }
+            }
+
+            // Integrated: Add clinical notes (e.g., "Drink water every 3 hours")
+            if (isset($validated['doctor_notes'])) {
+                foreach ($validated['doctor_notes'] as $noteText) {
+                    \App\Models\DietNote::create([
+                        'diet_id' => $dietPlan->id,
+                        'doctor_id' => $validated['doctor_id'],
+                        'user_id' => \App\Models\Patient::find($validated['patient_id'])->user_id,
+                        'note' => $noteText,
+                    ]);
                 }
             }
 
@@ -71,7 +90,7 @@ class DietPlanController extends Controller
                 $patient->user->notify(new \App\Notifications\DietPlanAssigned($dietPlan));
             }
 
-            return new DietPlanResource($dietPlan->load('meals'));
+            return new DietPlanResource($dietPlan->load(['meals', 'doctor']));
         });
     }
 
