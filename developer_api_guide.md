@@ -1,52 +1,64 @@
-# Developer API Guide - Clinic & Nutrition New Features
+# دليل المطور - الميزات الجديدة للعيادة والتغذية
 
-This document provides technical details for the mobile/web developers to integrate the new Doctor Clinic features.
+يوفر هذا المستند التفاصيل التقنية لمطوري التطبيقات (Mobile/Web) لربط ميزات "عيادة الطبيب" الجديدة.
 
-## 1. Nutrition Calculations (Specialized)
-Calculates BMR, TDEE, TEF, and Macronutrients in one request.
+## 1. الحسابات التغذوية (التخصصية)
+يقوم هذا الرابط بمجموعة حسابات متقدمة تشمل BMI ،BMR ،TEF والسعرات الكلية والماكروز في طلب واحد.
 
-- **Endpoint:** `POST /api/calculations/nutrition`
-- **Authentication:** `Bearer {token}`
-- **Request Body:**
+- **الرابط:** `POST /api/calculations/nutrition`
+- **التوثيق:** تحتاج لإرسال الهيدر `Authorization: Bearer {token}`
+- **جسم الطلب (Request Body):**
 ```json
 {
-    "weight": 85.0,        // kg
-    "height": 180.0,       // cm
-    "age": 30,             // years
-    "gender": "male",      // "male" | "female"
+    "weight": 85.0,        // الوزن بالكيلو
+    "height": 180.0,       // الطول بالسنتيمتر
+    "age": 30,             // العمر بالسنوات
+    "gender": "male",      // "male" للذكر | "female" للأنثى
     "activity_level": "moderate", // "sedentary" | "low" | "moderate" | "active" | "very_active"
     "goal": "lose",        // "maintain" | "lose" (-500) | "gain" (+500)
-    "save": true            // boolean (optional) - saves to patient history
+    "save": true            // اختياريا - لحفظ العملية في سجل المريض
 }
 ```
-- **Response Example:**
-```json
-{
-    "bmi": 26.23,
-    "bmr": 1891.25,
-    "total_calories": 2720,
-    "macros": {
-        "carbs_g": 340.0,
-        "protein_g": 136.0,
-        "fat_g": 90.7
-    },
-    "inputs": { ... }
-}
-```
+
+### طريقة الحساب في النظام (The Formulas):
+تم اعتماد المعادلات التالية بناءً على طلب الطبيب:
+
+**أ- مؤشر كتلة الجسم (BMI):**
+> الوزن (كجم) ÷ (الطول (م) × الطول (م))
+
+**ب- معدل الأيض الأساسي (BMR) - معادلة ميفلين (Mifflin-St Jeor):**
+> **للذكور:** (10 × الوزن) + (6.25 × الطول) - (5 × العمر) + 5
+> **للإناث:** (10 × الوزن) + (6.25 × الطول) - (5 × العمر) - 161
+
+**ج- مجموع الاحتياجات اليومية (TDEE):**
+يتم ضرب الـ BMR في معامل النشاط الفيزيائي كالتالي:
+- خامل (`sedentary`): 1.2
+- منخفض (`low`): 1.3
+- متوسط (`moderate`): 1.5
+- نشط (`active`): 1.7
+- نشط جداً (`very_active`): 1.9
+
+**د- الأثر الحراري للطعام (TEF):**
+يضيف النظام تلقائياً **10%** على ناتج الـ TDEE كأداء حراري للهضم.
+
+**هـ- توزيع الماكروز (Macronutrients):**
+يتم تقسيم السعرات كالتالي:
+- **كربوهيدرات (50%):** السعرات × 0.50 ÷ 4 جرام.
+- **بروتين (20%):** السعرات × 0.20 ÷ 4 جرام.
+- **دهون (30%):** السعرات × 0.30 ÷ 9 جرام.
 
 ---
 
-## 2. Nutrition Manuals & References
-Provides doctors with clinical manuals and external resources (e.g., Kraus).
+## 2. المراجع العلمية للأطباء
+رابط يوفر للأطباء المراجع التغذوية والكتب التعليمية (مثل مرجع كراوس).
 
-- **Endpoint:** `GET /api/references/nutrition-manuals`
-- **Response Body:**
+- **الرابط:** `GET /api/references/nutrition-manuals`
+- **الرد (Sample Response):**
 ```json
 {
     "title": "Nutrition References (كراوس وغيره)",
     "references": [
-        { "file_name": "Kraus_Chapter_1.pdf", "url": "..." },
-        ...
+        { "file_name": "Kraus_Chapter_1.pdf", "url": "..." }
     ],
     "external_links": [
         { "name": "USDA Food Database", "url": "..." }
@@ -56,62 +68,20 @@ Provides doctors with clinical manuals and external resources (e.g., Kraus).
 
 ---
 
-## 3. Creating a Diet Plan (Updated)
-Creates a full diet plan with integrated clinical notes.
+## 3. إنشاء خطة غذائية (محدث)
+يتيح إنشاء خطة مع إضافة ملاحظات طبية مدمجة.
 
-- **Endpoint:** `POST /api/diet-plans`
-- **Request Body:**
-```json
-{
-    "patient_id": 5,
-    "doctor_id": 2,
-    "title": "خطة إنقاص وزن شهرية",
-    "daily_calories": 2100,
-    "duration_days": 30,
-    "start_date": "2026-03-01",
-    "end_date": "2026-03-31",
-    "doctor_notes": [
-        "اشرب 3 لتر ماء يومياً",
-        "المشي نصف ساعة قبل الإفطار"
-    ],
-    "meals": [
-        {
-            "day_number": 1,
-            "meal_type": "breakfast",
-            "meal_name": "شوفان بالحليب",
-            "calories": 400,
-            "carbo": 50,
-            "protin": 20,
-            "fat": 10,
-            "serving": "1 cup"
-        }
-    ]
-}
-```
+- **الرابط:** `POST /api/diet-plans`
+- **حقول جديدة:**
+    - `doctor_notes`: مصفوفة نصوص (Array) تحتوي على ملاحظات مثل "اشرب الماء بانتظام".
+    - `meals`: مصفوفة تحتوي على تفاصيل الوجبات (النوع، الاسم، الماكروز، الحصص).
 
 ---
 
-## 4. Individual Meal Management (Updated)
-Store specific portion details for meal tracking.
+## 4. إدارة الوجبات الفردية
+لتسجيل تفاصيل "الحصص" (Servings) بدقة.
 
-- **Endpoint:** `POST /api/meals`
-- **Request Body:**
-```json
-{
-    "diet_plan_id": 1,
-    "meal_type": "lunch",
-    "meal_name": "صدر دجاج مشوي",
-    "carbo": 0,
-    "protin": 30.5,
-    "fat": 5.2,
-    "energy": "200",
-    "serving": "150g" 
-}
-```
-
----
-
-## Technical Notes
-- **Activity Levels:** `sedentary` (1.2), `low` (1.3), `moderate` (1.5), `active` (1.7), `very_active` (1.9).
-- **Macro Logic:** 50% Carbs, 20% Protein, 30% Fat based on Physician Requirements.
-- **TEF:** The system automatically adds 10% Thermic Effect of Food to the TDEE result.
+- **الرابط:** `POST /api/meals`
+- **الحقول الجديدة:**
+    - `serving`: حجم الحصة (مثلاً: 1 كوب، 150 جرام).
+    - `carbo`, `protin`, `fat`: القيم الغذائية للحصة الواحدة.
