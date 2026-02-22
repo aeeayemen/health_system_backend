@@ -147,6 +147,87 @@ class CalculationController extends Controller
     }
 
     /**
+     * Specialized Nutrition Calculation based on Physician Formulas
+     * Includes BMR, Activity Level, TEF (10%), Goal (+/- 500), and Macros (50/20/30)
+     */
+    public function calculateNutrition(Request $request)
+    {
+        $validated = $request->validate([
+            'weight' => 'required|numeric|min:1',
+            'height' => 'required|numeric|min:1',
+            'age' => 'required|integer|min:1',
+            'gender' => 'required|in:male,female',
+            'activity_level' => 'required|in:sedentary,low,moderate,active,very_active',
+            'goal' => 'required|in:maintain,lose,gain',
+            'save' => 'boolean'
+        ]);
+
+        // 1. Calculate BMR (Mifflin-St Jeor)
+        if ($validated['gender'] === 'male') {
+            $bmr = (10 * $validated['weight']) + (6.25 * $validated['height']) - (5 * $validated['age']) + 5;
+        } else {
+            $bmr = (10 * $validated['weight']) + (6.25 * $validated['height']) - (5 * $validated['age']) - 161;
+        }
+
+        // 2. Activity Multiplier
+        $multipliers = [
+            'sedentary' => 1.2,
+            'low' => 1.3,
+            'moderate' => 1.5,
+            'active' => 1.7,
+            'very_active' => 1.9,
+        ];
+        $activity_multiplier = $multipliers[$validated['activity_level']];
+        $tdee_base = $bmr * $activity_multiplier;
+
+        // 3. TEF (10%)
+        $tef = $tdee_base * 0.10;
+        $total_needs = $tdee_base + $tef;
+
+        // 4. Goal Adjustment
+        $target_calories = $total_needs;
+        if ($validated['goal'] === 'lose') {
+            $target_calories -= 500;
+        } elseif ($validated['goal'] === 'gain') {
+            $target_calories += 500;
+        }
+
+        // 5. BMI
+        $heightInMeters = $validated['height'] / 100;
+        $bmi = $validated['weight'] / ($heightInMeters * $heightInMeters);
+
+        // 6. Macros (50% Carbs, 20% Protein, 30% Fat)
+        $macros = [
+            'carbs_g' => round(($target_calories * 0.50) / 4, 1),
+            'protein_g' => round(($target_calories * 0.20) / 4, 1),
+            'fat_g' => round(($target_calories * 0.30) / 9, 1),
+        ];
+
+        $result = [
+            'bmi' => round($bmi, 2),
+            'bmr' => round($bmr, 2),
+            'total_calories' => round($target_calories, 0),
+            'macros' => $macros,
+            'inputs' => $validated
+        ];
+
+        // Save to history if logged in
+        if ($request->input('save', false) && Auth::check()) {
+            MainCalculation::create([
+                'user_id' => Auth::id(),
+                'calories' => (string) round($target_calories, 0),
+                'protin' => (string) $macros['protein_g'],
+                'fat' => (string) $macros['fat_g'],
+                'carbo' => (string) $macros['carbs_g'],
+                'BMR' => (string) round($bmr, 2),
+                'BMI' => (string) round($bmi, 2),
+            ]);
+        }
+
+        return response()->json($result);
+    }
+
+    /**
      * Get calculation history for current user
      */
     public function history(Request $request)
