@@ -62,4 +62,9 @@ class Doctor extends Model
     {
         return $this->hasMany(Subscription::class);
     }
+
+    public function forum()
+    {
+        return $this->hasOne(Forum::class);
+    }
 }
