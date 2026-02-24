@@ -21,16 +21,19 @@ class PaymentSeeder extends Seeder
         $cardTypes = ['visa', 'mastercard', 'amex'];
 
         foreach ($users as $user) {
-            // Create 1-2 payment methods for each user
-            $numCards = rand(1, 2);
-            for ($i = 0; $i < $numCards; $i++) {
-                PaymentMethod::create([
-                    'user_id' => $user->id,
-                    'card_type' => $cardTypes[array_rand($cardTypes)],
-                    'last_four' => str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT),
-                    'expiry_date' => rand(1, 12) . '/' . rand(25, 30),
-                    'is_default' => $i === 0, // First card is default
-                ]);
+            // Only create if user has no payment methods
+            if ($user->paymentMethods()->count() == 0) {
+                // Create 1-2 payment methods for each user
+                $numCards = rand(1, 2);
+                for ($i = 0; $i < $numCards; $i++) {
+                    PaymentMethod::create([
+                        'user_id' => $user->id,
+                        'card_type' => $cardTypes[array_rand($cardTypes)],
+                        'last_four' => str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT),
+                        'expiry_date' => rand(1, 12) . '/' . rand(25, 30),
+                        'is_default' => $i === 0, // First card is default
+                    ]);
+                }
             }
         }
 

@@ -17,24 +17,31 @@ class ContentSeeder extends Seeder
 
         // Forums
         foreach ($doctors as $doctor) {
-            $forum = \App\Models\Forum::factory()->create([
-                'doctor_id' => $doctor->id,
-            ]);
+            // Only create forum and posts if doctor doesn't have a forum yet
+            if (!$doctor->forum()->exists()) {
+                $forum = \App\Models\Forum::factory()->create([
+                    'doctor_id' => $doctor->id,
+                ]);
 
-            \App\Models\ForumPost::factory(5)->create([
-                'forum_id' => $forum->id,
-                'user_id' => $doctor->user_id,
+                \App\Models\ForumPost::factory(5)->create([
+                    'forum_id' => $forum->id,
+                    'user_id' => $doctor->user_id,
+                ]);
+            }
+        }
+
+        // Tips - only create if we have few tips
+        if (\App\Models\Tip::count() < 20) {
+            \App\Models\Tip::factory(20)->create([
+                'admin_id' => $admin->id,
             ]);
         }
 
-        // Tips
-        \App\Models\Tip::factory(20)->create([
-            'admin_id' => $admin->id,
-        ]);
-
-        // Ads
-        \App\Models\Advertisement::factory(5)->create([
-            'admin_id' => $admin->id,
-        ]);
+        // Ads - only create if we have few ads
+        if (\App\Models\Advertisement::count() < 5) {
+            \App\Models\Advertisement::factory(5)->create([
+                'admin_id' => $admin->id,
+            ]);
+        }
     }
 }

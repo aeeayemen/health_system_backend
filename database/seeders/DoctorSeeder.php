@@ -16,11 +16,13 @@ class DoctorSeeder extends Seeder
         $doctorUsers = \App\Models\User::role('doctor')->get();
 
         foreach ($doctorUsers as $user) {
-            \App\Models\Doctor::factory()->create([
-                'user_id' => $user->id,
-                'name' => $user->name,
-                'admin_id' => $admin->id,
-            ]);
+            \App\Models\Doctor::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'name' => $user->name,
+                    'admin_id' => $admin->id,
+                ]
+            );
         }
     }
 }

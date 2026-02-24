@@ -15,13 +15,18 @@ class PatientSeeder extends Seeder
         $patientUsers = \App\Models\User::role('patient')->get();
         $doctors = \App\Models\Doctor::all();
 
+        if ($doctors->isEmpty()) {
+            return;
+        }
+
         foreach ($patientUsers as $user) {
-            \App\Models\Patient::factory()->create([
-                'id' => $user->id,
-                'user_id' => $user->id,
-                'fullname' => $user->name,
-                'current_doctor_id' => $doctors->random()->id,
-            ]);
+            \App\Models\Patient::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'fullname' => $user->name,
+                    'current_doctor_id' => $doctors->random()->id,
+                ]
+            );
         }
     }
 }
