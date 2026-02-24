@@ -19,10 +19,16 @@ class Meal extends Model
         'fat',
         'energy',
         'category',
+        'category_id',
         'diet_plan_id',
         'day_number',
         'meal_type',
         'calories',
         'meal_name',
     ];
+
+    public function mealCategory()
+    {
+        return $this->belongsTo(MealCategory::class, 'category_id');
+    }
 }
