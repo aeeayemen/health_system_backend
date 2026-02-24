@@ -19,7 +19,6 @@ class ForumPostFactory extends Factory
         return [
             'title' => $this->faker->sentence,
             'content' => $this->faker->paragraphs(3, true),
-            'image' => 'post.jpg',
         ];
     }
 }
