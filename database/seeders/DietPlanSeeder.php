@@ -15,14 +15,17 @@ class DietPlanSeeder extends Seeder
         $patients = \App\Models\Patient::all();
 
         foreach ($patients as $patient) {
-            $dietPlan = \App\Models\DietPlan::factory()->create([
-                'patient_id' => $patient->id,
-                'doctor_id' => $patient->current_doctor_id,
-            ]);
+            // Only create if patient doesn't have a diet plan yet
+            if (!$patient->dietPlans()->exists()) {
+                $dietPlan = \App\Models\DietPlan::factory()->create([
+                    'patient_id' => $patient->id,
+                    'doctor_id' => $patient->current_doctor_id,
+                ]);
 
-            \App\Models\Meal::factory(21)->create([
-                'diet_plan_id' => $dietPlan->id,
-            ]);
+                \App\Models\Meal::factory(21)->create([
+                    'diet_plan_id' => $dietPlan->id,
+                ]);
+            }
         }
     }
 }
