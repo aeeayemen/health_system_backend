@@ -94,4 +94,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('doctor');
     }
+
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
 }

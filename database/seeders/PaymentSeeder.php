@@ -46,8 +46,8 @@ class PaymentSeeder extends Seeder
 
             if ($status === 'paid') {
                 // Get a payment method for the user associated with the invoice's subscription
-                $user = $invoice->subscription->patient->user;
-                $paymentMethod = $user->paymentMethods()->first();
+                $user = $invoice->subscription?->patient?->user;
+                $paymentMethod = $user ? $user->paymentMethods()->first() : null;
 
                 if ($paymentMethod) {
                     Payment::create([
