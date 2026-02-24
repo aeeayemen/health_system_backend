@@ -34,15 +34,21 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Create all storage directories
+# Create all storage and upload directories
 RUN mkdir -p storage/logs \
     storage/framework/cache/data \
     storage/framework/sessions \
     storage/framework/views \
-    bootstrap/cache
+    bootstrap/cache \
+    public/uploads/advertisements \
+    public/uploads/settings \
+    public/uploads/medical-tests \
+    public/uploads/meal-categories \
+    public/uploads/doctors/cv \
+    public/uploads/doctors/profile
 
 # Set permissions
-RUN chmod -R 777 storage bootstrap/cache
+RUN chmod -R 777 storage bootstrap/cache public/uploads
 
 # Configure Apache DocumentRoot
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
@@ -63,7 +69,7 @@ EXPOSE 10000
 RUN sed -i 's/80/10000/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
 # Start Apache
-CMD chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache && \
+CMD chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/uploads && \
     php artisan config:clear && \
     php artisan cache:clear && \
     php artisan migrate --force && \
