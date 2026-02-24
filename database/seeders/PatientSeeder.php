@@ -23,6 +23,7 @@ class PatientSeeder extends Seeder
             \App\Models\Patient::firstOrCreate(
                 ['user_id' => $user->id],
                 [
+                    'id' => $user->id,
                     'fullname' => $user->name,
                     'current_doctor_id' => $doctors->random()->id,
                 ]
