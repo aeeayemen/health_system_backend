@@ -18,8 +18,6 @@ class ForumFactory extends Factory
     {
         return [
             'name' => $this->faker->sentence(2),
-            'description' => $this->faker->paragraph,
-            'image' => 'forum.jpg',
         ];
     }
 }
