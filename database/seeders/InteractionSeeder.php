@@ -23,25 +23,22 @@ class InteractionSeeder extends Seeder
                 ]);
             }
 
-            // Messages - only create if none exist between this patient and doctor
-            $hasMessages = \App\Models\Message::where(function ($q) use ($patient) {
-                $q->where('sender_id', $patient->user_id)
-                    ->where('receiver_id', $patient->doctor->user_id);
-            })->orWhere(function ($q) use ($patient) {
-                $q->where('sender_id', $patient->doctor->user_id)
-                    ->where('receiver_id', $patient->user_id);
-            })->exists();
+            // Messages - only create if none exist between this patient and their doctor
+            $doctorId = $patient->current_doctor_id;
+            $hasMessages = \App\Models\Message::where('user_id', $patient->user_id)
+                ->where('doctor_id', $doctorId)
+                ->exists();
 
-            if (!$hasMessages) {
+            if (!$hasMessages && $doctorId) {
                 \App\Models\Message::factory(10)->create([
-                    'sender_id' => $patient->user_id,
-                    'receiver_id' => $patient->doctor->user_id,
+                    'user_id' => $patient->user_id,
+                    'doctor_id' => $doctorId,
                     'sender_type' => 'user',
                 ]);
 
                 \App\Models\Message::factory(5)->create([
-                    'sender_id' => $patient->doctor->user_id,
-                    'receiver_id' => $patient->user_id,
+                    'user_id' => $patient->user_id,
+                    'doctor_id' => $doctorId,
                     'sender_type' => 'doctor',
                 ]);
             }

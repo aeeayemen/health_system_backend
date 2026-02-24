@@ -21,8 +21,6 @@ class MessageFactory extends Factory
             'time' => $this->faker->time(),
             'date' => $this->faker->date(),
             'read' => $this->faker->randomElement(['true', 'false']),
-            'sender_id' => null, // Will be set in seeder
-            'receiver_id' => null, // Will be set in seeder
             'sender_type' => $this->faker->randomElement(['user', 'doctor']),
         ];
     }
