@@ -17,7 +17,7 @@ class ConsultationFactory extends Factory
     public function definition(): array
     {
         return [
-            'consultation_type' => $this->faker->randomElement(['initial', 'follow-up', 'emergency']),
+            'consultation_type' => $this->faker->randomElement(['initial', 'follow_up', 'review']),
             'scheduled_date' => $this->faker->dateTimeBetween('now', '+1 month'),
             'status' => $this->faker->randomElement(['pending', 'completed', 'cancelled']),
             'notes' => $this->faker->sentence,
