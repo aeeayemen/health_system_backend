@@ -36,6 +36,7 @@ use App\Http\Controllers\ForumPostController;
 use App\Http\Controllers\DietPeriodController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\DietTypeController;
+use App\Http\Controllers\AthkarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,7 @@ Route::prefix('public')->group(function () {
     Route::get('/forums', [PublicController::class, 'forums']);
     Route::get('/forums/{forumId}/posts', [PublicController::class, 'forumPosts']);
     Route::get('/diets-preview', [PublicController::class, 'dietsPreview']);
+    Route::get('/athkar', [AthkarController::class, 'index']);
 });
 
 // =============================================
@@ -177,6 +179,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('meals', MealController::class);
     Route::apiResource('meal-categories', MealCategoryController::class);
     Route::apiResource('advertisements', AdvertisementController::class);
+    Route::apiResource('athkar', AthkarController::class);
 
     // === Medical References ===
     Route::get('/references/nutrition-manuals', [\App\Http\Controllers\RefController::class, 'nutritionManuals']);
