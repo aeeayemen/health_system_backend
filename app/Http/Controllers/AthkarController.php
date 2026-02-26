@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Athkar;
+use App\Enums\AthkarCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class AthkarController extends Controller
 {
@@ -12,9 +14,12 @@ class AthkarController extends Controller
     {
         $query = Athkar::with('admin');
 
-        // التصفية بحسب النوع (الصباح، المساء، الخ)
+        // التصفية بحسب النوع (صباحي، مسائي)
         if ($request->has('category')) {
-            $query->where('category', $request->category);
+            // التأكد من أن القيمة المدخلة صحيحة
+            if (in_array($request->category, AthkarCategory::values())) {
+                $query->where('category', $request->category);
+            }
         }
 
         // البحث
@@ -31,10 +36,10 @@ class AthkarController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category' => 'required|string', // مثلا: 'morning', 'evening'
-            'title' => 'nullable|string',    // النص العريض
-            'content' => 'required|string',  // محتوى الذكر
-            'repetition' => 'nullable|integer|min:1', // مرات التكرار
+            'category' => ['required', Rule::in(AthkarCategory::values())],
+            'title' => 'nullable|string',
+            'content' => 'required|string',
+            'repetition' => 'nullable|integer|min:1',
         ]);
 
         $validated['admin_id'] = Auth::id() ?? 1;
@@ -54,7 +59,7 @@ class AthkarController extends Controller
         $athkar = Athkar::findOrFail($id);
 
         $validated = $request->validate([
-            'category' => 'sometimes|string',
+            'category' => ['sometimes', Rule::in(AthkarCategory::values())],
             'title' => 'nullable|string',
             'content' => 'sometimes|string',
             'repetition' => 'nullable|integer|min:1',
@@ -69,5 +74,14 @@ class AthkarController extends Controller
         $athkar = Athkar::findOrFail($id);
         $athkar->delete();
         return response()->json(null, 204);
+    }
+
+    // إضافة دالة لجلب أنواع الأذكار (مفيد للواجهة الأمامية)
+    public function categories()
+    {
+        return response()->json([
+            'categories' => AthkarCategory::toArray(),
+            'values' => AthkarCategory::values(),
+        ]);
     }
 }

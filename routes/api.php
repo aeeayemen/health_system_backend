@@ -66,7 +66,16 @@ Route::prefix('public')->group(function () {
 // =============================================
 // PROTECTED ROUTES (Authentication Required)
 // =============================================
+
 Route::middleware('auth:sanctum')->group(function () {
+    // === Email Verification ===
+    Route::post('/email/verification-notification', [AuthController::class, 'resendVerificationEmail']);
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+        ->middleware('signed')
+        ->name('verification.verify');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
@@ -180,7 +189,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('meal-categories', MealCategoryController::class);
     Route::apiResource('advertisements', AdvertisementController::class);
     Route::apiResource('athkar', AthkarController::class);
-
+    Route::get('/athkar/categories', [AthkarController::class, 'categories']);
     // === Medical References ===
     Route::get('/references/nutrition-manuals', [\App\Http\Controllers\RefController::class, 'nutritionManuals']);
 

@@ -8,6 +8,8 @@ use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class AuthController extends Controller
 {
@@ -78,6 +80,8 @@ class AuthController extends Controller
             $admins = User::where('type', 'admin')->get();
             \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewDoctorApplication($doctor));
         }
+
+        event(new Registered($user));
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -169,5 +173,29 @@ class AuthController extends Controller
         ]);
         // Logic to reset password
         return response()->json(['message' => 'Password reset successfully']);
+    }
+
+    /**
+     * Resend verification email
+     */
+    public function resendVerificationEmail(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 400);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Verification link sent']);
+    }
+
+    /**
+     * Verify email
+     */
+    public function verifyEmail(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+
+        return response()->json(['message' => 'Email verified successfully']);
     }
 }
