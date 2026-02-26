@@ -25,6 +25,8 @@ class DietPlanFactory extends Factory
             'end_date' => $this->faker->date(),
             'status' => $this->faker->randomElement(['active', 'completed', 'cancelled']),
             'notes' => $this->faker->sentence,
+            'doctor_id' => \App\Models\Doctor::inRandomOrder()->first()?->id ?? \App\Models\Doctor::factory(),
+            'patient_id' => \App\Models\Patient::inRandomOrder()->first()?->id ?? \App\Models\Patient::factory(),
         ];
     }
 }

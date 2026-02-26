@@ -19,7 +19,7 @@ class DietPlanSeeder extends Seeder
             if (!$patient->dietPlans()->exists()) {
                 $dietPlan = \App\Models\DietPlan::factory()->create([
                     'patient_id' => $patient->id,
-                    'doctor_id' => $patient->current_doctor_id,
+                    'doctor_id' => $patient->current_doctor_id ?? \App\Models\Doctor::inRandomOrder()->first()?->id ?? \App\Models\Doctor::factory()->create()->id,
                 ]);
 
                 \App\Models\Meal::factory(21)->create([
