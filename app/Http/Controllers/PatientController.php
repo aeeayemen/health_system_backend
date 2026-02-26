@@ -22,18 +22,17 @@ class PatientController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
-            'current_doctor_id' => 'nullable|exists:doctors,id',
-            'date_of_birth' => 'nullable|date',
-            'gender' => 'nullable|in:male,female',
-            'current_weight' => 'nullable|numeric',
-            'target_weight' => 'nullable|numeric',
-            'height' => 'nullable|numeric',
-            'medical_history' => 'nullable|string',
-            'allergies' => 'nullable|string',
             'physical_activity' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/patients/profile'), $imageName);
+            $validated['image'] = 'uploads/patients/profile/' . $imageName;
+        }
 
         // Map frontend keys to database columns
         $data = $validated;
@@ -57,6 +56,8 @@ class PatientController extends Controller
             $data['allergies'] = $validated['allergies'];
         if (isset($validated['current_doctor_id']))
             $data['current_doctor_id'] = $validated['current_doctor_id'];
+        if (isset($validated['image']))
+            $data['image'] = $validated['image'];
 
         $patient = Patient::create($data);
 
@@ -174,7 +175,20 @@ class PatientController extends Controller
             'medical_history' => 'sometimes|string',
             'allergies' => 'sometimes|string',
             'physical_activity' => 'sometimes|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($patient->image && file_exists(public_path($patient->image))) {
+                unlink(public_path($patient->image));
+            }
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/patients/profile'), $imageName);
+            $data['image'] = 'uploads/patients/profile/' . $imageName;
+        }
 
         // Map frontend keys to database columns
         $data = $validated;
