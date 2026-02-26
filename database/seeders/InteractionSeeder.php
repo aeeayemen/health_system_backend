@@ -14,12 +14,16 @@ class InteractionSeeder extends Seeder
     {
         $patients = \App\Models\Patient::all();
 
+        $fallbackDoctorId = \App\Models\Doctor::inRandomOrder()->first()?->id;
+
         foreach ($patients as $patient) {
+            $doctorIdForConsultation = $patient->current_doctor_id ?? $fallbackDoctorId;
+
             // Consultations - only create if none exist for this patient
-            if ($patient->consultations()->count() == 0) {
+            if ($patient->consultations()->count() == 0 && $doctorIdForConsultation) {
                 \App\Models\Consultation::factory(2)->create([
                     'patient_id' => $patient->id,
-                    'doctor_id' => $patient->current_doctor_id,
+                    'doctor_id' => $doctorIdForConsultation,
                 ]);
             }
 
