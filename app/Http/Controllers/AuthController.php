@@ -22,6 +22,10 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'type' => 'nullable|in:user,patient,doctor,admin,payed',
+            'gender' => 'nullable|string|in:male,female,ذكر,انثى',
+            'degree' => 'nullable|string|max:100',
+            'cv' => 'nullable|string|max:255',
+            'consultation_fee' => 'nullable|numeric|min:0',
         ]);
 
         $user = User::create([
@@ -47,6 +51,10 @@ class AuthController extends Controller
             $doctor->name = $user->name;
             $doctor->specialization = $request->specialization ?? 'General';
             $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
+            $doctor->gender = $request->gender;
+            $doctor->degree = $request->degree;
+            $doctor->CV = $request->cv;
+            $doctor->consultation_fee = $request->consultation_fee;
             $doctor->save();
 
             // Notify all admins about new doctor application
