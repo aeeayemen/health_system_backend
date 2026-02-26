@@ -24,7 +24,8 @@ class AuthController extends Controller
             'type' => 'nullable|in:user,patient,doctor,admin,payed',
             'gender' => 'nullable|string|in:male,female,ذكر,انثى',
             'degree' => 'nullable|string|max:100',
-            'cv' => 'nullable|string|max:255',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'consultation_fee' => 'nullable|numeric|min:0',
         ]);
 
@@ -53,8 +54,24 @@ class AuthController extends Controller
             $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
             $doctor->gender = $request->gender;
             $doctor->degree = $request->degree;
-            $doctor->CV = $request->cv;
             $doctor->consultation_fee = $request->consultation_fee;
+
+            // Handle CV file upload
+            if ($request->hasFile('cv')) {
+                $cv = $request->file('cv');
+                $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+                $cv->move(public_path('uploads/doctors/cv'), $cvName);
+                $doctor->CV = 'uploads/doctors/cv/' . $cvName;
+            }
+
+            // Handle profile image upload
+            if ($request->hasFile('profile_image')) {
+                $image = $request->file('profile_image');
+                $imageName = time() . '_profile_' . $image->getClientOriginalName();
+                $image->move(public_path('uploads/doctors/profile'), $imageName);
+                $doctor->profile_image = 'uploads/doctors/profile/' . $imageName;
+            }
+
             $doctor->save();
 
             // Notify all admins about new doctor application

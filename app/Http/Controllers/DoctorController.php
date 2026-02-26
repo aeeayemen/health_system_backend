@@ -254,8 +254,21 @@ class DoctorController extends Controller
             'is_available' => 'sometimes|boolean',
             'years_of_experience' => 'nullable|integer',
             'phone_number' => 'nullable|string',
+            'degree' => 'nullable|string',
+            'CV' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Handle CV upload
+        if ($request->hasFile('CV')) {
+            if ($doctor->CV && file_exists(public_path($doctor->CV))) {
+                unlink(public_path($doctor->CV));
+            }
+            $cv = $request->file('CV');
+            $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+            $cv->move(public_path('uploads/doctors/cv'), $cvName);
+            $validated['CV'] = 'uploads/doctors/cv/' . $cvName;
+        }
 
         // Handle profile image upload
         if ($request->hasFile('profile_image')) {
