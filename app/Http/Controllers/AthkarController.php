@@ -35,6 +35,11 @@ class AthkarController extends Controller
 
     public function store(Request $request)
     {
+        // التحويل إذا كان المدخل رقماً (1 للصباحي، 2 للمسائي)
+        if (is_numeric($request->category)) {
+            $request->merge(['category' => AthkarCategory::fromId($request->category)]);
+        }
+
         $validated = $request->validate([
             'category' => ['required', Rule::in(AthkarCategory::values())],
             'title' => 'nullable|string',
@@ -57,6 +62,11 @@ class AthkarController extends Controller
     public function update(Request $request, $id)
     {
         $athkar = Athkar::findOrFail($id);
+
+        // التحويل إذا كان المدخل رقماً (1 للصباحي، 2 للمسائي)
+        if ($request->has('category') && is_numeric($request->category)) {
+            $request->merge(['category' => AthkarCategory::fromId($request->category)]);
+        }
 
         $validated = $request->validate([
             'category' => ['sometimes', Rule::in(AthkarCategory::values())],

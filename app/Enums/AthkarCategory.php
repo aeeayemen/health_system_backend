@@ -24,4 +24,13 @@ enum AthkarCategory: string
             return $carry;
         }, []);
     }
+
+    public static function fromId($id): ?string
+    {
+        return match ((int) $id) {
+            1 => self::MORNING->value,
+            2 => self::EVENING->value,
+            default => null,
+        };
+    }
 }
