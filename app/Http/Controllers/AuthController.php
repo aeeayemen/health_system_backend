@@ -196,6 +196,26 @@ class AuthController extends Controller
     }
 
     /**
+     * Publicly Resend verification email by email address
+     */
+    public function resendVerificationEmailPublic(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 400);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Verification link sent']);
+    }
+
+    /**
      * Verify email
      */
     public function verifyEmail(EmailVerificationRequest $request)
