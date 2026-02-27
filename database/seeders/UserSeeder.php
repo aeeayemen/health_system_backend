@@ -24,14 +24,14 @@ class UserSeeder extends Seeder
         );
         $admin->assignRole('admin');
 
-        // Second Admin
+        // Second Admin (Unverified for testing)
         $anasAdmin = \App\Models\User::updateOrCreate(
             ['email' => 'anasadelismail2023@gmail.com'],
             [
                 'name' => 'Anas Adel',
                 'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
                 'type' => 'admin',
-                'email_verified_at' => now(),
+                'email_verified_at' => null, // Left unverified so the user can test the verification flow
             ]
         );
         $anasAdmin->assignRole('admin');
