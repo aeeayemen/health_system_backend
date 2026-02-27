@@ -200,19 +200,30 @@ class AuthController extends Controller
      */
     public function resendVerificationEmailPublic(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|email|exists:users,email',
+            ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->first();
 
-        if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified'], 400);
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            if ($user->hasVerifiedEmail()) {
+                return response()->json(['message' => 'Email already verified'], 400);
+            }
+
+            $user->sendEmailVerificationNotification();
+
+            return response()->json(['message' => 'Verification link sent']);
+        } catch (\Exception $e) {
+            \Log::error('Public Resend Verification Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'حدث خطأ أثناء إرسال البريد: ' . $e->getMessage()
+            ], 500);
         }
-
-        $user->sendEmailVerificationNotification();
-
-        return response()->json(['message' => 'Verification link sent']);
     }
 
     /**
