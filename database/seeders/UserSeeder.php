@@ -18,9 +18,23 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Admin User',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'type' => 'admin',
+                'email_verified_at' => now(),
             ]
         );
         $admin->assignRole('admin');
+
+        // Second Admin
+        $anasAdmin = \App\Models\User::updateOrCreate(
+            ['email' => 'anasadelismail2023@gmail.com'],
+            [
+                'name' => 'Anas Adel',
+                'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+                'type' => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+        $anasAdmin->assignRole('admin');
 
         // Doctors - check if we already have enough doctors
         if (\App\Models\User::role('doctor')->count() < 10) {
