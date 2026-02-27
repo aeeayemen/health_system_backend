@@ -9,6 +9,11 @@ use App\Enums\AthkarCategory;
 return new class extends Migration {
     public function up()
     {
+        // Update existing invalid records to a default valid value
+        DB::table('athkars')
+            ->whereNotIn('category', [AthkarCategory::MORNING->value, AthkarCategory::EVENING->value])
+            ->update(['category' => AthkarCategory::MORNING->value]);
+
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('ALTER TABLE athkars ALTER COLUMN category TYPE VARCHAR(255)');
             DB::statement('ALTER TABLE athkars ADD CONSTRAINT athkars_category_check CHECK (category IN (\'صباحي\', \'مسائي\'))');
