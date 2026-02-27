@@ -112,6 +112,12 @@ class AuthController extends Controller
             ]);
         }
 
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Your email address is not verified.'
+            ], 403);
+        }
+
         if ($user->type === 'doctor') {
             $doctor = $user->doctor;
             if ($doctor && $doctor->application_status !== 'approved') {
