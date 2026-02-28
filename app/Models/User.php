@@ -11,9 +11,11 @@ use Spatie\Permission\Traits\HasRoles;
 
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 
-class User extends Authenticatable implements MustVerifyEmail
+// class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, MustVerifyEmailTrait;
+    // use HasApiTokens, HasFactory, Notifiable, HasRoles, MustVerifyEmailTrait;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
