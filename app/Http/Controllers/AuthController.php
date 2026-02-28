@@ -26,7 +26,7 @@ class AuthController extends Controller
             'type' => 'nullable|in:user,patient,doctor,admin,payed',
             'gender' => 'nullable|string|in:male,female,ذكر,انثى',
             'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'consultation_fee' => 'nullable|numeric|min:0',
         ]);

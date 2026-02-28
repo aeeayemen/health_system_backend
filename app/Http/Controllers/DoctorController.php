@@ -51,7 +51,7 @@ class DoctorController extends Controller
             'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'bank_account' => 'nullable|string',
             'phone_number' => 'nullable|string',
-            'CV' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'CV' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'admin_id' => 'nullable|exists:users,id',
         ]);
@@ -110,7 +110,7 @@ class DoctorController extends Controller
             'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'bank_account' => 'nullable|string',
             'phone_number' => 'nullable|string',
-            'CV' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'CV' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'admin_id' => 'nullable|exists:users,id',
         ]);
@@ -279,7 +279,7 @@ class DoctorController extends Controller
             'years_of_experience' => 'nullable|integer',
             'phone_number' => 'nullable|string',
             'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
-            'CV' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'CV' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
