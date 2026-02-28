@@ -15,7 +15,7 @@ return new class extends Migration {
                 $table->id(); // bigInt (20) PK
                 $table->string('name', 100); // اسم العنصر
                 $table->string('gender', 100)->nullable(); // الجنس
-                $table->string('degree', 100)->nullable(); // الدرجة العلمية
+                $table->string('degree', 255)->nullable(); // الدرجة العلمية
                 $table->string('bank_account', 100)->nullable(); // الحساب البنكي
                 $table->string('phone_number', 100)->nullable(); // رقم الهاتف
                 $table->string('CV', 255)->nullable(); // السيرة الذاتية

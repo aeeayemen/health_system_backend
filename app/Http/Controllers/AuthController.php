@@ -25,7 +25,7 @@ class AuthController extends Controller
             'phone' => 'nullable|string|max:20',
             'type' => 'nullable|in:user,patient,doctor,admin,payed',
             'gender' => 'nullable|string|in:male,female,ذكر,انثى',
-            'degree' => 'nullable|string|max:100',
+            'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'consultation_fee' => 'nullable|numeric|min:0',
@@ -55,8 +55,15 @@ class AuthController extends Controller
             $doctor->specialization = $request->specialization ?? 'General';
             $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
             $doctor->gender = $request->gender;
-            $doctor->degree = $request->degree;
             $doctor->consultation_fee = $request->consultation_fee;
+
+            // Handle Degree file upload
+            if ($request->hasFile('degree')) {
+                $degree = $request->file('degree');
+                $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+                $degree->move(public_path('uploads/doctors/degree'), $degreeName);
+                $doctor->degree = 'uploads/doctors/degree/' . $degreeName;
+            }
 
             // Handle CV file upload
             if ($request->hasFile('cv')) {

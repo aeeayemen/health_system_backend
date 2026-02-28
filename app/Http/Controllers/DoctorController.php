@@ -48,13 +48,21 @@ class DoctorController extends Controller
             'bio' => 'nullable|string',
             'consultation_fee' => 'nullable|numeric',
             'gender' => 'nullable|string',
-            'degree' => 'nullable|string',
+            'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'bank_account' => 'nullable|string',
             'phone_number' => 'nullable|string',
             'CV' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'admin_id' => 'nullable|exists:users,id',
         ]);
+
+        // Handle Degree upload
+        if ($request->hasFile('degree')) {
+            $degree = $request->file('degree');
+            $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+            $degree->move(public_path('uploads/doctors/degree'), $degreeName);
+            $validated['degree'] = 'uploads/doctors/degree/' . $degreeName;
+        }
 
         // Handle CV upload
         if ($request->hasFile('CV')) {
@@ -99,13 +107,25 @@ class DoctorController extends Controller
             'years_of_experience' => 'nullable|integer',
             'license_number' => 'sometimes|string',
             'gender' => 'nullable|string',
-            'degree' => 'nullable|string',
+            'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'bank_account' => 'nullable|string',
             'phone_number' => 'nullable|string',
             'CV' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'admin_id' => 'nullable|exists:users,id',
         ]);
+
+        // Handle Degree upload
+        if ($request->hasFile('degree')) {
+            // Delete old degree if exists
+            if ($doctor->degree && file_exists(public_path($doctor->degree))) {
+                unlink(public_path($doctor->degree));
+            }
+            $degree = $request->file('degree');
+            $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+            $degree->move(public_path('uploads/doctors/degree'), $degreeName);
+            $validated['degree'] = 'uploads/doctors/degree/' . $degreeName;
+        }
 
         // Handle CV upload
         if ($request->hasFile('CV')) {
@@ -141,6 +161,10 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor)
     {
+        // Delete Degree if exists
+        if ($doctor->degree && file_exists(public_path($doctor->degree))) {
+            unlink(public_path($doctor->degree));
+        }
         // Delete CV if exists
         if ($doctor->CV && file_exists(public_path($doctor->CV))) {
             unlink(public_path($doctor->CV));
@@ -254,10 +278,21 @@ class DoctorController extends Controller
             'is_available' => 'sometimes|boolean',
             'years_of_experience' => 'nullable|integer',
             'phone_number' => 'nullable|string',
-            'degree' => 'nullable|string',
+            'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'CV' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        // Handle Degree upload
+        if ($request->hasFile('degree')) {
+            if ($doctor->degree && file_exists(public_path($doctor->degree))) {
+                unlink(public_path($doctor->degree));
+            }
+            $degree = $request->file('degree');
+            $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+            $degree->move(public_path('uploads/doctors/degree'), $degreeName);
+            $validated['degree'] = 'uploads/doctors/degree/' . $degreeName;
+        }
 
         // Handle CV upload
         if ($request->hasFile('CV')) {
