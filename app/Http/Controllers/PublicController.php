@@ -37,7 +37,8 @@ class PublicController extends Controller
      */
     public function doctors(Request $request)
     {
-        $query = Doctor::where('application_status', 'approved')
+        $query = Doctor::with('user:id,email')
+            ->where('application_status', 'approved')
             ->where('is_available', true);
 
         if ($request->has('specialization')) {
@@ -48,7 +49,25 @@ class PublicController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $doctors = $query->get(['id', 'name', 'specialization', 'bio', 'consultation_fee', 'profile_image', 'years_of_experience']);
+        $doctors = $query->get([
+            'id',
+            'user_id',
+            'name',
+            'specialization',
+            'bio',
+            'consultation_fee',
+            'profile_image',
+            'years_of_experience',
+            'phone_number',
+            'bank_account'
+        ]);
+
+        $doctors->transform(function ($doctor) {
+            $data = $doctor->toArray();
+            $data['email'] = $doctor->user ? $doctor->user->email : null;
+            unset($data['user']);
+            return $data;
+        });
 
         return response()->json($doctors);
     }
