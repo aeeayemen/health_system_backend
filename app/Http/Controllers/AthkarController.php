@@ -16,9 +16,14 @@ class AthkarController extends Controller
 
         // التصفية بحسب النوع (صباحي، مسائي)
         if ($request->has('category')) {
-            // التأكد من أن القيمة المدخلة صحيحة
-            if (in_array($request->category, AthkarCategory::values())) {
-                $query->where('category', $request->category);
+            $category = $request->category;
+            // التحويل إذا كان المدخل رقماً
+            if (is_numeric($category)) {
+                $category = AthkarCategory::fromId($category);
+            }
+
+            if (in_array($category, AthkarCategory::values())) {
+                $query->where('category', $category);
             }
         }
 
