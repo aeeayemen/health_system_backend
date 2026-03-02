@@ -62,6 +62,9 @@ Route::prefix('public')->group(function () {
     Route::get('/forums/{forumId}/posts', [PublicController::class, 'forumPosts']);
     Route::get('/diets-preview', [PublicController::class, 'dietsPreview']);
     Route::get('/athkar', [AthkarController::class, 'index']);
+    Route::get('/athkar-raw', function () {
+        return \App\Models\Athkar::all();
+    });
 });
 
 // =============================================
