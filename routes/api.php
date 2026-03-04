@@ -26,6 +26,7 @@ use App\Http\Controllers\MealCategoryController;
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\MedicalTestController;
+use App\Http\Controllers\MedicalFileController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
@@ -217,6 +218,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // === Medical Tests ===
     Route::apiResource('medical-tests', MedicalTestController::class);
     Route::put('/medical-tests/{id}/status', [MedicalTestController::class, 'updateStatus']);
+
+    // === Medical Files ===
+    Route::apiResource('medical-files', MedicalFileController::class);
 
     // === Chat ===
     Route::get('/chat/conversations', [ChatController::class, 'getConversations']);
