@@ -67,15 +67,19 @@ class PatientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Patient $patient)
+    public function show($id)
     {
+        $patient = Patient::where('id', $id)->first();
+        if (!$patient) {
+            return response()->json(['message' => 'Patient not found'], 404);
+        }
         return new PatientResource($patient->load(['user', 'doctor']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Patient $patient)
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -89,6 +93,11 @@ class PatientController extends Controller
             'allergies' => 'sometimes|string',
             'physical_activity' => 'sometimes|string',
         ]);
+
+        $patient = Patient::where('id', $id)->first();
+        if (!$patient) {
+            return response()->json(['message' => 'Patient not found'], 404);
+        }
 
         // Map frontend keys to database columns
         $data = $validated;
@@ -121,8 +130,12 @@ class PatientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Patient $patient)
+    public function destroy($id)
     {
+        $patient = Patient::where('id', $id)->first();
+        if (!$patient) {
+            return response()->json(['message' => 'Patient not found'], 404);
+        }
         $patient->delete();
 
         return response()->json(['message' => 'Patient deleted successfully']);
