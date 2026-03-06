@@ -20,7 +20,7 @@ class MedicalFileController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'patient_id' => 'nullable|exists:patients,id',
             'file_name' => 'nullable|string',
             'file' => 'required|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx|max:10240',
             'description' => 'nullable|string',
@@ -65,7 +65,7 @@ class MedicalFileController extends Controller
         $medicalFile = MedicalFile::findOrFail($id);
 
         $validated = $request->validate([
-            'patient_id' => 'sometimes|exists:patients,id',
+            'patient_id' => 'nullable|exists:patients,id',
             'file_name' => 'nullable|string',
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx|max:10240',
             'description' => 'nullable|string',
