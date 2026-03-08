@@ -80,58 +80,63 @@ class ChatController extends Controller
 
     public function sendMessage(Request $request)
     {
-        $user = $request->user();
-        $validated = $request->validate([
-            'receiver_id' => 'required|integer',
-            'message' => 'nullable|string',
-            'file' => 'nullable|file|max:10240', // 10MB limit
-        ]);
+        try {
+            $user = $request->user();
+            $validated = $request->validate([
+                'receiver_id' => 'required|integer',
+                'message' => 'nullable|string',
+                'file' => 'nullable|file|max:10240', // 10MB limit
+            ]);
 
-        $fileData = [];
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $uploadPath = public_path('uploads/chat-files');
+            $fileData = [];
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $uploadPath = public_path('uploads/chat-files');
 
-            if (!\Illuminate\Support\Facades\File::exists($uploadPath)) {
-                \Illuminate\Support\Facades\File::makeDirectory($uploadPath, 0755, true);
+                if (!\Illuminate\Support\Facades\File::exists($uploadPath)) {
+                    \Illuminate\Support\Facades\File::makeDirectory($uploadPath, 0755, true);
+                }
+
+                $file->move($uploadPath, $fileName);
+                $fileData = [
+                    'file_path' => 'uploads/chat-files/' . $fileName,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_type' => $file->getClientOriginalExtension(),
+                ];
             }
 
-            $file->move($uploadPath, $fileName);
-            $fileData = [
-                'file_path' => 'uploads/chat-files/' . $fileName,
-                'file_name' => $file->getClientOriginalName(),
-                'file_type' => $file->getClientOriginalExtension(),
-            ];
+            // Ensure at least message or file is provided
+            if (!$request->filled('message') && !$request->hasFile('file')) {
+                return response()->json(['message' => 'Message or file is required'], 422);
+            }
+
+            $commonData = array_merge([
+                'time' => now()->toTimeString(),
+                'date' => now()->toDateString(),
+                'read' => 'false',
+                'message' => $validated['message'] ?? '',
+            ], $fileData);
+
+            if ($user->type === 'doctor') {
+                $message = Message::create(array_merge($commonData, [
+                    'doctor_id' => $user->doctor->id ?? 0,
+                    'user_id' => $validated['receiver_id'],
+                    'sender_type' => 'doctor'
+                ]));
+            } else {
+                $message = Message::create(array_merge($commonData, [
+                    'user_id' => $user->id,
+                    'doctor_id' => $validated['receiver_id'],
+                    'sender_type' => 'user'
+                ]));
+            }
+
+            return response()->json($message, 201);
+        } catch (\Exception $e) {
+            \Log::error('Chat File Upload Failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Chat message failed: ' . $e->getMessage()], 500);
         }
-
-        // Ensure at least message or file is provided
-        if (!$request->filled('message') && !$request->hasFile('file')) {
-            return response()->json(['message' => 'Message or file is required'], 422);
-        }
-
-        $commonData = array_merge([
-            'time' => now()->toTimeString(),
-            'date' => now()->toDateString(),
-            'read' => 'false',
-            'message' => $validated['message'] ?? '',
-        ], $fileData);
-
-        if ($user->type === 'doctor') {
-            $message = Message::create(array_merge($commonData, [
-                'doctor_id' => $user->doctor->id ?? 0,
-                'user_id' => $validated['receiver_id'],
-                'sender_type' => 'doctor'
-            ]));
-        } else {
-            $message = Message::create(array_merge($commonData, [
-                'user_id' => $user->id,
-                'doctor_id' => $validated['receiver_id'],
-                'sender_type' => 'user'
-            ]));
-        }
-
-        return response()->json($message, 201);
     }
 
     public function getAllConversations()

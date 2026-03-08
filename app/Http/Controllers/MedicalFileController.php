@@ -27,31 +27,36 @@ class MedicalFileController extends Controller
             'status' => 'nullable|string',
         ]);
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
+        try {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
 
-            // Generate name
-            $fileName = time() . '_' . $file->getClientOriginalName();
+                // Generate name
+                $fileName = time() . '_' . $file->getClientOriginalName();
 
-            // Move file
-            $uploadPath = public_path('uploads/medical-files');
-            if (!File::exists($uploadPath)) {
-                File::makeDirectory($uploadPath, 0755, true);
+                // Move file
+                $uploadPath = public_path('uploads/medical-files');
+                if (!File::exists($uploadPath)) {
+                    File::makeDirectory($uploadPath, 0755, true);
+                }
+
+                $file->move($uploadPath, $fileName);
+
+                $validated['file_path'] = 'uploads/medical-files/' . $fileName;
+                $validated['file_name'] = $request->input('file_name', $file->getClientOriginalName());
+                $validated['file_type'] = $file->getClientOriginalExtension();
+                $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $fileName));
             }
 
-            $file->move($uploadPath, $fileName);
+            $validated['uploaded_at'] = now();
 
-            $validated['file_path'] = 'uploads/medical-files/' . $fileName;
-            $validated['file_name'] = $request->input('file_name', $file->getClientOriginalName());
-            $validated['file_type'] = $file->getClientOriginalExtension();
-            $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $fileName));
+            $medicalFile = MedicalFile::create($validated);
+
+            return response()->json($medicalFile, 201);
+        } catch (\Exception $e) {
+            \Log::error('Medical File Upload Failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Upload failed: ' . $e->getMessage()], 500);
         }
-
-        $validated['uploaded_at'] = now();
-
-        $medicalFile = MedicalFile::create($validated);
-
-        return response()->json($medicalFile, 201);
     }
 
     public function show($id)
