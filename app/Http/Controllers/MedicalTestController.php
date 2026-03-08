@@ -83,13 +83,17 @@ class MedicalTestController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        // Status field is not in ERD, but requested in endpoints.
-        // Assuming we might add it or it's a virtual/logic thing.
-        // For now, we'll try to update if passed, but catch error or ignore if field missing.
-        // Or better, just ignore if not in fillable.
-        // But if user requested it, I should probably have added it.
-        // I'll leave it as is, if column missing it might throw, but I'll assume I should have added it.
-        // I'll add a migration for status later if needed.
-        return response()->json(['message' => 'Status update not fully implemented due to schema constraints'], 200);
+        $test = MedicalTest::findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,completed,cancelled',
+        ]);
+
+        $test->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'message' => 'Test status updated successfully',
+            'data' => $test
+        ]);
     }
 }

@@ -17,6 +17,9 @@ class Message extends Model
         'read',
         'doctor_id',
         'sender_type',
+        'file_path',
+        'file_name',
+        'file_type',
     ];
 
     public function user()

@@ -115,4 +115,16 @@ class MedicalFileController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function download($id)
+    {
+        $medicalFile = MedicalFile::findOrFail($id);
+        $path = public_path($medicalFile->file_path);
+
+        if (!file_exists($path)) {
+            return response()->json(['message' => 'File not found on server'], 404);
+        }
+
+        return response()->download($path, $medicalFile->file_name);
+    }
 }

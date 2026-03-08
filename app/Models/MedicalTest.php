@@ -13,6 +13,7 @@ class MedicalTest extends Model
         'name',
         'user_id',
         'image',
+        'status',
     ];
 
     public function user()

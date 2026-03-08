@@ -82,30 +82,53 @@ class ChatController extends Controller
     {
         $user = $request->user();
         $validated = $request->validate([
-            'receiver_id' => 'required|integer', // Could be user_id or doctor_id
-            'message' => 'required|string',
+            'receiver_id' => 'required|integer',
+            'message' => 'nullable|string',
+            'file' => 'nullable|file|max:10240', // 10MB limit
         ]);
 
+        $fileData = [];
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $uploadPath = public_path('uploads/chat-files');
+
+            if (!\Illuminate\Support\Facades\File::exists($uploadPath)) {
+                \Illuminate\Support\Facades\File::makeDirectory($uploadPath, 0755, true);
+            }
+
+            $file->move($uploadPath, $fileName);
+            $fileData = [
+                'file_path' => 'uploads/chat-files/' . $fileName,
+                'file_name' => $file->getClientOriginalName(),
+                'file_type' => $file->getClientOriginalExtension(),
+            ];
+        }
+
+        // Ensure at least message or file is provided
+        if (!$request->filled('message') && !$request->hasFile('file')) {
+            return response()->json(['message' => 'Message or file is required'], 422);
+        }
+
+        $commonData = array_merge([
+            'time' => now()->toTimeString(),
+            'date' => now()->toDateString(),
+            'read' => 'false',
+            'message' => $validated['message'] ?? '',
+        ], $fileData);
+
         if ($user->type === 'doctor') {
-            $message = Message::create([
+            $message = Message::create(array_merge($commonData, [
                 'doctor_id' => $user->doctor->id ?? 0,
                 'user_id' => $validated['receiver_id'],
-                'message' => $validated['message'],
-                'time' => now()->toTimeString(),
-                'date' => now()->toDateString(),
-                'read' => 'false',
                 'sender_type' => 'doctor'
-            ]);
+            ]));
         } else {
-            $message = Message::create([
+            $message = Message::create(array_merge($commonData, [
                 'user_id' => $user->id,
                 'doctor_id' => $validated['receiver_id'],
-                'message' => $validated['message'],
-                'time' => now()->toTimeString(),
-                'date' => now()->toDateString(),
-                'read' => 'false',
                 'sender_type' => 'user'
-            ]);
+            ]));
         }
 
         return response()->json($message, 201);

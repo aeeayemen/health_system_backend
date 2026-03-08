@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DietController;
+use App\Http\Controllers\DietPlanController;
 use App\Http\Controllers\DietNoteController;
 use App\Http\Controllers\DietComponentController;
 use App\Http\Controllers\WeeklyCalculationController;
@@ -141,7 +142,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('patients', PatientController::class)->where(['patient' => '[0-9]+']);
 
     // === Diet Plans (Diets) ===
-    Route::apiResource('diet-plans', DietController::class);
+    Route::apiResource('diet-plans', DietPlanController::class);
     Route::apiResource('diets', DietController::class);
     Route::put('/diets/{id}/status', [DietController::class, 'updateStatus']);
     Route::apiResource('diet-notes', DietNoteController::class);
@@ -220,6 +221,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/medical-tests/{id}/status', [MedicalTestController::class, 'updateStatus']);
 
     // === Medical Files ===
+    Route::get('/medical-files/{id}/download', [MedicalFileController::class, 'download']);
     Route::apiResource('medical-files', MedicalFileController::class);
 
     // === Chat ===
