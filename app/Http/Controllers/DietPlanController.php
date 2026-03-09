@@ -90,7 +90,7 @@ class DietPlanController extends Controller
                 $patient->user->notify(new \App\Notifications\DietPlanAssigned($dietPlan));
             }
 
-            return new DietPlanResource($dietPlan->load(['meals', 'doctor']));
+            return new DietPlanResource($dietPlan->load(['meals', 'doctor', 'patient']));
         });
     }
 
@@ -121,7 +121,7 @@ class DietPlanController extends Controller
 
         $dietPlan->update($validated);
 
-        return new DietPlanResource($dietPlan);
+        return new DietPlanResource($dietPlan->load(['doctor', 'patient', 'meals']));
     }
 
     /**

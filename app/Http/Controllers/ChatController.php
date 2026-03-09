@@ -131,6 +131,18 @@ class ChatController extends Controller
                         'uploaded_at' => now(),
                     ]);
                     $medicalFileCreated = true;
+
+                    // --- INTEGRATION: Also Save to Medical Tests (Checkups/الفحوصات) ---
+                    // Get the User ID for the patient
+                    $patientUser = \App\Models\Patient::find($patientId);
+                    if ($patientUser) {
+                        \App\Models\MedicalTest::create([
+                            'user_id' => $patientUser->user_id,
+                            'name' => 'فحص مرفوع من الشات: ' . $fileData['file_name'],
+                            'image' => $fileData['file_path'],
+                            'status' => 'completed',
+                        ]);
+                    }
                 }
             }
 
