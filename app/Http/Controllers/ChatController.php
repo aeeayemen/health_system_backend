@@ -89,6 +89,8 @@ class ChatController extends Controller
             ]);
 
             $fileData = [];
+            $medicalFileCreated = false;
+
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $fileName = time() . '_' . $file->getClientOriginalName();
@@ -104,6 +106,32 @@ class ChatController extends Controller
                     'file_name' => $file->getClientOriginalName(),
                     'file_type' => $file->getClientOriginalExtension(),
                 ];
+
+                // --- INTEGRATION: Save to Medical Files (Checkups) ---
+                $patientId = null;
+                if ($user->type === 'doctor') {
+                    // Sender is doctor, receiver is user. Find patient record for receiver.
+                    $patient = \App\Models\Patient::where('user_id', $validated['receiver_id'])->first();
+                    $patientId = $patient ? $patient->id : null;
+                } else {
+                    // Sender is user. Find patient record for sender.
+                    $patient = \App\Models\Patient::where('user_id', $user->id)->first();
+                    $patientId = $patient ? $patient->id : null;
+                }
+
+                if ($patientId) {
+                    \App\Models\MedicalFile::create([
+                        'patient_id' => $patientId,
+                        'file_name' => $fileData['file_name'],
+                        'file_path' => $fileData['file_path'],
+                        'file_type' => $fileData['file_type'],
+                        'file_size' => \Illuminate\Support\Facades\File::size(public_path($fileData['file_path'])),
+                        'description' => 'ملف مرفوع عبر الشات',
+                        'status' => 'chat_upload',
+                        'uploaded_at' => now(),
+                    ]);
+                    $medicalFileCreated = true;
+                }
             }
 
             // Ensure at least message or file is provided
