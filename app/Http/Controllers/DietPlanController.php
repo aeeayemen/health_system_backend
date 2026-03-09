@@ -40,16 +40,31 @@ class DietPlanController extends Controller
             'duration_days' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'meals' => 'array',
-            'meals.*.day_number' => 'required|integer',
-            'meals.*.meal_type' => 'required|in:breakfast,lunch,dinner,snack',
-            'meals.*.meal_name' => 'required|string',
-            'meals.*.calories' => 'nullable|integer',
+            // Accept meals in both old and new format
+            'meals' => 'nullable|array',
+            'meals.*.meal_type' => 'required|string',
+            // Old format fields
+            'meals.*.meal_name' => 'nullable|string',
+            'meals.*.day_number' => 'nullable|integer',
             'meals.*.carbo' => 'nullable|numeric',
             'meals.*.protin' => 'nullable|numeric',
             'meals.*.fat' => 'nullable|numeric',
             'meals.*.serving' => 'nullable|string',
-            'doctor_notes' => 'nullable|array', // Array of clinical notes/instructions
+            // New format fields (mobile app)
+            'meals.*.name' => 'nullable|string',
+            'meals.*.carbs_g' => 'nullable|numeric',
+            'meals.*.protein_g' => 'nullable|numeric',
+            'meals.*.fat_g' => 'nullable|numeric',
+            'meals.*.serving_summary' => 'nullable|string',
+            'meals.*.calories' => 'nullable|integer',
+            // Meal periods (new)
+            'meal_periods' => 'nullable|array',
+            'meal_periods.*.meal_type' => 'required|string',
+            'meal_periods.*.hour' => 'required|integer',
+            'meal_periods.*.minute' => 'required|integer',
+            'meal_periods.*.custom_name' => 'nullable|string',
+            // Doctor notes
+            'doctor_notes' => 'nullable|array',
             'doctor_notes.*' => 'string'
         ]);
 
@@ -63,16 +78,28 @@ class DietPlanController extends Controller
                 'duration_days' => $validated['duration_days'],
                 'start_date' => $validated['start_date'],
                 'end_date' => $validated['end_date'],
+                // Store meal_periods as JSON in notes if provided
+                'notes' => isset($validated['meal_periods']) ? json_encode($validated['meal_periods']) : null,
             ]);
 
-            // Add meals
+            // Add meals - map new format fields to DB columns
             if (isset($validated['meals'])) {
                 foreach ($validated['meals'] as $mealData) {
-                    $dietPlan->meals()->create($mealData);
+                    $dietPlan->meals()->create([
+                        'meal_type' => $mealData['meal_type'],
+                        'meal_name' => $mealData['meal_name'] ?? $mealData['name'] ?? $mealData['meal_type'],
+                        'name' => $mealData['name'] ?? $mealData['meal_name'] ?? $mealData['meal_type'],
+                        'day_number' => $mealData['day_number'] ?? 1,
+                        'calories' => $mealData['calories'] ?? null,
+                        'carbo' => $mealData['carbo'] ?? $mealData['carbs_g'] ?? null,
+                        'protin' => $mealData['protin'] ?? $mealData['protein_g'] ?? null,
+                        'fat' => $mealData['fat'] ?? $mealData['fat_g'] ?? null,
+                        'serving' => $mealData['serving'] ?? $mealData['serving_summary'] ?? null,
+                    ]);
                 }
             }
 
-            // Integrated: Add clinical notes (e.g., "Drink water every 3 hours")
+            // Add clinical notes
             if (isset($validated['doctor_notes'])) {
                 foreach ($validated['doctor_notes'] as $noteText) {
                     \App\Models\DietNote::create([
@@ -85,9 +112,13 @@ class DietPlanController extends Controller
             }
 
             // Notify the patient about new diet plan
-            $patient = \App\Models\Patient::find($validated['patient_id']);
-            if ($patient && $patient->user) {
-                $patient->user->notify(new \App\Notifications\DietPlanAssigned($dietPlan));
+            try {
+                $patient = \App\Models\Patient::find($validated['patient_id']);
+                if ($patient && $patient->user) {
+                    $patient->user->notify(new \App\Notifications\DietPlanAssigned($dietPlan));
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Failed to send diet plan notification: ' . $e->getMessage());
             }
 
             return new DietPlanResource($dietPlan->load(['meals', 'doctor', 'patient']));

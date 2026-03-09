@@ -16,7 +16,6 @@ class DietPlanResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'test_val' => 'DEBUG_CHECK',
             'title' => $this->title,
             'description' => $this->description,
             'daily_calories' => $this->daily_calories,
@@ -27,6 +26,7 @@ class DietPlanResource extends JsonResource
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'patient' => new PatientResource($this->whenLoaded('patient')),
             'meals' => $this->whenLoaded('meals'),
+            'meal_periods' => $this->notes ? json_decode($this->notes, true) : null,
         ];
     }
 }
