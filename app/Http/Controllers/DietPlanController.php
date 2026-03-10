@@ -32,7 +32,7 @@ class DietPlanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'patient_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
             'title' => 'required|string',
             'description' => 'nullable|string',

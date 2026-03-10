@@ -28,7 +28,7 @@ class MeasurementController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id' => 'nullable|exists:patients,id',
+            'patient_id' => 'nullable|exists:users,id',
             'weight' => 'required|numeric',
             'waist_circumference' => 'nullable|numeric',
             'hip_circumference' => 'nullable|numeric',
