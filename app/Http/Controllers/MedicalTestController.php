@@ -21,7 +21,7 @@ class MedicalTestController extends Controller
         $validated = $request->validate([
             'name' => 'required|string',
             'user_id' => 'required|exists:users,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable', // Removed strict image rule to allow strings, but will check type manually
         ]);
 
         // Handle image upload
@@ -48,7 +48,7 @@ class MedicalTestController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string',
             'user_id' => 'sometimes|exists:users,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable',
         ]);
 
         // Handle image upload
