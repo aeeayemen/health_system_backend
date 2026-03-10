@@ -13,6 +13,7 @@ class DietNote extends Model
         'user_id',
         'doctor_id',
         'diet_id',
+        'diet_plan_id',
         'note',
     ];
 
@@ -24,5 +25,10 @@ class DietNote extends Model
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
+    }
+
+    public function dietPlan()
+    {
+        return $this->belongsTo(DietPlan::class);
     }
 }

@@ -103,7 +103,7 @@ class DietPlanController extends Controller
             if (isset($validated['doctor_notes'])) {
                 foreach ($validated['doctor_notes'] as $noteText) {
                     \App\Models\DietNote::create([
-                        'diet_id' => $dietPlan->id,
+                        'diet_plan_id' => $dietPlan->id,
                         'doctor_id' => $validated['doctor_id'],
                         'user_id' => \App\Models\Patient::find($validated['patient_id'])->user_id,
                         'note' => $noteText,
@@ -141,7 +141,7 @@ class DietPlanController extends Controller
     public function update(Request $request, DietPlan $dietPlan)
     {
         $validated = $request->validate([
-            'patient_id' => 'exists:patients,id',
+            'patient_id' => 'exists:users,id',
             'doctor_id' => 'exists:doctors,id',
             'title' => 'string',
             'description' => 'nullable|string',
