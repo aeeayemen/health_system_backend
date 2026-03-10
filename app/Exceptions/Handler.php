@@ -23,6 +23,12 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
+        $this->renderable(function (\Throwable $e, $request) {
+            if ($request->is('api/*')) {
+                return $this->prepareJsonResponse($request, $e);
+            }
+        });
+
         $this->reportable(function (Throwable $e) {
             //
         });
