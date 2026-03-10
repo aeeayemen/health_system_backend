@@ -121,7 +121,9 @@ class DietPlanController extends Controller
                 \Log::warning('Failed to send diet plan notification: ' . $e->getMessage());
             }
 
-            return new DietPlanResource($dietPlan->load(['meals', 'doctor', 'patient']));
+            return (new DietPlanResource($dietPlan->load(['meals', 'doctor', 'patient'])))
+                ->response()
+                ->setStatusCode(201);
         });
     }
 
