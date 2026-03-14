@@ -56,6 +56,10 @@ class AuthController extends Controller
             $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
             $doctor->gender = $request->gender;
             $doctor->consultation_fee = $request->consultation_fee;
+            $doctor->bio = $request->bio;
+            $doctor->years_of_experience = $request->years_of_experience;
+            $doctor->phone_number = $request->phone_number ?? $validated['phone'] ?? null;
+            $doctor->bank_account = $request->bank_account;
 
             // Handle Degree file upload
             if ($request->hasFile('degree')) {

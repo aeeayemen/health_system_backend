@@ -59,7 +59,9 @@ class PublicController extends Controller
             'profile_image',
             'years_of_experience',
             'phone_number',
-            'bank_account'
+            'bank_account',
+            'rating',
+            'gender'
         ]);
 
         $doctors->transform(function ($doctor) {

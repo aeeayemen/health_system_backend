@@ -70,7 +70,7 @@ class DietController extends Controller
     {
         $user = $request->user();
 
-        // Find active diet for user (through subscription or direct assignment)
+        // 1. First check the strict Diet table
         $diet = Diet::with(['doctor', 'components', 'notes'])
             ->where('user_id', $user->id)
             ->orWhereHas('subscription', function ($q) use ($user) {
@@ -79,11 +79,51 @@ class DietController extends Controller
             ->where('status', 'active')
             ->first();
 
-        if (!$diet) {
-            return response()->json(['message' => 'No active diet found'], 404);
+        if ($diet) {
+            return response()->json($diet);
         }
 
-        return response()->json($diet);
+        // 2. If no classic Diet found, check the new DietPlan table
+        if ($user->isPatient()) {
+            $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
+                ->where('patient_id', $user->patient->id)
+                ->where('status', 'active')
+                ->latest()
+                ->first();
+
+            if ($dietPlan) {
+                // Map the DietPlan to look like the classic Diet for backward compatibility
+                return response()->json([
+                    'id' => $dietPlan->id,
+                    'doctor_id' => $dietPlan->doctor_id,
+                    'user_id' => $user->id,
+                    'status' => $dietPlan->status,
+                    'created_at' => $dietPlan->created_at,
+                    'updated_at' => $dietPlan->updated_at,
+                    'title' => $dietPlan->title,
+                    'description' => $dietPlan->description,
+                    'daily_calories' => $dietPlan->daily_calories,
+                    'start_date' => $dietPlan->start_date,
+                    'end_date' => $dietPlan->end_date,
+                    'periods' => $dietPlan->notes, // meal_periods are stored in notes field
+                    'doctor' => $dietPlan->doctor,
+                    'components' => $dietPlan->meals->map(function ($meal) {
+                        return [
+                            'id' => $meal->id,
+                            'diet_id' => $meal->diet_plan_id,
+                            'meal' => $meal->meal_type . ' - ' . $meal->name,
+                            'day' => 'Day ' . $meal->day_number,
+                            'time' => null,
+                            'quantity' => $meal->serving,
+                            'notes' => 'Calories: ' . $meal->calories . ', Carbs: ' . $meal->carbo . 'g, Protein: ' . $meal->protin . 'g, Fat: ' . $meal->fat . 'g'
+                        ];
+                    }),
+                    'notes' => []
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'No active diet found'], 404);
     }
 
     /**
@@ -100,17 +140,30 @@ class DietController extends Controller
             ->where('status', 'active')
             ->first();
 
-        if (!$diet) {
-            return response()->json(['message' => 'No active diet found'], 404);
+        if ($diet) {
+            $periods = json_decode($diet->periods, true) ?? [];
+            return response()->json([
+                'diet_id' => $diet->id,
+                'periods' => $periods
+            ]);
         }
 
-        // Return diet periods
-        $periods = json_decode($diet->periods, true) ?? [];
+        if ($user->isPatient()) {
+            $dietPlan = \App\Models\DietPlan::where('patient_id', $user->patient->id)
+                ->where('status', 'active')
+                ->latest()
+                ->first();
 
-        return response()->json([
-            'diet_id' => $diet->id,
-            'periods' => $periods
-        ]);
+            if ($dietPlan) {
+                $periods = json_decode($dietPlan->notes, true) ?? [];
+                return response()->json([
+                    'diet_id' => $dietPlan->id,
+                    'periods' => $periods
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'No active diet found'], 404);
     }
 
     /**
@@ -128,25 +181,51 @@ class DietController extends Controller
             ->where('status', 'active')
             ->first();
 
-        if (!$diet) {
-            return response()->json(['message' => 'No active diet found'], 404);
+        if ($diet) {
+            $meals = $diet->components->map(function ($component) {
+                return [
+                    'id' => $component->id,
+                    'meal' => $component->meal,
+                    'day' => $component->day,
+                    'time' => $component->time,
+                    'quantity' => $component->quantity,
+                    'notes' => $component->notes
+                ];
+            });
+
+            return response()->json([
+                'diet_id' => $diet->id,
+                'meals' => $meals
+            ]);
         }
 
-        $meals = $diet->components->map(function ($component) {
-            return [
-                'id' => $component->id,
-                'meal' => $component->meal,
-                'day' => $component->day,
-                'time' => $component->time,
-                'quantity' => $component->quantity,
-                'notes' => $component->notes
-            ];
-        });
+        if ($user->isPatient()) {
+            $dietPlan = \App\Models\DietPlan::with('meals')
+                ->where('patient_id', $user->patient->id)
+                ->where('status', 'active')
+                ->latest()
+                ->first();
 
-        return response()->json([
-            'diet_id' => $diet->id,
-            'meals' => $meals
-        ]);
+            if ($dietPlan) {
+                $meals = $dietPlan->meals->map(function ($meal) {
+                    return [
+                        'id' => $meal->id,
+                        'meal' => $meal->meal_type . ' - ' . $meal->name,
+                        'day' => 'Day ' . $meal->day_number,
+                        'time' => null,
+                        'quantity' => $meal->serving,
+                        'notes' => 'Calories: ' . $meal->calories . ', Carbs: ' . $meal->carbo . 'g, Protein: ' . $meal->protin . 'g, Fat: ' . $meal->fat . 'g'
+                    ];
+                });
+
+                return response()->json([
+                    'diet_id' => $dietPlan->id,
+                    'meals' => $meals
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'No active diet found'], 404);
     }
 
     /**
@@ -163,17 +242,42 @@ class DietController extends Controller
             })
             ->first();
 
-        if (!$diet) {
-            return response()->json(['message' => 'No diet found'], 404);
+        if ($diet) {
+            return response()->json([
+                'diet' => $diet,
+                'total_meals' => $diet->components->count(),
+                'total_notes' => $diet->notes->count(),
+                'doctor' => $diet->doctor,
+                'start_date' => $diet->created_at,
+                'status' => $diet->status ?? 'active'
+            ]);
         }
 
-        return response()->json([
-            'diet' => $diet,
-            'total_meals' => $diet->components->count(),
-            'total_notes' => $diet->notes->count(),
-            'doctor' => $diet->doctor,
-            'start_date' => $diet->created_at,
-            'status' => $diet->status ?? 'active'
-        ]);
+        if ($user->isPatient()) {
+            $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
+                ->where('patient_id', $user->patient->id)
+                ->where('status', 'active')
+                ->latest()
+                ->first();
+
+            if ($dietPlan) {
+                return response()->json([
+                    'diet' => [
+                        'id' => $dietPlan->id,
+                        'title' => $dietPlan->title,
+                        'description' => $dietPlan->description,
+                        'daily_calories' => $dietPlan->daily_calories,
+                        'status' => $dietPlan->status,
+                    ],
+                    'total_meals' => $dietPlan->meals->count(),
+                    'total_notes' => 0, // No specific notes table in diet_plan structure directly
+                    'doctor' => $dietPlan->doctor,
+                    'start_date' => $dietPlan->created_at,
+                    'status' => $dietPlan->status
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'No diet found'], 404);
     }
 }

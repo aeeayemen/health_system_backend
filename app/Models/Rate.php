@@ -13,6 +13,7 @@ class Rate extends Model
         'user_id',
         'doctor_id',
         'rate',
+        'comment',
     ];
 
     public function user()

@@ -50,6 +50,29 @@ class RateController extends Controller
     {
         $user = $request->user();
 
+        // 1. Ensure the user is a Patient
+        $patient = \App\Models\Patient::where('user_id', $user->id)->first();
+        if (!$patient) {
+            return response()->json(['message' => 'Only patients can rate doctors'], 403);
+        }
+
+        // 2. Ensure the patient has an active or past subscription/diet plan with this doctor
+        $hasInteraction = \App\Models\Subscription::where('patient_id', $patient->id)
+            ->where('doctor_id', $doctorId)
+            ->exists();
+
+        if (!$hasInteraction) {
+            $hasInteraction = \App\Models\DietPlan::where('patient_id', $patient->id)
+                ->where('doctor_id', $doctorId)
+                ->exists();
+        }
+
+        if (!$hasInteraction) {
+            return response()->json([
+                'message' => 'You can only rate a doctor if you are subscribed to them or have a diet plan from them'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'rate' => 'required|numeric|min:1|max:5',
             'comment' => 'nullable|string|max:500',
@@ -66,25 +89,32 @@ class RateController extends Controller
                 'rate' => $validated['rate'],
                 'comment' => $validated['comment'] ?? null,
             ]);
-
-            return response()->json([
-                'message' => 'Rating updated successfully',
-                'rate' => $existingRate->fresh()
+            $rate = $existingRate->fresh();
+            $message = 'Rating updated successfully';
+            $statusCode = 200;
+        } else {
+            // Create new rate
+            $rate = Rate::create([
+                'user_id' => $user->id,
+                'doctor_id' => $doctorId,
+                'rate' => $validated['rate'],
+                'comment' => $validated['comment'] ?? null,
             ]);
+            $message = 'Doctor rated successfully';
+            $statusCode = 201;
         }
 
-        // Create new rate
-        $rate = Rate::create([
-            'user_id' => $user->id,
-            'doctor_id' => $doctorId,
-            'rate' => $validated['rate'],
-            'comment' => $validated['comment'] ?? null,
-        ]);
+        // 3. Update the calculate average rating on the Doctor model
+        $doctor = \App\Models\Doctor::find($doctorId);
+        if ($doctor) {
+            $averageRating = Rate::where('doctor_id', $doctorId)->avg('rate');
+            $doctor->update(['rating' => $averageRating]);
+        }
 
         return response()->json([
-            'message' => 'Doctor rated successfully',
+            'message' => $message,
             'rate' => $rate
-        ], 201);
+        ], $statusCode);
     }
 
     /**

@@ -165,9 +165,14 @@ class ChatController extends Controller
                     'sender_type' => 'doctor'
                 ]));
             } else {
+                // receiver_id is the user_id of the doctor, we need the actual doctor.id
+                $doctor = Doctor::where('user_id', $validated['receiver_id'])->first();
+                if (!$doctor) {
+                    return response()->json(['message' => 'Doctor not found'], 404);
+                }
                 $message = Message::create(array_merge($commonData, [
                     'user_id' => $user->id,
-                    'doctor_id' => $validated['receiver_id'],
+                    'doctor_id' => $doctor->id,
                     'sender_type' => 'user'
                 ]));
             }
