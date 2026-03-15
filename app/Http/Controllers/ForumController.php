@@ -15,6 +15,10 @@ class ForumController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->has('doctor_id')) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
         $forums = $query->paginate(10);
 
         // Transform to include users array directly

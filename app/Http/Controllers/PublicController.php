@@ -97,6 +97,10 @@ class PublicController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->has('doctor_id')) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
         $forums = $query->withCount('members')->paginate(10);
 
         return response()->json($forums);

@@ -16,6 +16,10 @@ class Rate extends Model
         'comment',
     ];
 
+    protected $casts = [
+        'rate' => 'integer',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

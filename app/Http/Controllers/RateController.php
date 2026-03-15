@@ -18,7 +18,7 @@ class RateController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
-            'rate' => 'nullable|string',
+            'rate' => 'required|numeric|min:1|max:5',
         ]);
 
         $rate = Rate::create($validated);
@@ -107,7 +107,11 @@ class RateController extends Controller
         // 3. Update the calculate average rating on the Doctor model
         $doctor = \App\Models\Doctor::find($doctorId);
         if ($doctor) {
-            $averageRating = Rate::where('doctor_id', $doctorId)->avg('rate');
+            // Explicitly cast to integer for database compatibility (PostgreSQL fix)
+            $averageRating = Rate::where('doctor_id', $doctorId)
+                ->selectRaw('AVG(CAST(rate AS INTEGER)) as avg_rate')
+                ->value('avg_rate');
+
             $doctor->update(['rating' => $averageRating]);
         }
 
