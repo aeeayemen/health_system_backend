@@ -131,6 +131,7 @@ class AuthController extends Controller
         }
         */
 
+        /*
         if ($user->type === 'doctor') {
             $doctor = $user->doctor;
             if ($doctor && $doctor->application_status !== 'approved') {
@@ -139,6 +140,7 @@ class AuthController extends Controller
                 ], 403);
             }
         }
+        */
 
         // if (trim(strtolower($user->role)) !== 'admin') {
 
@@ -148,6 +150,7 @@ class AuthController extends Controller
         // }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+        $user->load(['doctor', 'patient']);
 
         return response()->json([
             'message' => 'Logged in successfully',
