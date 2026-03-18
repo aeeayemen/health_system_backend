@@ -228,4 +228,23 @@ class PatientController extends Controller
 
         return new PatientResource($patient->load(['user', 'doctor', 'subscriptions.doctor']));
     }
+
+    /**
+     * Get doctors that the patient is currently subscribed to
+     */
+    public function myDoctors(Request $request)
+    {
+        $user = $request->user();
+        $patient = Patient::where('user_id', $user->id)->first();
+
+        if (!$patient) {
+            return response()->json(['message' => 'Patient profile not found'], 404);
+        }
+
+        $doctors = \App\Models\Doctor::whereHas('subscriptions', function ($q) use ($patient) {
+            $q->where('patient_id', $patient->id)->where('status', 'active');
+        })->with('user')->get();
+
+        return \App\Http\Resources\DoctorResource::collection($doctors);
+    }
 }
