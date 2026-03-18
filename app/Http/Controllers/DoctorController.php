@@ -415,7 +415,7 @@ class DoctorController extends Controller
 
         return response()->json([
             'patient' => $patient->user,
-            'current_weight' => $patient->current_weight,
+            'current_weight' => $patient->weight,
             'target_weight' => $patient->target_weight,
             'weight_change' => $weightChange,
             'total_measurements' => $measurements->count(),

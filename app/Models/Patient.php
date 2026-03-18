@@ -77,4 +77,9 @@ class Patient extends Model
     {
         return $this->hasMany(MedicalFile::class);
     }
+
+    public function getCurrentWeightAttribute()
+    {
+        return $this->weight;
+    }
 }
