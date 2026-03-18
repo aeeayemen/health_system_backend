@@ -29,6 +29,7 @@ class PatientResource extends JsonResource
             'medical_history' => $this->medical,
             'allergies' => $this->allergies,
             'physical_activity' => $this->physical_activity,
+            'phone_number' => $this->phone_number ?? ($this->user ? $this->user->phone : null),
             'image' => $this->image,
             'current_doctor_id' => $this->current_doctor_id ?? ($activeSubscription ? $activeSubscription->doctor_id : null),
             'doctor_name' => $this->doctor ? $this->doctor->name : ($activeSubscription && $activeSubscription->doctor ? $activeSubscription->doctor->name : null),
