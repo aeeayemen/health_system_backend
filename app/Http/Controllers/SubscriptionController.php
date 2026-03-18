@@ -18,6 +18,8 @@ class SubscriptionController extends Controller
             $query->where('patient_id', $request->user()->patient->id);
         } elseif ($request->user()->isDoctor()) {
             $query->where('doctor_id', $request->user()->doctor->id);
+        } elseif ($request->has('patient_id')) {
+            $query->where('patient_id', $request->patient_id);
         }
 
         return response()->json($query->get());

@@ -91,12 +91,12 @@ class User extends Authenticatable
 
     public function isPatient()
     {
-        return $this->hasRole('patient');
+        return $this->type === 'patient';
     }
 
     public function isDoctor()
     {
-        return $this->hasRole('doctor');
+        return $this->type === 'doctor';
     }
 
     public function paymentMethods()
