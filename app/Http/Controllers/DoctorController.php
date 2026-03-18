@@ -372,7 +372,7 @@ class DoctorController extends Controller
             ->orWhereHas('dietPlans', function ($q) use ($doctor) {
                 $q->where('doctor_id', $doctor->id);
             })
-            ->with('user:id,name,email,phone,gender')
+            ->with('user:id,name,email,phone')
             ->paginate(20);
 
         return \App\Http\Resources\PatientResource::collection($patients);

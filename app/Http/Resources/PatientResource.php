@@ -22,7 +22,7 @@ class PatientResource extends JsonResource
             'user_id' => $this->user_id,
             'name' => $this->fullname ?? ($this->user ? $this->user->name : null),
             'date_of_birth' => $this->birthdate,
-            'gender' => $this->gender ?? ($this->user ? $this->user->gender : 'male'),
+            'gender' => $this->gender ?? 'male',
             'current_weight' => $this->weight,
             'target_weight' => $this->target_weight,
             'height' => $this->height,
