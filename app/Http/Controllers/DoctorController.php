@@ -375,7 +375,7 @@ class DoctorController extends Controller
             ->with('user:id,name,email')
             ->paginate(20);
 
-        return response()->json($patients);
+        return \App\Http\Resources\PatientResource::collection($patients);
     }
 
     /**
