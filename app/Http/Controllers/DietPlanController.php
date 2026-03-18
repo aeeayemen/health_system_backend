@@ -17,9 +17,9 @@ class DietPlanController extends Controller
     {
         $query = DietPlan::with(['doctor', 'patient']);
 
-        if ($request->user()->isPatient()) {
+        if ($request->user()->isPatient() && $request->user()->patient) {
             $query->where('patient_id', $request->user()->patient->id);
-        } elseif ($request->user()->isDoctor()) {
+        } elseif ($request->user()->isDoctor() && $request->user()->doctor) {
             $query->where('doctor_id', $request->user()->doctor->id);
         }
 
@@ -31,54 +31,62 @@ class DietPlanController extends Controller
      */
     public function store(Request $request)
     {
+        $user = $request->user();
+
         $validated = $request->validate([
             'patient_id' => 'required|exists:users,id',
-            'doctor_id' => 'required|exists:doctors,id',
+            'doctor_id' => 'nullable|exists:doctors,id',
             'title' => 'required|string',
             'description' => 'nullable|string',
             'daily_calories' => 'required|integer',
             'duration_days' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            // Accept meals in both old and new format
             'meals' => 'nullable|array',
             'meals.*.meal_type' => 'required|string',
-            // Old format fields
             'meals.*.meal_name' => 'nullable|string',
             'meals.*.day_number' => 'nullable|integer',
             'meals.*.carbo' => 'nullable|numeric',
             'meals.*.protin' => 'nullable|numeric',
             'meals.*.fat' => 'nullable|numeric',
             'meals.*.serving' => 'nullable|string',
-            // New format fields (mobile app)
             'meals.*.name' => 'nullable|string',
             'meals.*.carbs_g' => 'nullable|numeric',
             'meals.*.protein_g' => 'nullable|numeric',
             'meals.*.fat_g' => 'nullable|numeric',
             'meals.*.serving_summary' => 'nullable|string',
             'meals.*.calories' => 'nullable|integer',
-            // Meal periods (new)
             'meal_periods' => 'nullable|array',
             'meal_periods.*.meal_type' => 'required|string',
             'meal_periods.*.hour' => 'required|integer',
             'meal_periods.*.minute' => 'required|integer',
             'meal_periods.*.custom_name' => 'nullable|string',
-            // Doctor notes
             'doctor_notes' => 'nullable|array',
             'doctor_notes.*' => 'string'
         ]);
 
+        // If the user is a doctor, force their doctor_id
+        if ($user->isDoctor() && $user->doctor) {
+            $validated['doctor_id'] = $user->doctor->id;
+        }
+
+        if (!isset($validated['doctor_id'])) {
+            return response()->json(['message' => 'Doctor profile not found for this user'], 422);
+        }
+
         return DB::transaction(function () use ($validated, $request) {
+            // Get patient profile ID (which is the user_id in this system)
+            $patientId = $validated['patient_id'];
+
             $dietPlan = DietPlan::create([
                 'doctor_id' => $validated['doctor_id'],
-                'patient_id' => $validated['patient_id'],
+                'patient_id' => $patientId,
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'daily_calories' => $validated['daily_calories'],
                 'duration_days' => $validated['duration_days'],
                 'start_date' => $validated['start_date'],
                 'end_date' => $validated['end_date'],
-                // Store meal_periods as JSON in notes if provided
                 'notes' => isset($validated['meal_periods']) ? json_encode($validated['meal_periods']) : null,
             ]);
 
