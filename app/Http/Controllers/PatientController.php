@@ -13,7 +13,7 @@ class PatientController extends Controller
      */
     public function index()
     {
-        return PatientResource::collection(Patient::with(['user', 'doctor'])->get());
+        return PatientResource::collection(Patient::with(['user', 'doctor', 'subscriptions.doctor'])->get());
     }
 
     /**
@@ -73,7 +73,7 @@ class PatientController extends Controller
         if (!$patient) {
             return response()->json(['message' => 'Patient not found'], 404);
         }
-        return new PatientResource($patient->load(['user', 'doctor']));
+        return new PatientResource($patient->load(['user', 'doctor', 'subscriptions.doctor']));
     }
 
     /**
@@ -124,7 +124,7 @@ class PatientController extends Controller
 
         $patient->update($data);
 
-        return new PatientResource($patient->load(['user', 'doctor']));
+        return new PatientResource($patient->load(['user', 'doctor', 'subscriptions.doctor']));
     }
 
     /**
@@ -157,7 +157,7 @@ class PatientController extends Controller
             ]);
         }
 
-        return new PatientResource($patient->load(['user', 'doctor']));
+        return new PatientResource($patient->load(['user', 'doctor', 'subscriptions.doctor']));
     }
 
     /**
@@ -226,6 +226,6 @@ class PatientController extends Controller
 
         $patient->update($data);
 
-        return new PatientResource($patient->load(['user', 'doctor']));
+        return new PatientResource($patient->load(['user', 'doctor', 'subscriptions.doctor']));
     }
 }

@@ -14,6 +14,9 @@ class PatientResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $activeSubscription = $this->id ? $this->subscriptions()->where('status', 'active')->latest()->first() : null;
+        $isSubscribed = !is_null($activeSubscription);
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
@@ -27,8 +30,10 @@ class PatientResource extends JsonResource
             'allergies' => $this->allergies,
             'physical_activity' => $this->physical_activity,
             'image' => $this->image,
-            'current_doctor_id' => $this->current_doctor_id,
-            'doctor_name' => $this->doctor ? $this->doctor->name : null,
+            'current_doctor_id' => $this->current_doctor_id ?? ($activeSubscription ? $activeSubscription->doctor_id : null),
+            'doctor_name' => $this->doctor ? $this->doctor->name : ($activeSubscription && $activeSubscription->doctor ? $activeSubscription->doctor->name : null),
+            'is_subscribed' => $isSubscribed,
+            'active_subscription' => $activeSubscription,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

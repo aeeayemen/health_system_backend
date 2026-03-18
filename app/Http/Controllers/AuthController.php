@@ -28,7 +28,7 @@ class AuthController extends Controller
             'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'cv' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'consultation_fee' => 'nullable|numeric|min:0',
+            'consultation_fee' => 'nullable|numeric|min:0|max:999999.99',
         ]);
 
         $user = User::create([
@@ -150,11 +150,11 @@ class AuthController extends Controller
         // }
 
         $token = $user->createToken('auth_token')->plainTextToken;
-        $user->load(['doctor', 'patient']);
+        $user->load(['doctor', 'patient.subscriptions.doctor', 'patient.doctor']);
 
         return response()->json([
             'message' => 'Logged in successfully',
-            'user' => $user,
+            'user' => new \App\Http\Resources\UserResource($user),
             'token' => $token,
         ]);
     }
@@ -176,7 +176,7 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
-        return response()->json($request->user()->load(['doctor', 'patient']));
+        return new \App\Http\Resources\UserResource($request->user()->load(['doctor', 'patient.subscriptions.doctor', 'patient.doctor']));
     }
 
     public function forgotPassword(Request $request)
