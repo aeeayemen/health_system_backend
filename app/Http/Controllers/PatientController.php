@@ -176,27 +176,38 @@ class PatientController extends Controller
             ]);
         }
 
-        // Handle possible 'data' wrapper from frontend
-        $input = $request->has('data') ? $request->input('data') : $request->all();
+        // Robust input handling: check for root, data wrapper, or JSON string 'data'
+        $rawInput = $request->all();
+        if ($request->has('data')) {
+            $dataWrapper = $request->input('data');
+            if (is_string($dataWrapper)) {
+                $dataWrapper = json_decode($dataWrapper, true) ?? [];
+            }
+            if (is_array($dataWrapper)) {
+                $rawInput = array_merge($rawInput, $dataWrapper);
+            }
+        }
 
-        $validated = \Validator::make($input, [
+        $validated = \Validator::make($rawInput, [
             'name' => 'sometimes|string|max:255',
-            'date_of_birth' => 'sometimes|date',
-            'birthdate' => 'sometimes|date',
-            'age' => 'sometimes|integer|min:1|max:120',
-            'gender' => 'sometimes|in:male,female',
-            'current_weight' => 'sometimes|numeric',
-            'target_weight' => 'sometimes|numeric',
-            'height' => 'sometimes|numeric',
-            'medical_history' => 'sometimes|string',
-            'allergies' => 'sometimes|string',
-            'physical_activity' => 'sometimes|string',
+            'date_of_birth' => 'sometimes|nullable|date',
+            'birthdate' => 'sometimes|nullable|date',
+            'age' => 'sometimes|nullable|integer|min:1|max:120',
+            'gender' => 'sometimes|nullable|in:male,female',
+            'current_weight' => 'sometimes|nullable|numeric',
+            'weight' => 'sometimes|nullable|numeric',
+            'target_weight' => 'sometimes|nullable|numeric',
+            'height' => 'sometimes|nullable|numeric',
+            'medical_history' => 'sometimes|nullable|string',
+            'allergies' => 'sometimes|nullable|string',
+            'physical_activity' => 'sometimes|nullable|string',
+            'current_doctor_id' => 'sometimes|nullable|exists:doctors,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ])->validate();
 
         $data = $validated;
 
-        // Handle image upload (always from the root request files)
+        // Handle image upload
         if ($request->hasFile('image')) {
             if ($patient->image && file_exists(public_path($patient->image))) {
                 @unlink(public_path($patient->image));
@@ -207,7 +218,7 @@ class PatientController extends Controller
             $data['image'] = 'uploads/patients/profile/' . $imageName;
         }
 
-        // Map fields
+        // Explicit mappings to database columns
         if (isset($validated['name'])) {
             $data['fullname'] = $validated['name'];
         }
@@ -222,6 +233,8 @@ class PatientController extends Controller
 
         if (isset($validated['current_weight'])) {
             $data['weight'] = $validated['current_weight'];
+        } elseif (isset($validated['weight'])) {
+            $data['weight'] = $validated['weight'];
         }
 
         if (isset($validated['medical_history'])) {
@@ -231,7 +244,7 @@ class PatientController extends Controller
 
         $patient->update($data);
 
-        return new PatientResource($patient->load(['user', 'doctor', 'subscriptions.doctor']));
+        return new PatientResource($patient->refresh()->load(['user', 'doctor', 'subscriptions.doctor']));
     }
 
     /**

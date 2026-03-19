@@ -139,6 +139,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // === Patients ===
     Route::get('patients/profile', [PatientController::class, 'myProfile']);
     Route::put('patients/profile', [PatientController::class, 'updateMyProfile']);
+    Route::post('patients/profile', [PatientController::class, 'updateMyProfile']); // Support POST for easier image uploads
     Route::get('patients/my-doctors', [PatientController::class, 'myDoctors']);
     Route::apiResource('patients', PatientController::class)->where(['patient' => '[0-9]+']);
 
