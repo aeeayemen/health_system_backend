@@ -166,11 +166,9 @@ class PatientController extends Controller
     public function updateMyProfile(Request $request)
     {
         $user = $request->user();
-
         $patient = Patient::where('user_id', $user->id)->first();
 
         if (!$patient) {
-            // Auto-create profile if missing
             $patient = Patient::create([
                 'id' => $user->id,
                 'user_id' => $user->id,
@@ -178,9 +176,14 @@ class PatientController extends Controller
             ]);
         }
 
-        $validated = $request->validate([
+        // Handle possible 'data' wrapper from frontend
+        $input = $request->has('data') ? $request->input('data') : $request->all();
+
+        $validated = \Validator::make($input, [
             'name' => 'sometimes|string|max:255',
             'date_of_birth' => 'sometimes|date',
+            'birthdate' => 'sometimes|date',
+            'age' => 'sometimes|integer|min:1|max:120',
             'gender' => 'sometimes|in:male,female',
             'current_weight' => 'sometimes|numeric',
             'target_weight' => 'sometimes|numeric',
@@ -189,13 +192,14 @@ class PatientController extends Controller
             'allergies' => 'sometimes|string',
             'physical_activity' => 'sometimes|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
+        ])->validate();
 
-        // Handle image upload
+        $data = $validated;
+
+        // Handle image upload (always from the root request files)
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($patient->image && file_exists(public_path($patient->image))) {
-                unlink(public_path($patient->image));
+                @unlink(public_path($patient->image));
             }
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
@@ -203,26 +207,27 @@ class PatientController extends Controller
             $data['image'] = 'uploads/patients/profile/' . $imageName;
         }
 
-        // Map frontend keys to database columns
-        $data = $validated;
-        if (isset($validated['name']))
+        // Map fields
+        if (isset($validated['name'])) {
             $data['fullname'] = $validated['name'];
-        if (isset($validated['date_of_birth']))
-            $data['birthdate'] = $validated['date_of_birth'];
-        if (isset($validated['current_weight']))
-            $data['weight'] = $validated['current_weight'];
+        }
 
-        // Map medical_history to medical
+        if (isset($validated['date_of_birth'])) {
+            $data['birthdate'] = $validated['date_of_birth'];
+        } elseif (isset($validated['birthdate'])) {
+            $data['birthdate'] = $validated['birthdate'];
+        } elseif (isset($validated['age'])) {
+            $data['birthdate'] = \Carbon\Carbon::now()->subYears($validated['age'])->format('Y-01-01');
+        }
+
+        if (isset($validated['current_weight'])) {
+            $data['weight'] = $validated['current_weight'];
+        }
+
         if (isset($validated['medical_history'])) {
             $data['medical'] = $validated['medical_history'];
             unset($data['medical_history']);
         }
-
-        // Pass through new fields if they exist
-        if (isset($validated['target_weight']))
-            $data['target_weight'] = $validated['target_weight'];
-        if (isset($validated['allergies']))
-            $data['allergies'] = $validated['allergies'];
 
         $patient->update($data);
 
