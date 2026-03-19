@@ -82,4 +82,20 @@ class Patient extends Model
     {
         return $this->weight;
     }
+
+    /**
+     * Get the patient's age based on birthdate.
+     */
+    public function getAgeAttribute()
+    {
+        if (!$this->birthdate) {
+            return null;
+        }
+
+        try {
+            return \Carbon\Carbon::parse($this->birthdate)->age;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
