@@ -1,0 +1,3 @@
+ERROR MSG: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it (Connection: mysql, SQL: select * from `doctors` limit 1)
+FILE: C:\Users\USER\.gemini\antigravity\scratch\health-nutrition-api-full\vendor\laravel\framework\src\Illuminate\Database\Connection.php
+LINE: 829
