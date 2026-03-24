@@ -14,49 +14,114 @@ class ChatController extends Controller
     {
         $user = $request->user();
 
-        if ($user->type === 'doctor') {
-            $doctorId = $user->doctor->id ?? 0;
+        try {
+            if ($user->type === 'doctor') {
+                // Safe null check on doctor relation
+                $doctor = $user->doctor;
+                if (!$doctor) {
+                    return response()->json([]);
+                }
+                $doctorId = $doctor->id;
 
-            // 1. Get users who have messages with this doctor
-            $messageUserIds = Message::where('doctor_id', $doctorId)
-                ->pluck('user_id')
-                ->toArray();
+                // Get all user IDs who have messages with this doctor
+                $messageUserIds = Message::where('doctor_id', $doctorId)
+                    ->pluck('user_id')
+                    ->unique()
+                    ->toArray();
 
-            // 2. Get users who have active subscriptions with this doctor
-            // Note: Subscription patient_id is actually the user_id in Patient model (subscribed_users table)
-            // We need to get the user_id associated with the patient
-            $subscriptionUserIds = \App\Models\Subscription::where('doctor_id', $doctorId)
-                ->where('status', 'active') // Optional: only active subscriptions?
-                ->with('patient')
-                ->get()
-                ->pluck('patient.user_id')
-                ->toArray();
+                // Get user IDs from subscriptions (any status)
+                $subscriptionUserIds = \App\Models\Subscription::where('doctor_id', $doctorId)
+                    ->with('patient')
+                    ->get()
+                    ->pluck('patient.user_id')
+                    ->filter()
+                    ->toArray();
 
-            // Merge and unique
-            $allUserIds = array_unique(array_merge($messageUserIds, $subscriptionUserIds));
+                $allUserIds = array_unique(array_merge($messageUserIds, $subscriptionUserIds));
 
-            $conversations = User::whereIn('id', $allUserIds)->get();
+                if (empty($allUserIds)) {
+                    return response()->json([]);
+                }
 
-        } else {
-            // Get all doctors this user has chatted with
-            $doctorIds = Message::where('user_id', $user->id)
-                ->pluck('doctor_id')
-                ->unique();
+                $users = User::whereIn('id', $allUserIds)->get();
 
-            // Also include doctors from active subscriptions
-            $subscriptionDoctorIds = \App\Models\Subscription::whereHas('patient', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
-                ->where('status', 'active')
-                ->pluck('doctor_id')
-                ->toArray();
+                // Build conversation list with last message + unread count
+                $conversations = $users->map(function ($u) use ($doctorId) {
+                    $lastMessage = Message::where('doctor_id', $doctorId)
+                        ->where('user_id', $u->id)
+                        ->latest()
+                        ->first();
 
-            $allDoctorIds = array_unique(array_merge($doctorIds->toArray(), $subscriptionDoctorIds));
+                    $unreadCount = Message::where('doctor_id', $doctorId)
+                        ->where('user_id', $u->id)
+                        ->where('sender_type', 'user')
+                        ->where('read', 'false')
+                        ->count();
 
-            $conversations = Doctor::whereIn('id', $allDoctorIds)->get();
+                    return [
+                        'id' => $u->id,
+                        'name' => $u->name,
+                        'email' => $u->email,
+                        'phone' => $u->phone ?? null,
+                        'last_message' => $lastMessage ? $lastMessage->message : null,
+                        'last_time' => $lastMessage ? $lastMessage->created_at : null,
+                        'unread_count' => $unreadCount,
+                    ];
+                })->sortByDesc('last_time')->values();
+
+                return response()->json($conversations);
+
+            } else {
+                // Patient: get doctors they have messages with or subscriptions to
+                $doctorIds = Message::where('user_id', $user->id)
+                    ->pluck('doctor_id')
+                    ->unique()
+                    ->toArray();
+
+                $subscriptionDoctorIds = \App\Models\Subscription::whereHas('patient', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                })
+                    ->pluck('doctor_id')
+                    ->toArray();
+
+                $allDoctorIds = array_unique(array_merge($doctorIds, $subscriptionDoctorIds));
+
+                if (empty($allDoctorIds)) {
+                    return response()->json([]);
+                }
+
+                $doctors = Doctor::with('user')->whereIn('id', $allDoctorIds)->get();
+
+                $conversations = $doctors->map(function ($doc) use ($user) {
+                    $lastMessage = Message::where('doctor_id', $doc->id)
+                        ->where('user_id', $user->id)
+                        ->latest()
+                        ->first();
+
+                    $unreadCount = Message::where('doctor_id', $doc->id)
+                        ->where('user_id', $user->id)
+                        ->where('sender_type', 'doctor')
+                        ->where('read', 'false')
+                        ->count();
+
+                    return [
+                        'id' => $doc->id,
+                        'user_id' => $doc->user_id,
+                        'name' => $doc->user->name ?? $doc->name ?? 'دكتور',
+                        'specialization' => $doc->specialization ?? null,
+                        'profile_image' => $doc->profile_image ?? null,
+                        'last_message' => $lastMessage ? $lastMessage->message : null,
+                        'last_time' => $lastMessage ? $lastMessage->created_at : null,
+                        'unread_count' => $unreadCount,
+                    ];
+                })->sortByDesc('last_time')->values();
+
+                return response()->json($conversations);
+            }
+        } catch (\Exception $e) {
+            \Log::error('getConversations error: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to load conversations: ' . $e->getMessage()], 500);
         }
-
-        return response()->json($conversations);
     }
 
     public function getMessages(Request $request, $id)

@@ -228,6 +228,126 @@ class CalculationController extends Controller
     }
 
     /**
+     * Calculate diet macros using the Exchange List System (جدول الحصص)
+     *
+     * The doctor enters the number of servings from each food group.
+     * The system calculates total carbs, protein, fat, calories, and macro percentages.
+     *
+     * Standard Exchange Values (per serving):
+     * ┌────────────┬────────┬─────────┬──────┐
+     * │ Group      │ Carbs  │ Protein │ Fat  │
+     * ├────────────┼────────┼─────────┼──────┤
+     * │ Fruits     │ 15g    │ 0g      │ 0g   │
+     * │ Milk       │ 12g    │ 8g      │ 5g   │
+     * │ Vegetables │ 5g     │ 2g      │ 0g   │
+     * │ Starch     │ 15g    │ 3g      │ 0g   │
+     * │ Protein    │ 0g     │ 7g      │ 5g   │
+     * │ Fat        │ 0g     │ 0g      │ 5g   │
+     * └────────────┴────────┴─────────┴──────┘
+     */
+    public function calculateExchangeList(Request $request)
+    {
+        $validated = $request->validate([
+            'fruits_servings' => 'required|numeric|min:0',
+            'milk_servings' => 'required|numeric|min:0',
+            'vegetables_servings' => 'required|numeric|min:0',
+            'starch_servings' => 'required|numeric|min:0',
+            'protein_servings' => 'required|numeric|min:0',
+            'fat_servings' => 'required|numeric|min:0',
+        ]);
+
+        // ── Standard Exchange Values per serving ────────────────────────────
+        $exchangeTable = [
+            'fruits' => ['carbs' => 15, 'protein' => 0, 'fat' => 0],
+            'milk' => ['carbs' => 12, 'protein' => 8, 'fat' => 5],
+            'vegetables' => ['carbs' => 5, 'protein' => 2, 'fat' => 0],
+            'starch' => ['carbs' => 15, 'protein' => 3, 'fat' => 0],
+            'protein' => ['carbs' => 0, 'protein' => 7, 'fat' => 5],
+            'fat' => ['carbs' => 0, 'protein' => 0, 'fat' => 5],
+        ];
+
+        $servings = [
+            'fruits' => $validated['fruits_servings'],
+            'milk' => $validated['milk_servings'],
+            'vegetables' => $validated['vegetables_servings'],
+            'starch' => $validated['starch_servings'],
+            'protein' => $validated['protein_servings'],
+            'fat' => $validated['fat_servings'],
+        ];
+
+        // ── Step 1: Calculate macros per group ──────────────────────────────
+        $breakdown = [];
+        $totalCarbs = 0;
+        $totalProtein = 0;
+        $totalFat = 0;
+
+        foreach ($exchangeTable as $group => $values) {
+            $s = $servings[$group];
+            $carbs = $s * $values['carbs'];
+            $protein = $s * $values['protein'];
+            $fat = $s * $values['fat'];
+
+            $breakdown[$group] = [
+                'servings' => $s,
+                'carbs_g' => $carbs,
+                'protein_g' => $protein,
+                'fat_g' => $fat,
+            ];
+
+            $totalCarbs += $carbs;
+            $totalProtein += $protein;
+            $totalFat += $fat;
+        }
+
+        // ── Step 2: Calories from macros ────────────────────────────────────
+        $caloriesFromCarbs = $totalCarbs * 4;
+        $caloriesFromProtein = $totalProtein * 4;
+        $caloriesFromFat = $totalFat * 9;
+        $totalCalories = $caloriesFromCarbs + $caloriesFromProtein + $caloriesFromFat;
+
+        // ── Step 3: Macro percentages ────────────────────────────────────────
+        $carbsPercent = $totalCalories > 0 ? round(($caloriesFromCarbs / $totalCalories) * 100, 1) : 0;
+        $proteinPercent = $totalCalories > 0 ? round(($caloriesFromProtein / $totalCalories) * 100, 1) : 0;
+        $fatPercent = $totalCalories > 0 ? round(($caloriesFromFat / $totalCalories) * 100, 1) : 0;
+
+        // ── Step 4: Serving equivalents (as described by client) ─────────────
+        // Free groups carbs (fruits + milk + vegetables) ÷ 15 → carb servings needed
+        $freeGroupCarbs = $breakdown['fruits']['carbs_g']
+            + $breakdown['milk']['carbs_g']
+            + $breakdown['vegetables']['carbs_g'];
+
+        $carbServingsFromFreeGroups = round($freeGroupCarbs / 15, 2);
+
+        // Free groups protein (fruits + vegetables) ÷ 2
+        $proteinFromFreeGroups = round(
+            ($breakdown['fruits']['protein_g'] + $breakdown['vegetables']['protein_g']) / 2,
+            2
+        );
+
+        // Fat servings ÷ 5
+        $fatServingsEquivalent = round($totalFat / 5, 2);
+
+        return response()->json([
+            'summary' => [
+                'total_carbs_g' => round($totalCarbs, 1),
+                'total_protein_g' => round($totalProtein, 1),
+                'total_fat_g' => round($totalFat, 1),
+                'total_calories' => round($totalCalories, 0),
+                'carbs_percent' => $carbsPercent,
+                'protein_percent' => $proteinPercent,
+                'fat_percent' => $fatPercent,
+            ],
+            'servings_equivalents' => [
+                'carb_servings_from_free_groups' => $carbServingsFromFreeGroups,
+                'protein_adjustment_from_free_groups' => $proteinFromFreeGroups,
+                'fat_servings_equivalent' => $fatServingsEquivalent,
+            ],
+            'breakdown_per_group' => $breakdown,
+            'inputs' => $validated,
+        ]);
+    }
+
+    /**
      * Get calculation history for current user
      */
     public function history(Request $request)

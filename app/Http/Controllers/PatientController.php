@@ -176,7 +176,8 @@ class PatientController extends Controller
             ]);
         }
 
-        // Robust input handling: check for root, data wrapper, or JSON string 'data'
+        // Handle possible 'data' wrapper from frontend
+        // Sometimes Axios/fetch sends { data: { ... } }, sometimes just { ... }
         $rawInput = $request->all();
         if ($request->has('data')) {
             $dataWrapper = $request->input('data');
@@ -184,9 +185,15 @@ class PatientController extends Controller
                 $dataWrapper = json_decode($dataWrapper, true) ?? [];
             }
             if (is_array($dataWrapper)) {
+                // If the frontend sends the ENTIRE profile back, including nulls for untouched fields,
+                // and it's wrapped in 'data', we use that as the primary input.
+                // We merge it over rawInput so 'data' keys take precedence over root keys.
                 $rawInput = array_merge($rawInput, $dataWrapper);
             }
         }
+        
+        // Remove the 'data' key itself from validation to avoid confusion
+        unset($rawInput['data']);
 
         $validated = \Validator::make($rawInput, [
             'name' => 'sometimes|string|max:255',
@@ -205,7 +212,7 @@ class PatientController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ])->validate();
 
-        $data = $validated;
+        $data = [];
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -218,37 +225,72 @@ class PatientController extends Controller
             $data['image'] = 'uploads/patients/profile/' . $imageName;
         }
 
-        // Explicit mappings to database columns
-        if (isset($validated['name'])) {
+        // Only update fields that are ACTUALLY present in the request (even if null)
+        // This prevents overwriting existing data if validation 'sometimes' skips it
+        
+        if (array_key_exists('name', $validated)) {
             $data['fullname'] = $validated['name'];
         }
 
-        if (isset($validated['date_of_birth'])) {
+        if (array_key_exists('gender', $validated)) {
+            $data['gender'] = $validated['gender'];
+        }
+        
+        if (array_key_exists('height', $validated)) {
+            $data['height'] = $validated['height'];
+        }
+
+        if (array_key_exists('physical_activity', $validated)) {
+            $data['physical_activity'] = $validated['physical_activity'];
+        }
+
+        if (array_key_exists('allergies', $validated)) {
+            $data['allergies'] = $validated['allergies'];
+        }
+
+        if (array_key_exists('current_doctor_id', $validated)) {
+            $data['current_doctor_id'] = $validated['current_doctor_id'];
+        }
+
+        if (array_key_exists('target_weight', $validated)) {
+            $data['target_weight'] = $validated['target_weight'];
+        }
+
+        // Handle birthdate variants
+        if (array_key_exists('date_of_birth', $validated)) {
             $data['birthdate'] = $validated['date_of_birth'];
-        } elseif (isset($validated['birthdate'])) {
+        } elseif (array_key_exists('birthdate', $validated)) {
             $data['birthdate'] = $validated['birthdate'];
-        } elseif (isset($validated['age'])) {
+        } elseif (array_key_exists('age', $validated) && $validated['age'] !== null) {
             $data['birthdate'] = \Carbon\Carbon::now()->subYears($validated['age'])->format('Y-01-01');
         }
 
-        if (isset($validated['current_weight'])) {
+        // Handle weight variants
+        if (array_key_exists('current_weight', $validated)) {
             $data['weight'] = $validated['current_weight'];
-        } elseif (isset($validated['weight'])) {
+        } elseif (array_key_exists('weight', $validated)) {
             $data['weight'] = $validated['weight'];
         }
 
-        if (isset($validated['medical_history'])) {
+        // Handle medical history variant
+        if (array_key_exists('medical_history', $validated)) {
             $data['medical'] = $validated['medical_history'];
-            unset($data['medical_history']);
         }
 
-        $patient->update($data);
+        // Clean up string "null" from JS FormData if any
+        foreach ($data as $key => $value) {
+            if ($value === 'null') {
+                $data[$key] = null;
+            }
+        }
+
+        if (!empty($data)) {
+            $patient->update($data);
+        }
 
         return new PatientResource($patient->refresh()->load(['user', 'doctor', 'subscriptions.doctor']));
     }
-
-    /**
-     * Get doctors that the patient is currently subscribed to
+     /* Get doctors that the patient is currently subscribed to
      */
     public function myDoctors(Request $request)
     {

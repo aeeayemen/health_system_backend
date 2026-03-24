@@ -107,6 +107,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/bmr', [CalculationController::class, 'calculateBMR']);
         Route::post('/calories', [CalculationController::class, 'calculateCalories']);
         Route::post('/nutrition', [CalculationController::class, 'calculateNutrition']);
+        Route::post('/exchange-list', [CalculationController::class, 'calculateExchangeList']);
         Route::get('/history', [CalculationController::class, 'history']);
     });
 
