@@ -17,7 +17,8 @@ class PatientResource extends JsonResource
         $activeSubscription = null;
         try {
             if ($this->id) {
-                $activeSubscription = clone $this->subscriptions()->where('status', 'active')->latest()->first();
+                $sub = $this->subscriptions()->where('status', 'active')->latest()->first();
+                $activeSubscription = $sub ? clone $sub : null;
             }
         } catch (\Exception $e) {
             // Ignore missing relations quietly
