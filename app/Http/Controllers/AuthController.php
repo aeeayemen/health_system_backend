@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -31,76 +33,102 @@ class AuthController extends Controller
             'consultation_fee' => 'nullable|numeric|min:0|max:999999.99',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'] ?? null,
-            'type' => $validated['type'] ?? 'user',
-        ]);
+        // Map Arabic gender to English for DB consistency if needed
+        $gender = $request->gender;
+        if ($gender === 'ذكر')
+            $gender = 'male';
+        if ($gender === 'انثى')
+            $gender = 'female';
 
-        $role = $validated['type'] ?? 'user';
+        DB::beginTransaction();
 
-        // Create Patient or Doctor profile if needed
-        if ($role === 'patient') {
-            Patient::create([
-                'id' => $user->id,
-                'user_id' => $user->id,
-                'gender' => $request->gender ?? 'male',
+        try {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'phone' => $validated['phone'] ?? null,
+                'type' => $validated['type'] ?? 'user',
             ]);
-        } elseif ($role === 'doctor') {
-            $doctor = new Doctor();
-            $doctor->user_id = $user->id;
-            $doctor->name = $user->name;
-            $doctor->specialization = $request->specialization ?? 'General';
-            $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
-            $doctor->gender = $request->gender;
-            $doctor->consultation_fee = $request->consultation_fee;
-            $doctor->bio = $request->bio;
-            $doctor->years_of_experience = $request->years_of_experience;
-            $doctor->phone_number = $request->phone_number ?? $validated['phone'] ?? null;
-            $doctor->bank_account = $request->bank_account;
 
-            // Handle Degree file upload
-            if ($request->hasFile('degree')) {
-                $degree = $request->file('degree');
-                $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
-                $degree->move(public_path('uploads/doctors/degree'), $degreeName);
-                $doctor->degree = 'uploads/doctors/degree/' . $degreeName;
+            $role = $validated['type'] ?? 'user';
+
+            // Create Patient or Doctor profile if needed
+            if ($role === 'patient') {
+                Patient::create([
+                    'id' => $user->id,
+                    'user_id' => $user->id,
+                    'gender' => $gender ?? 'male',
+                ]);
+            } elseif ($role === 'doctor') {
+                $doctor = new Doctor();
+                $doctor->user_id = $user->id;
+                $doctor->name = $user->name;
+                $doctor->specialization = $request->specialization ?? 'General';
+                $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
+                $doctor->gender = $gender;
+                $doctor->consultation_fee = $request->consultation_fee;
+                $doctor->bio = $request->bio;
+                $doctor->years_of_experience = $request->years_of_experience;
+                $doctor->phone_number = $request->phone_number ?? $validated['phone'] ?? null;
+                $doctor->bank_account = $request->bank_account;
+
+                // Handle Degree file upload
+                if ($request->hasFile('degree')) {
+                    $degree = $request->file('degree');
+                    $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+                    $degree->move(public_path('uploads/doctors/degree'), $degreeName);
+                    $doctor->degree = 'uploads/doctors/degree/' . $degreeName;
+                }
+
+                // Handle CV file upload
+                if ($request->hasFile('cv')) {
+                    $cv = $request->file('cv');
+                    $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+                    $cv->move(public_path('uploads/doctors/cv'), $cvName);
+                    $doctor->CV = 'uploads/doctors/cv/' . $cvName;
+                }
+
+                // Handle profile image upload
+                if ($request->hasFile('profile_image')) {
+                    $image = $request->file('profile_image');
+                    $imageName = time() . '_profile_' . $image->getClientOriginalName();
+                    $image->move(public_path('uploads/doctors/profile'), $imageName);
+                    $doctor->profile_image = 'uploads/doctors/profile/' . $imageName;
+                }
+
+                $doctor->save();
+
+                // Notify all admins about new doctor application
+                $admins = User::where('type', 'admin')->get();
+                if ($admins->count() > 0) {
+                    \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewDoctorApplication($doctor));
+                }
             }
 
-            // Handle CV file upload
-            if ($request->hasFile('cv')) {
-                $cv = $request->file('cv');
-                $cvName = time() . '_cv_' . $cv->getClientOriginalName();
-                $cv->move(public_path('uploads/doctors/cv'), $cvName);
-                $doctor->CV = 'uploads/doctors/cv/' . $cvName;
-            }
+            DB::commit();
 
-            // Handle profile image upload
-            if ($request->hasFile('profile_image')) {
-                $image = $request->file('profile_image');
-                $imageName = time() . '_profile_' . $image->getClientOriginalName();
-                $image->move(public_path('uploads/doctors/profile'), $imageName);
-                $doctor->profile_image = 'uploads/doctors/profile/' . $imageName;
-            }
+            event(new Registered($user));
 
-            $doctor->save();
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-            // Notify all admins about new doctor application
-            $admins = User::where('type', 'admin')->get();
-            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewDoctorApplication($doctor));
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user' => $user,
+                'token' => $token,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Registration Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->except(['password', 'password_confirmation'])
+            ]);
+
+            return response()->json([
+                'message' => 'حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى لاحقاً.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
-
-        event(new Registered($user));
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
     }
 
     /**
