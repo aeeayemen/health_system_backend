@@ -15,12 +15,6 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    public function ping()
-    {
-        Log::info('Ping reached AuthController');
-        return response()->json(['message' => 'pong', 'time' => now()]);
-    }
-
     /**
      * Register a new user
      */

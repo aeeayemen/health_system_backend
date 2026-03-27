@@ -19,6 +19,7 @@ class Subscription extends Model
         'end_date',
         'status',
         'auto_renew',
+        'receipt_image',
     ];
 
     protected $casts = [

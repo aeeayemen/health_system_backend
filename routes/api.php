@@ -54,7 +54,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/email/resend', [AuthController::class, 'resendVerificationEmailPublic']);
-Route::get('/ping', [AuthController::class, 'ping']);
 
 // === Public Content (Guest Access) ===
 Route::prefix('public')->group(function () {

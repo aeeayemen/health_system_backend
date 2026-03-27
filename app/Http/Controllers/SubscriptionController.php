@@ -36,6 +36,7 @@ class SubscriptionController extends Controller
             'price' => 'required|numeric',
             'duration_months' => 'required|integer|min:1',
             'start_date' => 'required|date',
+            'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $user = $request->user();
@@ -61,8 +62,13 @@ class SubscriptionController extends Controller
             'duration_months' => $validated['duration_months'],
             'start_date' => $validated['start_date'],
             'end_date' => date('Y-m-d', strtotime($validated['start_date'] . ' + ' . $validated['duration_months'] . ' months')),
-            'status' => 'active',
+            'status' => 'pending',
         ]);
+
+        if ($request->hasFile('receipt_image')) {
+            $imagePath = $request->file('receipt_image')->store('receipts', 'public');
+            $subscription->update(['receipt_image' => $imagePath]);
+        }
 
         // Create Invoice logic here (simplified)
         $subscription->invoices()->create([
@@ -99,7 +105,7 @@ class SubscriptionController extends Controller
             'price' => 'sometimes|numeric',
             'duration_months' => 'sometimes|integer|min:1',
             'start_date' => 'sometimes|date',
-            'status' => 'sometimes|in:active,expired,cancelled',
+            'status' => 'sometimes|in:active,expired,cancelled,pending',
         ]);
 
         $subscription->update($validated);
