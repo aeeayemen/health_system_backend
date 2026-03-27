@@ -11,20 +11,29 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('subscriptions', function (Blueprint $table) {
+        $driver = DB::getDriverName();
+
+        Schema::table('subscriptions', function (Blueprint $table) use ($driver) {
             // Add receipt_image column
             if (!Schema::hasColumn('subscriptions', 'receipt_image')) {
                 $table->string('receipt_image')->nullable()->after('end_date');
             }
-
-            // Modify status column to include 'pending'
-            // In MySQL, we need to use a raw statement for ENUM changes or change it to string temporarily
-            // For safety and compatibility with standard dashboard requests, we use string if ENUM is too restrictive
-            // but let's try to update the ENUM first if it exists.
         });
 
         // Update ENUM status to include 'pending'
-        DB::statement("ALTER TABLE subscriptions MODIFY COLUMN status ENUM('active', 'inactive', 'expired', 'cancelled', 'pending') NOT NULL DEFAULT 'pending'");
+        if ($driver === 'mysql') {
+            DB::statement("ALTER TABLE subscriptions MODIFY COLUMN status ENUM('active', 'inactive', 'expired', 'cancelled', 'pending') NOT NULL DEFAULT 'pending'");
+        } elseif ($driver === 'pgsql') {
+            // For PostgreSQL, changing an ENUM is more complex. 
+            // The simplest cross-version way is to change to TEXT/VARCHAR temporarily.
+            DB::statement("ALTER TABLE subscriptions ALTER COLUMN status TYPE VARCHAR(50)");
+            DB::statement("ALTER TABLE subscriptions ALTER COLUMN status SET DEFAULT 'pending'");
+        } else {
+            // Fallback for other drivers
+            Schema::table('subscriptions', function (Blueprint $table) {
+                $table->string('status')->default('pending')->change();
+            });
+        }
     }
 
     /**
@@ -32,12 +41,18 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        $driver = DB::getDriverName();
+
         Schema::table('subscriptions', function (Blueprint $table) {
             if (Schema::hasColumn('subscriptions', 'receipt_image')) {
                 $table->dropColumn('receipt_image');
             }
         });
 
-        DB::statement("ALTER TABLE subscriptions MODIFY COLUMN status ENUM('active', 'inactive', 'expired', 'cancelled') NOT NULL DEFAULT 'active'");
+        if ($driver === 'mysql') {
+            DB::statement("ALTER TABLE subscriptions MODIFY COLUMN status ENUM('active', 'inactive', 'expired', 'cancelled') NOT NULL DEFAULT 'active'");
+        } elseif ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE subscriptions ALTER COLUMN status SET DEFAULT 'active'");
+        }
     }
 };
