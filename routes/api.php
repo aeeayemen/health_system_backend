@@ -54,6 +54,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/email/resend', [AuthController::class, 'resendVerificationEmailPublic']);
+Route::get('/ping', [AuthController::class, 'ping']);
 
 // === Public Content (Guest Access) ===
 Route::prefix('public')->group(function () {
@@ -136,6 +137,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/profile', [DoctorController::class, 'updateMyProfile']);
         Route::get('/rates', [DoctorController::class, 'myRates']);
         Route::get('/patients', [DoctorController::class, 'myPatients']);
+        Route::get('/patients/{id}', [PatientController::class, 'show']);
         Route::get('/patients/{patientId}/progress', [DoctorController::class, 'patientProgress']);
         Route::get('/patients/{patientId}/calculations', [DoctorController::class, 'patientCalculations']);
     });

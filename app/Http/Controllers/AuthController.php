@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
+    public function ping()
+    {
+        Log::info('Ping reached AuthController');
+        return response()->json(['message' => 'pong', 'time' => now()]);
+    }
+
     /**
      * Register a new user
      */
@@ -62,6 +68,7 @@ class AuthController extends Controller
                     'user_id' => $user->id,
                     'gender' => $gender ?? 'male',
                 ]);
+                Log::info('Patient profile created successfully', ['user_id' => $user->id]);
             } elseif ($role === 'doctor') {
                 $doctor = new Doctor();
                 $doctor->user_id = $user->id;
