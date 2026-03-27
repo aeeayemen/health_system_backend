@@ -20,6 +20,8 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        Log::info('Registration attempt started', ['request' => $request->all()]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -98,6 +100,7 @@ class AuthController extends Controller
                 }
 
                 $doctor->save();
+                Log::info('Doctor profile created successfully', ['doctor_id' => $doctor->id]);
 
                 // Notify all admins about new doctor application
                 $admins = User::where('type', 'admin')->get();
@@ -117,7 +120,7 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token,
             ], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Registration Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
