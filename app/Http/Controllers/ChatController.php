@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\NewChatMessage;
 
 class ChatController extends Controller
 {
@@ -240,6 +241,26 @@ class ChatController extends Controller
                     'doctor_id' => $doctor->id,
                     'sender_type' => 'user'
                 ]));
+            }
+
+            // --- NOTIFICATION: Notify Receiver ---
+            try {
+                if ($user->type === 'doctor') {
+                    $receiver = User::find($validated['receiver_id']);
+                    if ($receiver) {
+                        $notifyBody = $message->message ?: 'أرسل لك الطبيب ملفاً';
+                        $receiver->notify(new NewChatMessage($user->name, $notifyBody, 'doctor'));
+                    }
+                } else {
+                    $doctor = Doctor::find($message->doctor_id);
+                    if ($doctor && $doctor->user) {
+                        $notifyBody = $message->message ?: 'أرسل لك المريض ملفاً';
+                        $doctor->user->notify(new NewChatMessage($user->name, $notifyBody, 'user'));
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Chat Notification Failed: ' . $e->getMessage());
+                // Don't fail the request if notification fails
             }
 
             return response()->json($message, 201);
