@@ -28,7 +28,7 @@ class AdvertisementController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
+            'title' => 'nullable|string|max:255',
             'describtion' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'phone_number' => 'required|string',
@@ -62,6 +62,7 @@ class AdvertisementController extends Controller
     {
         $ad = Advertisement::findOrFail($id);
         $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
             'describtion' => 'string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'phone_number' => 'string',

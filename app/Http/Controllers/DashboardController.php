@@ -54,6 +54,8 @@ class DashboardController extends Controller
                 'tips_categories' => class_exists(TipCategory::class) ? TipCategory::count() : 0,
                 'meal_categories' => class_exists(MealCategory::class) ? MealCategory::count() : 0,
                 'ads' => class_exists(Advertisement::class) ? Advertisement::count() : 0,
+                'offers_ads' => class_exists(Advertisement::class) ? Advertisement::where('type', 'عرض')->count() : 0,
+                'promotions_ads' => class_exists(Advertisement::class) ? Advertisement::where('type', 'ترويج')->count() : 0,
             ],
             'engagement' => [
                 'messages' => class_exists(Message::class) ? Message::count() : 0,

@@ -11,6 +11,7 @@ class Advertisement extends Model
 
     protected $fillable = [
         'admin_id',
+        'title',
         'date',
         'image',
         'describtion',
