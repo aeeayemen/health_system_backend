@@ -10,7 +10,24 @@ class DietController extends Controller
     public function index(Request $request)
     {
         $query = Diet::with('doctor');
-        return response()->json($query->paginate(10));
+
+        if ($request->user()->isPatient()) {
+            $query->where('user_id', $request->user()->id);
+        } elseif ($request->user()->isDoctor() && $request->user()->doctor) {
+            $query->where('doctor_id', $request->user()->doctor->id);
+        }
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+        if ($request->has('patient_id')) {
+            $query->where('user_id', $request->patient_id);
+        }
+        if ($request->has('doctor_id')) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        return response()->json($query->latest()->paginate(20));
     }
 
     public function store(Request $request)

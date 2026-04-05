@@ -17,13 +17,22 @@ class DietPlanController extends Controller
     {
         $query = DietPlan::with(['doctor', 'patient']);
 
+        // Base filtering based on user role
         if ($request->user()->isPatient() && $request->user()->patient) {
             $query->where('patient_id', $request->user()->patient->id);
         } elseif ($request->user()->isDoctor() && $request->user()->doctor) {
             $query->where('doctor_id', $request->user()->doctor->id);
         }
 
-        return DietPlanResource::collection($query->get());
+        // Additional optional filtering from query parameters
+        if ($request->has('patient_id')) {
+            $query->where('patient_id', $request->patient_id);
+        }
+        if ($request->has('doctor_id')) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        return DietPlanResource::collection($query->latest()->get());
     }
 
     /**
@@ -113,7 +122,7 @@ class DietPlanController extends Controller
                     \App\Models\DietNote::create([
                         'diet_plan_id' => $dietPlan->id,
                         'doctor_id' => $validated['doctor_id'],
-                        'user_id' => \App\Models\Patient::find($validated['patient_id'])->user_id,
+                        'user_id' => $validated['patient_id'],
                         'note' => $noteText,
                     ]);
                 }
