@@ -20,4 +20,9 @@ class MedicalTest extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'user_id', 'id');
+    }
 }

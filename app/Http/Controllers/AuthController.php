@@ -57,11 +57,21 @@ class AuthController extends Controller
 
             // Create Patient or Doctor profile if needed
             if ($role === 'patient') {
-                Patient::create([
+                $patientData = [
                     'id' => $user->id,
                     'user_id' => $user->id,
                     'gender' => $gender ?? 'male',
-                ]);
+                ];
+
+                // Handle profile image upload for patient
+                if ($request->hasFile('profile_image')) {
+                    $image = $request->file('profile_image');
+                    $imageName = time() . '_profile_' . $image->getClientOriginalName();
+                    $image->move(public_path('uploads/patients/profile'), $imageName);
+                    $patientData['image'] = 'uploads/patients/profile/' . $imageName;
+                }
+
+                Patient::create($patientData);
                 Log::info('Patient profile created successfully', ['user_id' => $user->id]);
             } elseif ($role === 'doctor') {
                 $doctor = new Doctor();

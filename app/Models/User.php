@@ -103,4 +103,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(PaymentMethod::class);
     }
+
+    public function medicalTests()
+    {
+        return $this->hasMany(MedicalTest::class);
+    }
 }

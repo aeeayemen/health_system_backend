@@ -11,10 +11,20 @@ class MedicalFileController extends Controller
     public function index(Request $request)
     {
         $query = MedicalFile::query();
+        
         if ($request->has('patient_id')) {
             $query->where('patient_id', $request->patient_id);
+        } elseif ($request->has('user_id')) {
+            $query->where('patient_id', $request->user_id);
+        } else {
+            // If the current user is a patient, they should only see their own files
+            $user = $request->user();
+            if ($user && $user->type === 'patient') {
+                $query->where('patient_id', $user->id);
+            }
         }
-        return response()->json($query->latest()->paginate(10));
+        
+        return response()->json($query->with('patient.user')->latest()->paginate(10));
     }
 
     public function store(Request $request)
@@ -61,7 +71,7 @@ class MedicalFileController extends Controller
 
     public function show($id)
     {
-        $medicalFile = MedicalFile::findOrFail($id);
+        $medicalFile = MedicalFile::with('patient.user')->findOrFail($id);
         return response()->json($medicalFile);
     }
 

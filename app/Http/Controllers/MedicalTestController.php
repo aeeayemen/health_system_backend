@@ -10,14 +10,30 @@ class MedicalTestController extends Controller
     public function index(Request $request)
     {
         $query = MedicalTest::with('user');
+        
+        // Filter by user_id or patient_id
         if ($request->has('user_id')) {
             $query->where('user_id', $request->user_id);
+        } elseif ($request->has('patient_id')) {
+            $query->where('user_id', $request->patient_id);
+        } else {
+            // If the current user is a patient, they should only see their own tests by default
+            $user = $request->user();
+            if ($user && $user->type === 'patient') {
+                $query->where('user_id', $user->id);
+            }
         }
-        return response()->json($query->paginate(10));
+        
+        return \App\Http\Resources\MedicalTestResource::collection($query->latest()->paginate(10));
     }
 
     public function store(Request $request)
     {
+        // Support both user_id and patient_id
+        if (!$request->has('user_id') && $request->has('patient_id')) {
+            $request->merge(['user_id' => $request->patient_id]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string',
             'user_id' => 'required|exists:users,id',
@@ -33,17 +49,23 @@ class MedicalTestController extends Controller
         }
 
         $test = MedicalTest::create($validated);
-        return response()->json($test, 201);
+        return new \App\Http\Resources\MedicalTestResource($test->load('user'));
     }
 
     public function show($id)
     {
-        return MedicalTest::with('user')->findOrFail($id);
+        $test = MedicalTest::with('user')->findOrFail($id);
+        return new \App\Http\Resources\MedicalTestResource($test);
     }
 
     public function update(Request $request, $id)
     {
         $test = MedicalTest::findOrFail($id);
+
+        // Support both user_id and patient_id
+        if (!$request->has('user_id') && $request->has('patient_id')) {
+            $request->merge(['user_id' => $request->patient_id]);
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string',
@@ -65,7 +87,7 @@ class MedicalTestController extends Controller
         }
 
         $test->update($validated);
-        return response()->json($test);
+        return new \App\Http\Resources\MedicalTestResource($test->load('user'));
     }
 
     public function destroy($id)
