@@ -33,6 +33,10 @@ class AuthController extends Controller
             'cv' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'consultation_fee' => 'nullable|numeric|min:0|max:999999.99',
+            'specialization' => 'nullable|string|max:255',
+            'bio' => 'nullable|string|max:1000',
+            'years_of_experience' => 'nullable|integer|min:0|max:100',
+            'bank_account' => 'nullable|string|max:100',
         ]);
 
         // Map Arabic gender to English for DB consistency if needed
