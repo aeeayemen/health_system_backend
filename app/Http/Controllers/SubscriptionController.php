@@ -109,8 +109,16 @@ class SubscriptionController extends Controller
         ]);
 
         $subscription->update($validated);
+        
+        // If subscription is set to active, update the user type
+        if (isset($validated['status']) && $validated['status'] === 'active') {
+            $patient = $subscription->patient;
+            if ($patient && $patient->user) {
+                $patient->user->update(['type' => 'subscribed']);
+            }
+        }
 
-        return response()->json($subscription);
+        return response()->json($subscription->load(['doctor', 'patient']));
     }
 
     /**
@@ -135,6 +143,14 @@ class SubscriptionController extends Controller
         ]);
 
         $subscription->update(['status' => $validated['status']]);
+
+        // If subscription is set to active, update the user type
+        if ($validated['status'] === 'active') {
+            $patient = $subscription->patient;
+            if ($patient && $patient->user) {
+                $patient->user->update(['type' => 'subscribed']);
+            }
+        }
 
         return response()->json([
             'message' => 'Subscription status updated successfully',

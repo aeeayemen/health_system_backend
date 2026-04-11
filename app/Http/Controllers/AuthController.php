@@ -124,11 +124,11 @@ class AuthController extends Controller
                 }
             }
 
-            DB::commit();
-
             event(new Registered($user));
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            DB::commit();
 
             return response()->json([
                 'message' => 'User registered successfully',
@@ -136,7 +136,9 @@ class AuthController extends Controller
                 'token' => $token,
             ], 201);
         } catch (\Throwable $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
             Log::error('Registration Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'request' => $request->except(['password', 'password_confirmation'])

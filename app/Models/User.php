@@ -66,7 +66,7 @@ class User extends Authenticatable
      */
     public function getRoleAttribute()
     {
-        return $this->roles->first()?->name;
+        return $this->type;
     }
 
     public function doctor()
