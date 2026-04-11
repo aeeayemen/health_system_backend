@@ -29,6 +29,9 @@ class MedicalTestController extends Controller
 
     public function store(Request $request)
     {
+        // Debug: Log the incoming request data
+        \Log::info('MedicalTest Store Request:', $request->all());
+
         // Support both user_id and patient_id
         if (!$request->has('user_id') && $request->has('patient_id')) {
             $request->merge(['user_id' => $request->patient_id]);
