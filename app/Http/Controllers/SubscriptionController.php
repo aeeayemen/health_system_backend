@@ -114,7 +114,7 @@ class SubscriptionController extends Controller
         if (isset($validated['status']) && $validated['status'] === 'active') {
             $patient = $subscription->patient;
             if ($patient && $patient->user) {
-                $patient->user->update(['type' => 'subscribed']);
+                $patient->user->update(['type' => 'payed']);
             }
         }
 
@@ -148,7 +148,7 @@ class SubscriptionController extends Controller
         if ($validated['status'] === 'active') {
             $patient = $subscription->patient;
             if ($patient && $patient->user) {
-                $patient->user->update(['type' => 'subscribed']);
+                $patient->user->update(['type' => 'payed']);
             }
         }
 
