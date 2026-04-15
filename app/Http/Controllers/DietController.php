@@ -87,20 +87,7 @@ class DietController extends Controller
     {
         $user = $request->user();
 
-        // 1. First check the strict Diet table
-        $diet = Diet::with(['doctor', 'components', 'notes'])
-            ->where('user_id', $user->id)
-            ->orWhereHas('subscription', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
-            ->where('status', 'active')
-            ->first();
-
-        if ($diet) {
-            return response()->json($diet);
-        }
-
-        // 2. If no classic Diet found, check the new DietPlan table
+        // 1. First check the new DietPlan table (Prioritized)
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
                 ->where('patient_id', $user->id)
@@ -109,7 +96,6 @@ class DietController extends Controller
                 ->first();
 
             if ($dietPlan) {
-                // Map the DietPlan to look like the classic Diet for backward compatibility
                 return response()->json([
                     'id' => $dietPlan->id,
                     'doctor_id' => $dietPlan->doctor_id,
@@ -119,10 +105,11 @@ class DietController extends Controller
                     'updated_at' => $dietPlan->updated_at,
                     'title' => $dietPlan->title,
                     'description' => $dietPlan->description,
-                    'daily_calories' => $dietPlan->daily_calories,
-                    'start_date' => $dietPlan->start_date,
-                    'end_date' => $dietPlan->end_date,
-                    'periods' => $dietPlan->notes, // meal_periods are stored in notes field
+                    'daily_calories' => (int)$dietPlan->daily_calories,
+                    'start_date' => $dietPlan->start_date?->toDateString() ?? $dietPlan->start_date,
+                    'end_date' => $dietPlan->end_date?->toDateString() ?? $dietPlan->end_date,
+                    'duration_days' => (int)$dietPlan->duration_days,
+                    'periods' => $dietPlan->notes, // meal_periods in notes
                     'doctor' => $dietPlan->doctor,
                     'components' => $dietPlan->meals->map(function ($meal) {
                         return [
@@ -138,6 +125,19 @@ class DietController extends Controller
                     'notes' => []
                 ]);
             }
+        }
+
+        // 2. Fallback to legacy Diet table
+        $diet = Diet::with(['doctor', 'components', 'notes'])
+            ->where('user_id', $user->id)
+            ->orWhereHas('subscription', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->where('status', 'active')
+            ->first();
+
+        if ($diet) {
+            return response()->json($diet);
         }
 
         return response()->json(['message' => 'No active diet found'], 404);

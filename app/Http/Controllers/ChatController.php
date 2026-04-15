@@ -345,8 +345,12 @@ class ChatController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->paginate(50);
         } else {
+            // userId passed is the user_id of the doctor
+            $doctor = Doctor::where('user_id', $userId)->first();
+            $doctorId = $doctor ? $doctor->id : 0;
+
             $messages = Message::where('user_id', $user->id)
-                ->where('doctor_id', $userId)
+                ->where('doctor_id', $doctorId)
                 ->orderBy('created_at', 'asc')
                 ->paginate(50);
         }
