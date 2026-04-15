@@ -103,7 +103,7 @@ class DietController extends Controller
         // 2. If no classic Diet found, check the new DietPlan table
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
-                ->where('patient_id', $user->patient->id)
+                ->where('patient_id', $user->id)
                 ->where('status', 'active')
                 ->latest()
                 ->first();
@@ -166,7 +166,7 @@ class DietController extends Controller
         }
 
         if ($user->isPatient()) {
-            $dietPlan = \App\Models\DietPlan::where('patient_id', $user->patient->id)
+            $dietPlan = \App\Models\DietPlan::where('patient_id', $user->id)
                 ->where('status', 'active')
                 ->latest()
                 ->first();
@@ -218,7 +218,7 @@ class DietController extends Controller
 
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with('meals')
-                ->where('patient_id', $user->patient->id)
+                ->where('patient_id', $user->id)
                 ->where('status', 'active')
                 ->latest()
                 ->first();
@@ -272,7 +272,7 @@ class DietController extends Controller
 
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
-                ->where('patient_id', $user->patient->id)
+                ->where('patient_id', $user->id)
                 ->where('status', 'active')
                 ->latest()
                 ->first();

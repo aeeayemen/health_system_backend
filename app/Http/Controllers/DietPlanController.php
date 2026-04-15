@@ -19,7 +19,7 @@ class DietPlanController extends Controller
 
         // Base filtering based on user role
         if ($request->user()->isPatient() && $request->user()->patient) {
-            $query->where('patient_id', $request->user()->patient->id);
+            $query->where('patient_id', $request->user()->id);
         } elseif ($request->user()->isDoctor() && $request->user()->doctor) {
             $query->where('doctor_id', $request->user()->doctor->id);
         }
