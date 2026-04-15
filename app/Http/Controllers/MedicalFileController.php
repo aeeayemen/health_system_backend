@@ -17,11 +17,8 @@ class MedicalFileController extends Controller
         } elseif ($request->has('user_id')) {
             $query->where('patient_id', $request->user_id);
         } else {
-            // If the current user is a patient, they should only see their own files
-            $user = $request->user();
-            if ($user && $user->type === 'patient') {
-                $query->where('patient_id', $user->id);
-            }
+            // Default to global files (admin uploaded files for everyone)
+            $query->whereNull('patient_id');
         }
         
         return response()->json($query->with('patient.user')->latest()->paginate(10));

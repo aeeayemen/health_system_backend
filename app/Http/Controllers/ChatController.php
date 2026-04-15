@@ -59,12 +59,17 @@ class ChatController extends Controller
                         ->where('read', 'false')
                         ->count();
 
+                    $lastMsgText = $lastMessage ? $lastMessage->message : null;
+                    if ($lastMessage && empty($lastMsgText) && !empty($lastMessage->file_path)) {
+                        $lastMsgText = $lastMessage->file_type && in_array(strtolower($lastMessage->file_type), ['jpg', 'jpeg', 'png', 'gif', 'webp']) ? '[صورة]' : '[ملف]';
+                    }
+
                     return [
                         'id' => $u->id,
                         'name' => $u->name,
                         'email' => $u->email,
                         'phone' => $u->phone ?? null,
-                        'last_message' => $lastMessage ? $lastMessage->message : null,
+                        'last_message' => $lastMsgText,
                         'last_time' => $lastMessage ? $lastMessage->created_at : null,
                         'unread_count' => $unreadCount,
                     ];
@@ -105,13 +110,18 @@ class ChatController extends Controller
                         ->where('read', 'false')
                         ->count();
 
+                    $lastMsgText = $lastMessage ? $lastMessage->message : null;
+                    if ($lastMessage && empty($lastMsgText) && !empty($lastMessage->file_path)) {
+                        $lastMsgText = $lastMessage->file_type && in_array(strtolower($lastMessage->file_type), ['jpg', 'jpeg', 'png', 'gif', 'webp']) ? '[صورة]' : '[ملف]';
+                    }
+
                     return [
                         'id' => $doc->id,
                         'user_id' => $doc->user_id,
                         'name' => $doc->user->name ?? $doc->name ?? 'دكتور',
                         'specialization' => $doc->specialization ?? null,
                         'profile_image' => $doc->profile_image ?? null,
-                        'last_message' => $lastMessage ? $lastMessage->message : null,
+                        'last_message' => $lastMsgText,
                         'last_time' => $lastMessage ? $lastMessage->created_at : null,
                         'unread_count' => $unreadCount,
                     ];
@@ -173,7 +183,7 @@ class ChatController extends Controller
                     'file_type' => $file->getClientOriginalExtension(),
                 ];
 
-                // --- INTEGRATION: Save to Medical Files (Checkups) ---
+                // --- INTEGRATION: Save to Medical Tests (Checkups/الفحوصات) ---
                 $patientId = null;
                 if ($user->type === 'doctor') {
                     // Sender is doctor, receiver is user. Find patient record for receiver.
@@ -186,19 +196,6 @@ class ChatController extends Controller
                 }
 
                 if ($patientId) {
-                    \App\Models\MedicalFile::create([
-                        'patient_id' => $patientId,
-                        'file_name' => $fileData['file_name'],
-                        'file_path' => $fileData['file_path'],
-                        'file_type' => $fileData['file_type'],
-                        'file_size' => \Illuminate\Support\Facades\File::size(public_path($fileData['file_path'])),
-                        'description' => 'ملف مرفوع عبر الشات',
-                        'status' => 'chat_upload',
-                        'uploaded_at' => now(),
-                    ]);
-                    $medicalFileCreated = true;
-
-                    // --- INTEGRATION: Also Save to Medical Tests (Checkups/الفحوصات) ---
                     // Get the User ID for the patient
                     $patientUser = \App\Models\Patient::find($patientId);
                     if ($patientUser) {
@@ -208,6 +205,7 @@ class ChatController extends Controller
                             'image' => $fileData['file_path'],
                             'status' => 'completed',
                         ]);
+                        $medicalFileCreated = true;
                     }
                 }
             }
