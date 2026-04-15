@@ -118,7 +118,6 @@ class DietController extends Controller
                     'periods' => $dietPlan->notes, // meal_periods in notes
                     'doctor' => $dietPlan->doctor,
                     'components' => $dietPlan->meals->map(function ($meal) {
-                        $calories = $meal->calories ?? $meal->energy ?? 0;
                         return [
                             'id' => $meal->id,
                             'diet_id' => $meal->diet_plan_id,
@@ -126,7 +125,11 @@ class DietController extends Controller
                             'day' => 'Day ' . $meal->day_number,
                             'time' => null,
                             'quantity' => $meal->serving,
-                            'notes' => 'Calories: ' . $calories . ', Carbs: ' . ($meal->carbo ?? 0) . 'g, Protein: ' . ($meal->protin ?? 0) . 'g, Fat: ' . ($meal->fat ?? 0) . 'g'
+                            'calories' => $meal->calories ?? $meal->energy ?? 0,
+                            'carbo' => $meal->carbo ?? 0,
+                            'protin' => $meal->protin ?? 0,
+                            'fat' => $meal->fat ?? 0,
+                            'notes' => 'Serving: ' . $meal->serving
                         ];
                     }),
                     'notes' => []
@@ -156,6 +159,7 @@ class DietController extends Controller
     public function myDietPeriods(Request $request)
     {
         $user = $request->user();
+        $patientId = $user->patient ? $user->patient->id : null;
 
         $diet = Diet::where('user_id', $user->id)
             ->orWhereHas('subscription', function ($q) use ($user) {
@@ -201,6 +205,7 @@ class DietController extends Controller
     public function myDietMeals(Request $request)
     {
         $user = $request->user();
+        $patientId = $user->patient ? $user->patient->id : null;
 
         $diet = Diet::with('components.meal')
             ->where('user_id', $user->id)
@@ -246,9 +251,14 @@ class DietController extends Controller
                         'id' => $meal->id,
                         'meal' => $meal->meal_type . ' - ' . $meal->name,
                         'day' => 'Day ' . $meal->day_number,
+                        'day_number' => $meal->day_number,
                         'time' => null,
                         'quantity' => $meal->serving,
-                        'notes' => 'Calories: ' . $meal->calories . ', Carbs: ' . $meal->carbo . 'g, Protein: ' . $meal->protin . 'g, Fat: ' . $meal->fat . 'g'
+                        'calories' => $meal->calories ?? $meal->energy ?? 0,
+                        'carbo' => $meal->carbo ?? 0,
+                        'protin' => $meal->protin ?? 0,
+                        'fat' => $meal->fat ?? 0,
+                        'notes' => 'Serving: ' . $meal->serving
                     ];
                 });
 
@@ -268,6 +278,7 @@ class DietController extends Controller
     public function myDietReport(Request $request)
     {
         $user = $request->user();
+        $patientId = $user->patient ? $user->patient->id : null;
 
         $diet = Diet::with(['doctor', 'components', 'notes'])
             ->where('user_id', $user->id)
