@@ -86,11 +86,17 @@ class DietController extends Controller
     public function myDiet(Request $request)
     {
         $user = $request->user();
+        $patientId = $user->patient ? $user->patient->id : null;
 
         // 1. First check the new DietPlan table (Prioritized)
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
-                ->where('patient_id', $user->id)
+                ->where(function($q) use ($user, $patientId) {
+                    $q->where('patient_id', $user->id);
+                    if ($patientId) {
+                        $q->orWhere('patient_id', $patientId);
+                    }
+                })
                 ->where('status', 'active')
                 ->latest()
                 ->first();
@@ -112,6 +118,7 @@ class DietController extends Controller
                     'periods' => $dietPlan->notes, // meal_periods in notes
                     'doctor' => $dietPlan->doctor,
                     'components' => $dietPlan->meals->map(function ($meal) {
+                        $calories = $meal->calories ?? $meal->energy ?? 0;
                         return [
                             'id' => $meal->id,
                             'diet_id' => $meal->diet_plan_id,
@@ -119,7 +126,7 @@ class DietController extends Controller
                             'day' => 'Day ' . $meal->day_number,
                             'time' => null,
                             'quantity' => $meal->serving,
-                            'notes' => 'Calories: ' . $meal->calories . ', Carbs: ' . $meal->carbo . 'g, Protein: ' . $meal->protin . 'g, Fat: ' . $meal->fat . 'g'
+                            'notes' => 'Calories: ' . $calories . ', Carbs: ' . ($meal->carbo ?? 0) . 'g, Protein: ' . ($meal->protin ?? 0) . 'g, Fat: ' . ($meal->fat ?? 0) . 'g'
                         ];
                     }),
                     'notes' => []
@@ -166,7 +173,12 @@ class DietController extends Controller
         }
 
         if ($user->isPatient()) {
-            $dietPlan = \App\Models\DietPlan::where('patient_id', $user->id)
+            $dietPlan = \App\Models\DietPlan::where(function($q) use ($user, $patientId) {
+                    $q->where('patient_id', $user->id);
+                    if ($patientId) {
+                        $q->orWhere('patient_id', $patientId);
+                    }
+                })
                 ->where('status', 'active')
                 ->latest()
                 ->first();
@@ -218,7 +230,12 @@ class DietController extends Controller
 
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with('meals')
-                ->where('patient_id', $user->id)
+                ->where(function($q) use ($user, $patientId) {
+                    $q->where('patient_id', $user->id);
+                    if ($patientId) {
+                        $q->orWhere('patient_id', $patientId);
+                    }
+                })
                 ->where('status', 'active')
                 ->latest()
                 ->first();
@@ -272,7 +289,12 @@ class DietController extends Controller
 
         if ($user->isPatient()) {
             $dietPlan = \App\Models\DietPlan::with(['doctor', 'meals'])
-                ->where('patient_id', $user->id)
+                ->where(function($q) use ($user, $patientId) {
+                    $q->where('patient_id', $user->id);
+                    if ($patientId) {
+                        $q->orWhere('patient_id', $patientId);
+                    }
+                })
                 ->where('status', 'active')
                 ->latest()
                 ->first();
