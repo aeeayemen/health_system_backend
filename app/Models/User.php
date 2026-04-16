@@ -91,7 +91,7 @@ class User extends Authenticatable
 
     public function isPatient()
     {
-        return $this->type === 'patient';
+        return in_array($this->type, ['patient', 'payed', 'subscribed']);
     }
 
     public function isDoctor()

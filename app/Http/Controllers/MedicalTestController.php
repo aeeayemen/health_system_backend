@@ -19,7 +19,7 @@ class MedicalTestController extends Controller
         } else {
             // If the current user is a patient, they should only see their own tests by default
             $user = $request->user();
-            if ($user && $user->type === 'patient') {
+            if ($user && $user->isPatient()) {
                 $query->where('user_id', $user->id);
             }
         }
