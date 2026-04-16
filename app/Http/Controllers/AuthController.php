@@ -117,14 +117,22 @@ class AuthController extends Controller
                 $doctor->save();
                 Log::info('Doctor profile created successfully', ['doctor_id' => $doctor->id]);
 
+                try {
                 // Notify all admins about new doctor application
                 $admins = User::where('type', 'admin')->get();
                 if ($admins->count() > 0) {
                     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewDoctorApplication($doctor));
                 }
+                } catch (\Exception $e) {
+                    Log::warning('Doctor notification failed: ' . $e->getMessage());
+                }
             }
 
-            event(new Registered($user));
+            try {
+                event(new Registered($user));
+            } catch (\Exception $e) {
+                Log::warning('Registration email event failed: ' . $e->getMessage());
+            }
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
