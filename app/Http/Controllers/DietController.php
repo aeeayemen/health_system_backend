@@ -157,8 +157,7 @@ class DietController extends Controller
         $totalPlans = \App\Models\DietPlan::count();
         $samplePatientIds = \App\Models\DietPlan::distinct()->pluck('patient_id')->take(10)->toArray();
         $aliProfiles = \App\Models\Patient::where('fullname', 'LIKE', '%ali%')
-            ->orWhere('name', 'LIKE', '%ali%')
-            ->get(['id', 'user_id', 'fullname', 'name'])
+            ->get(['id', 'user_id', 'fullname'])
             ->toArray();
 
         return response()->json([
