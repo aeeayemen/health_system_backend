@@ -66,8 +66,14 @@ class SubscriptionController extends Controller
         ]);
 
         if ($request->hasFile('receipt_image')) {
-            $imagePath = $request->file('receipt_image')->store('receipts', 'public');
-            $subscription->update(['receipt_image' => $imagePath]);
+            $image = $request->file('receipt_image');
+            $imageName = time() . '_receipt_' . $image->getClientOriginalName();
+            $destinationPath = public_path('uploads/receipts');
+            if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+            }
+            $image->move($destinationPath, $imageName);
+            $subscription->update(['receipt_image' => 'uploads/receipts/' . $imageName]);
         }
 
         // Create Invoice logic here (simplified)
@@ -139,7 +145,7 @@ class SubscriptionController extends Controller
         $subscription = Subscription::findOrFail($id);
 
         $validated = $request->validate([
-            'status' => 'required|in:active,inactive,expired,cancelled',
+            'status' => 'required|in:active,inactive,expired,cancelled,pending',
         ]);
 
         $subscription->update(['status' => $validated['status']]);
