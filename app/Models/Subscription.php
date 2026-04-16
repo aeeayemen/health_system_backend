@@ -22,6 +22,15 @@ class Subscription extends Model
         'receipt_image',
     ];
 
+    protected $appends = ['receipt_url'];
+
+    public function getReceiptUrlAttribute()
+    {
+        if (!$this->receipt_image) return null;
+        if (strpos($this->receipt_image, 'http') === 0) return $this->receipt_image;
+        return url($this->receipt_image);
+    }
+
     protected $casts = [
         'price' => 'decimal:2',
         'start_date' => 'date',

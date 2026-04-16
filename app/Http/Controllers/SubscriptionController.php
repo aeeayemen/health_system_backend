@@ -12,7 +12,7 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Subscription::with(['doctor', 'patient']);
+        $query = Subscription::with(['doctor', 'patient.user']);
 
         if ($request->user()->isPatient()) {
             $query->where('patient_id', $request->user()->patient->id);

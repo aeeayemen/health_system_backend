@@ -67,8 +67,8 @@ Route::prefix('public')->group(function () {
     Route::get('/athkar-raw', function () {
         return \App\Models\Athkar::all();
     });
-    Route::get('/debug-users', function () {
-        return \App\Models\User::all();
+    Route::get('/debug-subscriptions', function () {
+        return \App\Models\Subscription::with(['patient', 'doctor'])->get();
     });
 });
 
