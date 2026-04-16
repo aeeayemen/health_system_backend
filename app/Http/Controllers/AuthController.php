@@ -71,7 +71,11 @@ class AuthController extends Controller
                 if ($request->hasFile('profile_image')) {
                     $image = $request->file('profile_image');
                     $imageName = time() . '_profile_' . $image->getClientOriginalName();
-                    $image->move(public_path('uploads/patients/profile'), $imageName);
+                    $destinationPath = public_path('uploads/patients/profile');
+                    if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                        \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                    }
+                    $image->move($destinationPath, $imageName);
                     $patientData['image'] = 'uploads/patients/profile/' . $imageName;
                 }
 
@@ -94,7 +98,11 @@ class AuthController extends Controller
                 if ($request->hasFile('degree')) {
                     $degree = $request->file('degree');
                     $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
-                    $degree->move(public_path('uploads/doctors/degree'), $degreeName);
+                    $destinationPath = public_path('uploads/doctors/degree');
+                    if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                        \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                    }
+                    $degree->move($destinationPath, $degreeName);
                     $doctor->degree = 'uploads/doctors/degree/' . $degreeName;
                 }
 
@@ -102,7 +110,11 @@ class AuthController extends Controller
                 if ($request->hasFile('cv')) {
                     $cv = $request->file('cv');
                     $cvName = time() . '_cv_' . $cv->getClientOriginalName();
-                    $cv->move(public_path('uploads/doctors/cv'), $cvName);
+                    $destinationPath = public_path('uploads/doctors/cv');
+                    if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                        \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                    }
+                    $cv->move($destinationPath, $cvName);
                     $doctor->CV = 'uploads/doctors/cv/' . $cvName;
                 }
 
@@ -110,7 +122,11 @@ class AuthController extends Controller
                 if ($request->hasFile('profile_image')) {
                     $image = $request->file('profile_image');
                     $imageName = time() . '_profile_' . $image->getClientOriginalName();
-                    $image->move(public_path('uploads/doctors/profile'), $imageName);
+                    $destinationPath = public_path('uploads/doctors/profile');
+                    if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                        \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                    }
+                    $image->move($destinationPath, $imageName);
                     $doctor->profile_image = 'uploads/doctors/profile/' . $imageName;
                 }
 
