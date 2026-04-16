@@ -155,15 +155,21 @@ class DietController extends Controller
         }
 
         $totalPlans = \App\Models\DietPlan::count();
-        $samplePatientIds = \App\Models\DietPlan::distinct()->pluck('patient_id')->take(5)->toArray();
+        $samplePatientIds = \App\Models\DietPlan::distinct()->pluck('patient_id')->take(10)->toArray();
+        $aliProfiles = \App\Models\Patient::where('fullname', 'LIKE', '%ali%')
+            ->orWhere('name', 'LIKE', '%ali%')
+            ->get(['id', 'user_id', 'fullname', 'name'])
+            ->toArray();
 
         return response()->json([
             'message' => 'No active diet found',
             'debug' => [
-                'your_user_id' => $user->id,
-                'your_patient_profile_id' => $patientProfileId,
+                'your_id' => $user->id,
+                'your_name' => $user->name,
+                'your_patient_profile' => $patientProfile,
+                'ali_profiles_in_db' => $aliProfiles,
                 'total_plans_in_db' => $totalPlans,
-                'sample_patient_ids_in_db' => $samplePatientIds,
+                'sample_patient_ids_in_plans' => $samplePatientIds,
             ]
         ], 404);
     }
