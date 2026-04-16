@@ -41,7 +41,15 @@ class SubscriptionController extends Controller
             $query->where('patient_id', $request->patient_id);
         }
 
-        return response()->json($query->latest()->get());
+        $subscriptions = $query->latest()->get()->map(function($sub) {
+            $sub->subscription_type = $sub->plan_type;
+            if ($sub->patient && $sub->patient->user) {
+                $sub->patient_name = $sub->patient->user->name;
+            }
+            return $sub;
+        });
+
+        return response()->json($subscriptions);
     }
 
     /**
