@@ -67,58 +67,77 @@ class SubscriptionController extends Controller
         ]);
 
         $user = $request->user();
-        $patient = $user->patient;
+        
+        return \Illuminate\Support\Facades\DB::transaction(function() use ($request, $validated, $user) {
+            try {
+                $patient = $user->patient;
 
-        if (!$patient) {
-            // Create a default patient record if it doesn't exist
-            $patient = \App\Models\Patient::create([
-                'id' => $user->id,
-                'user_id' => $user->id,
-                'fullname' => $user->name,
-                // Add other default fields if necessary, but they are nullable in migration
-            ]);
-            // Refresh user relationship
-            $user->load('patient');
-        }
+                if (!$patient) {
+                    // Create a default patient record if it doesn't exist
+                    $patient = \App\Models\Patient::create([
+                        'id' => $user->id,
+                        'user_id' => $user->id,
+                        'fullname' => $user->name,
+                    ]);
+                    // Refresh user relationship
+                    $user->load('patient');
+                }
 
-        $subscription = Subscription::create([
-            'patient_id' => $patient->id,
-            'doctor_id' => $validated['doctor_id'],
-            'plan_type' => $validated['plan_type'],
-            'price' => $validated['price'],
-            'duration_months' => $validated['duration_months'],
-            'start_date' => $validated['start_date'],
-            'end_date' => date('Y-m-d', strtotime($validated['start_date'] . ' + ' . $validated['duration_months'] . ' months')),
-            'status' => 'pending',
-        ]);
+                $subscription = Subscription::create([
+                    'patient_id' => $patient->id,
+                    'doctor_id' => $validated['doctor_id'],
+                    'plan_type' => $validated['plan_type'],
+                    'price' => $validated['price'],
+                    'duration_months' => $validated['duration_months'],
+                    'start_date' => $validated['start_date'],
+                    'end_date' => date('Y-m-d', strtotime($validated['start_date'] . ' + ' . $validated['duration_months'] . ' months')),
+                    'status' => 'pending',
+                ]);
 
-        if ($request->hasFile('receipt_image')) {
-            $image = $request->file('receipt_image');
-            $imageName = time() . '_receipt_' . $image->getClientOriginalName();
-            $destinationPath = public_path('uploads/receipts');
-            if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
-                \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                if ($request->hasFile('receipt_image')) {
+                    try {
+                        $image = $request->file('receipt_image');
+                        $imageName = time() . '_receipt_' . $image->getClientOriginalName();
+                        $destinationPath = public_path('uploads/receipts');
+                        
+                        if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                            \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                        }
+                        
+                        $image->move($destinationPath, $imageName);
+                        $subscription->update(['receipt_image' => 'uploads/receipts/' . $imageName]);
+                    } catch (\Exception $fileEx) {
+                        \Illuminate\Support\Facades\Log::error('Subscription Receipt Upload Failed: ' . $fileEx->getMessage());
+                        // We still continue as the subscription record itself is created
+                    }
+                }
+
+                // Create Invoice
+                $subscription->invoices()->create([
+                    'invoice_number' => 'INV-' . time(),
+                    'amount' => $validated['price'],
+                    'total_amount' => $validated['price'],
+                    'due_date' => date('Y-m-d'),
+                    'payment_status' => 'pending',
+                ]);
+
+                // Notify the doctor
+                try {
+                    $doctor = \App\Models\Doctor::find($validated['doctor_id']);
+                    if ($doctor && $doctor->user) {
+                        $doctor->user->notify(new \App\Notifications\NewPatientSubscription($patient));
+                    }
+                } catch (\Exception $notifyEx) {
+                    \Illuminate\Support\Facades\Log::warning('Subscription Notification Failed: ' . $notifyEx->getMessage());
+                }
+
+                return response()->json($subscription, 201);
+
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Subscription Store Failed: ' . $e->getMessage());
+                throw $e; // Re-throw to trigger rollback
             }
-            $image->move($destinationPath, $imageName);
-            $subscription->update(['receipt_image' => 'uploads/receipts/' . $imageName]);
-        }
-
-        // Create Invoice logic here (simplified)
-        $subscription->invoices()->create([
-            'invoice_number' => 'INV-' . time(),
-            'amount' => $validated['price'],
-            'total_amount' => $validated['price'],
-            'due_date' => date('Y-m-d'),
-            'payment_status' => 'pending',
-        ]);
-
-        // Notify the doctor about new patient subscription
-        $doctor = \App\Models\Doctor::find($validated['doctor_id']);
-        if ($doctor && $doctor->user) {
-            $doctor->user->notify(new \App\Notifications\NewPatientSubscription($patient));
-        }
-
-        return response()->json($subscription, 201);
+        });
     }
     /**
      * Display the specified resource.
