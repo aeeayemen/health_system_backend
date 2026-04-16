@@ -12,17 +12,36 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         $query = Subscription::with(['doctor', 'patient.user']);
 
-        if ($request->user()->isPatient()) {
-            $query->where('patient_id', $request->user()->patient->id);
-        } elseif ($request->user()->isDoctor()) {
-            $query->where('doctor_id', $request->user()->doctor->id);
-        } elseif ($request->has('patient_id')) {
+        // 1. Admin sees everything
+        if ($user->isAdmin()) {
+            // No additional filtering
+        } 
+        // 2. Doctor sees only subscriptions related to them
+        elseif ($user->isDoctor()) {
+            if ($user->doctor) {
+                $query->where('doctor_id', $user->doctor->id);
+            } else {
+                return response()->json([], 200);
+            }
+        } 
+        // 3. Patient sees only their own subscriptions
+        elseif ($user->isPatient()) {
+            if ($user->patient) {
+                $query->where('patient_id', $user->patient->id);
+            } else {
+                return response()->json([], 200);
+            }
+        }
+
+        // Additional filter by patient_id if provided (for admins/doctors)
+        if ($request->has('patient_id')) {
             $query->where('patient_id', $request->patient_id);
         }
 
-        return response()->json($query->get());
+        return response()->json($query->latest()->get());
     }
 
     /**

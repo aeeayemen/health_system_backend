@@ -99,6 +99,11 @@ class User extends Authenticatable
         return $this->type === 'doctor';
     }
 
+    public function isAdmin()
+    {
+        return $this->type === 'admin';
+    }
+
     public function paymentMethods()
     {
         return $this->hasMany(PaymentMethod::class);
