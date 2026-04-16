@@ -97,8 +97,11 @@ class DietController extends Controller
                     if ($patientProfileId) {
                         $q->orWhere('patient_id', $patientProfileId);
                     }
+                    // Add relationship-based check for maximum robustness
+                    $q->orWhereHas('patient', function($sub) use ($user) {
+                        $sub->where('user_id', $user->id);
+                    });
                 })
-                // Temporarily removing 'active' status for debugging to see if ANY plan exists
                 ->latest()
                 ->first();
 
@@ -191,6 +194,9 @@ class DietController extends Controller
                     if ($patientProfileId) {
                         $q->orWhere('patient_id', $patientProfileId);
                     }
+                    $q->orWhereHas('patient', function($sub) use ($user) {
+                        $sub->where('user_id', $user->id);
+                    });
                 })
                 ->latest()
                 ->first();
@@ -248,6 +254,9 @@ class DietController extends Controller
                     if ($patientProfileId) {
                         $q->orWhere('patient_id', $patientProfileId);
                     }
+                    $q->orWhereHas('patient', function($sub) use ($user) {
+                        $sub->where('user_id', $user->id);
+                    });
                 })
                 ->latest()
                 ->first();
@@ -312,8 +321,10 @@ class DietController extends Controller
                     if ($patientId) {
                         $q->orWhere('patient_id', $patientId);
                     }
+                    $q->orWhereHas('patient', function($sub) use ($user) {
+                        $sub->where('user_id', $user->id);
+                    });
                 })
-                ->where('status', 'active')
                 ->latest()
                 ->first();
 
