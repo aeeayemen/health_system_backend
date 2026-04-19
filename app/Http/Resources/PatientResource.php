@@ -39,7 +39,7 @@ class PatientResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'name' => !empty($this->fullname) ? $this->fullname : ($this->user->name ?? null),
+            'name' => !empty($this->fullname) ? $this->fullname : ($this->user?->name ?? null),
             'birthdate' => $this->birthdate,
             'gender' => $this->gender,
             'weight' => $this->weight,
@@ -48,7 +48,7 @@ class PatientResource extends JsonResource
             'medical' => $this->medical,
             'allergies' => $this->allergies,
             'physical_activity' => $this->physical_activity,
-            'phone_number' => !empty($this->phone_number) ? $this->phone_number : ($this->user->phone ?? null),
+            'phone_number' => !empty($this->phone_number) ? $this->phone_number : ($this->user?->phone ?? null),
             'image' => $this->image ? url($this->image) : null,
             'current_doctor_id' => $this->current_doctor_id ?? ($activeSubscription->doctor_id ?? null),
             'doctor_name' => $doctorName,

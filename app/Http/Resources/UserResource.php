@@ -22,8 +22,12 @@ class UserResource extends JsonResource
             'type' => $this->type,
             'role' => $this->role,
             'is_active' => $this->is_active,
-            'doctor_profile' => new DoctorResource($this->whenLoaded('doctor')),
-            'patient_profile' => new PatientResource($this->whenLoaded('patient')),
+            'doctor_profile' => $this->whenLoaded('doctor', function () {
+                return $this->doctor ? new DoctorResource($this->doctor) : null;
+            }),
+            'patient_profile' => $this->whenLoaded('patient', function () {
+                return $this->patient ? new PatientResource($this->patient) : null;
+            }),
             'created_at' => $this->created_at,
         ];
     }

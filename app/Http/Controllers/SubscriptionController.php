@@ -77,10 +77,27 @@ class SubscriptionController extends Controller
                     $patient = \App\Models\Patient::create([
                         'id' => $user->id,
                         'user_id' => $user->id,
-                        'fullname' => $user->name,
+                        'fullname' => $request->input('full_name', $user->name),
+                        'gender' => $request->input('gender', 'male'),
+                        'phone_number' => $request->input('phone', '-'),
+                        'birthdate' => $request->input('date_of_birth'),
+                        'height' => $request->input('height_cm'),
+                        'weight' => $request->input('weight_kg'),
+                        'physical_activity' => $request->input('activity'),
                     ]);
                     // Refresh user relationship
                     $user->load('patient');
+                } else {
+                    // Update patient with latest info from subscription form
+                    $patient->update([
+                        'fullname' => $request->input('full_name') ?? $patient->fullname,
+                        'gender' => $request->input('gender') ?? $patient->gender ?? 'male',
+                        'phone_number' => $request->input('phone') ?? $patient->phone_number,
+                        'birthdate' => $request->input('date_of_birth') ?? $patient->birthdate,
+                        'height' => $request->input('height_cm') ?? $patient->height,
+                        'weight' => $request->input('weight_kg') ?? $patient->weight,
+                        'physical_activity' => $request->input('activity') ?? $patient->physical_activity,
+                    ]);
                 }
 
                 $subscription = Subscription::create([
