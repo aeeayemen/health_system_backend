@@ -40,7 +40,11 @@ class AdvertisementController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('uploads/advertisements'), $imageName);
+            $destinationPath = public_path('uploads/advertisements');
+            if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+            }
+            $image->move($destinationPath, $imageName);
             $validated['image'] = 'uploads/advertisements/' . $imageName;
         }
 
@@ -79,7 +83,11 @@ class AdvertisementController extends Controller
 
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('uploads/advertisements'), $imageName);
+            $destinationPath = public_path('uploads/advertisements');
+            if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+            }
+            $image->move($destinationPath, $imageName);
             $validated['image'] = 'uploads/advertisements/' . $imageName;
         }
 

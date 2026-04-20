@@ -24,4 +24,13 @@ class Advertisement extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        if (isset($array['image']) && $array['image'] && strpos($array['image'], 'http') !== 0) {
+            $array['image'] = url($array['image']);
+        }
+        return $array;
+    }
 }

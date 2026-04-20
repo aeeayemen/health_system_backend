@@ -22,11 +22,15 @@ class PublicController extends Controller
         $query = Tip::with('category');
 
         if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
+            if ($request->category_id == 0) {
+                $query->whereNull('category_id');
+            } else {
+                $query->where('category_id', $request->category_id);
+            }
         }
 
         if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('describtion', 'like', '%' . $request->search . '%');
         }
 
         return response()->json($query->paginate(10));
