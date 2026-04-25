@@ -143,6 +143,14 @@ class SubscriptionController extends Controller
                     'status' => $status,
                 ]);
 
+                if ($patient && $patient->user) {
+                    if ($status === 'active') {
+                        $patient->user->update(['type' => 'payed']);
+                    } elseif ($patient->user->type === 'user') {
+                        $patient->user->update(['type' => 'subscribed']);
+                    }
+                }
+
                 if ($request->hasFile('receipt_image')) {
                     try {
                         $image = $request->file('receipt_image');
