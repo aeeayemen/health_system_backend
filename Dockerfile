@@ -45,7 +45,8 @@ RUN mkdir -p storage/logs \
     public/uploads/medical-tests \
     public/uploads/meal-categories \
     public/uploads/doctors/cv \
-    public/uploads/doctors/profile
+    public/uploads/doctors/profile \
+    public/uploads/receipts
 
 # Set permissions
 RUN chmod -R 777 storage bootstrap/cache public/uploads
