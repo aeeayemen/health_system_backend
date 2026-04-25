@@ -122,7 +122,15 @@ class UserController extends Controller
      */
     public function payedUsers()
     {
-        $users = User::with('roles')->where('type', 'payed')->get();
+        $users = User::with(['roles', 'patient.doctor.user'])->where('type', 'payed')->get()->map(function($user) {
+            $data = $user->toArray();
+            if ($user->patient && $user->patient->doctor && $user->patient->doctor->user) {
+                $data['doctor_name'] = $user->patient->doctor->user->name;
+            } else {
+                $data['doctor_name'] = '-';
+            }
+            return $data;
+        });
         return response()->json($users);
     }
 
@@ -131,7 +139,15 @@ class UserController extends Controller
      */
     public function normalUsers()
     {
-        $users = User::with('roles')->where('type', 'user')->get();
+        $users = User::with(['roles', 'patient.doctor.user'])->where('type', 'user')->get()->map(function($user) {
+            $data = $user->toArray();
+            if ($user->patient && $user->patient->doctor && $user->patient->doctor->user) {
+                $data['doctor_name'] = $user->patient->doctor->user->name;
+            } else {
+                $data['doctor_name'] = '-';
+            }
+            return $data;
+        });
         return response()->json($users);
     }
 }
