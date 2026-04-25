@@ -29,6 +29,12 @@ class Patient extends Model
         'target_weight',
         'allergies',
         'current_doctor_id',
+        'subscription_price',
+        'subscription_type',
+        'subscription_start_date',
+        'subscription_end_date',
+        'subscription_receipt_image',
+        'subscription_status',
     ];
 
     protected $casts = [
