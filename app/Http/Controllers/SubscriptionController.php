@@ -154,15 +154,15 @@ class SubscriptionController extends Controller
                 if ($request->hasFile('receipt_image')) {
                     try {
                         $image = $request->file('receipt_image');
-                        $imageName = time() . '_receipt_' . $image->getClientOriginalName();
-                        $destinationPath = public_path('uploads/receipts');
+                        $imageName = time() . '_' . $image->getClientOriginalName();
+                        $destinationPath = public_path('receipts');
                         
                         if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
                             \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
                         }
                         
                         $image->move($destinationPath, $imageName);
-                        $subscription->update(['receipt_image' => 'uploads/receipts/' . $imageName]);
+                        $subscription->update(['receipt_image' => 'receipts/' . $imageName]);
                     } catch (\Exception $fileEx) {
                         \Illuminate\Support\Facades\Log::error('Subscription Receipt Upload Failed: ' . $fileEx->getMessage());
                         // We still continue as the subscription record itself is created
@@ -238,15 +238,15 @@ class SubscriptionController extends Controller
                 }
 
                 $image = $request->file('receipt_image');
-                $imageName = time() . '_receipt_' . $image->getClientOriginalName();
-                $destinationPath = public_path('uploads/receipts');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $destinationPath = public_path('receipts');
                 
                 if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
                     \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
                 }
                 
                 $image->move($destinationPath, $imageName);
-                $validated['receipt_image'] = 'uploads/receipts/' . $imageName;
+                $validated['receipt_image'] = 'receipts/' . $imageName;
             } catch (\Exception $fileEx) {
                 \Illuminate\Support\Facades\Log::error('Subscription Receipt Update Failed: ' . $fileEx->getMessage());
             }
