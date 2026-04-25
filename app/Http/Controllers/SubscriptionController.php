@@ -219,11 +219,37 @@ class SubscriptionController extends Controller
             'status' => 'sometimes|in:active,expired,cancelled,pending',
             'patient_id' => 'sometimes|exists:patients,id',
             'doctor_id' => 'sometimes|exists:doctors,id',
+            'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($request->has('type')) {
             $validated['plan_type'] = $request->type;
             unset($validated['type']);
+        }
+
+        if ($request->hasFile('receipt_image')) {
+            try {
+                // Delete old image if it exists
+                if ($subscription->receipt_image) {
+                    $oldPath = public_path($subscription->receipt_image);
+                    if (\Illuminate\Support\Facades\File::exists($oldPath)) {
+                        \Illuminate\Support\Facades\File::delete($oldPath);
+                    }
+                }
+
+                $image = $request->file('receipt_image');
+                $imageName = time() . '_receipt_' . $image->getClientOriginalName();
+                $destinationPath = public_path('uploads/receipts');
+                
+                if (!\Illuminate\Support\Facades\File::exists($destinationPath)) {
+                    \Illuminate\Support\Facades\File::makeDirectory($destinationPath, 0755, true);
+                }
+                
+                $image->move($destinationPath, $imageName);
+                $validated['receipt_image'] = 'uploads/receipts/' . $imageName;
+            } catch (\Exception $fileEx) {
+                \Illuminate\Support\Facades\Log::error('Subscription Receipt Update Failed: ' . $fileEx->getMessage());
+            }
         }
 
         $subscription->update($validated);
