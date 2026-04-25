@@ -29,7 +29,10 @@ class Advertisement extends Model
     {
         $array = parent::toArray();
         if (isset($array['image']) && $array['image'] && strpos($array['image'], 'http') !== 0) {
-            $array['image'] = url($array['image']);
+            // Ensure the path has the correct prefix if it's just a filename
+            if (strpos($array['image'], 'uploads/') !== 0) {
+                $array['image'] = 'uploads/advertisements/' . ltrim($array['image'], '/');
+            }
         }
         return $array;
     }

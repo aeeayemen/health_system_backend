@@ -59,10 +59,14 @@ class SubscriptionController extends Controller
     {
         $validated = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
-            'plan_type' => 'required|in:basic,premium,vip',
+            'plan_type' => 'sometimes|in:basic,premium,vip,monthly,quarterly,yearly',
+            'type' => 'sometimes|in:basic,premium,vip,monthly,quarterly,yearly',
             'price' => 'required|numeric',
-            'duration_months' => 'required|integer|min:1',
+            'duration_months' => 'sometimes|integer|min:1',
             'start_date' => 'required|date',
+            'end_date' => 'sometimes|date',
+            'patient_id' => 'sometimes|exists:patients,id',
+            'status' => 'sometimes|in:active,pending,expired,cancelled',
             'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -70,45 +74,62 @@ class SubscriptionController extends Controller
         
         return \Illuminate\Support\Facades\DB::transaction(function() use ($request, $validated, $user) {
             try {
-                $patient = $user->patient;
-
-                if (!$patient) {
-                    // Create a default patient record if it doesn't exist
-                    $patient = \App\Models\Patient::create([
-                        'id' => $user->id,
-                        'user_id' => $user->id,
-                        'fullname' => $request->input('full_name', $user->name),
-                        'gender' => $request->input('gender', 'male'),
-                        'phone_number' => $request->input('phone', '-'),
-                        'birthdate' => $request->input('date_of_birth'),
-                        'height' => $request->input('height_cm'),
-                        'weight' => $request->input('weight_kg'),
-                        'physical_activity' => $request->input('activity'),
-                    ]);
-                    // Refresh user relationship
-                    $user->load('patient');
+                // If patient_id is provided (e.g. from Admin Dashboard), use it. Else use current user's patient profile.
+                if ($request->has('patient_id') && ($user->isAdmin() || $user->isDoctor())) {
+                    $patient = \App\Models\Patient::find($request->patient_id);
                 } else {
-                    // Update patient with latest info from subscription form
-                    $patient->update([
-                        'fullname' => $request->input('full_name') ?? $patient->fullname,
-                        'gender' => $request->input('gender') ?? $patient->gender ?? 'male',
-                        'phone_number' => $request->input('phone') ?? $patient->phone_number,
-                        'birthdate' => $request->input('date_of_birth') ?? $patient->birthdate,
-                        'height' => $request->input('height_cm') ?? $patient->height,
-                        'weight' => $request->input('weight_kg') ?? $patient->weight,
-                        'physical_activity' => $request->input('activity') ?? $patient->physical_activity,
-                    ]);
+                    $patient = $user->patient;
+
+                    if (!$patient) {
+                        // Create a default patient record if it doesn't exist
+                        $patient = \App\Models\Patient::create([
+                            'id' => $user->id,
+                            'user_id' => $user->id,
+                            'fullname' => $request->input('full_name', $user->name),
+                            'gender' => $request->input('gender', 'male'),
+                            'phone_number' => $request->input('phone', '-'),
+                            'birthdate' => $request->input('date_of_birth'),
+                            'height' => $request->input('height_cm'),
+                            'weight' => $request->input('weight_kg'),
+                            'physical_activity' => $request->input('activity'),
+                        ]);
+                        // Refresh user relationship
+                        $user->load('patient');
+                    } else {
+                        // Update patient with latest info from subscription form
+                        $patient->update([
+                            'fullname' => $request->input('full_name') ?? $patient->fullname,
+                            'gender' => $request->input('gender') ?? $patient->gender ?? 'male',
+                            'phone_number' => $request->input('phone') ?? $patient->phone_number,
+                            'birthdate' => $request->input('date_of_birth') ?? $patient->birthdate,
+                            'height' => $request->input('height_cm') ?? $patient->height,
+                            'weight' => $request->input('weight_kg') ?? $patient->weight,
+                            'physical_activity' => $request->input('activity') ?? $patient->physical_activity,
+                        ]);
+                    }
+                }
+
+                $planType = $request->input('type', $request->input('plan_type', 'monthly'));
+                $status = $request->input('status', 'pending');
+                $startDate = $validated['start_date'];
+                
+                // Calculate end_date based on either duration_months or explicit end_date
+                $endDate = $request->input('end_date');
+                if (!$endDate && $request->has('duration_months')) {
+                    $endDate = date('Y-m-d', strtotime($startDate . ' + ' . $request->duration_months . ' months'));
+                } elseif (!$endDate) {
+                    $endDate = date('Y-m-d', strtotime($startDate . ' + 1 month')); // Fallback
                 }
 
                 $subscription = Subscription::create([
                     'patient_id' => $patient->id,
                     'doctor_id' => $validated['doctor_id'],
-                    'plan_type' => $validated['plan_type'],
+                    'plan_type' => $planType,
                     'price' => $validated['price'],
-                    'duration_months' => $validated['duration_months'],
-                    'start_date' => $validated['start_date'],
-                    'end_date' => date('Y-m-d', strtotime($validated['start_date'] . ' + ' . $validated['duration_months'] . ' months')),
-                    'status' => 'pending',
+                    'duration_months' => $request->input('duration_months', 1),
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'status' => $status,
                 ]);
 
                 if ($request->hasFile('receipt_image')) {
@@ -170,12 +191,21 @@ class SubscriptionController extends Controller
     public function update(Request $request, Subscription $subscription)
     {
         $validated = $request->validate([
-            'plan_type' => 'sometimes|in:basic,premium,vip',
+            'plan_type' => 'sometimes|in:basic,premium,vip,monthly,quarterly,yearly',
+            'type' => 'sometimes|in:basic,premium,vip,monthly,quarterly,yearly',
             'price' => 'sometimes|numeric',
             'duration_months' => 'sometimes|integer|min:1',
             'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date',
             'status' => 'sometimes|in:active,expired,cancelled,pending',
+            'patient_id' => 'sometimes|exists:patients,id',
+            'doctor_id' => 'sometimes|exists:doctors,id',
         ]);
+
+        if ($request->has('type')) {
+            $validated['plan_type'] = $request->type;
+            unset($validated['type']);
+        }
 
         $subscription->update($validated);
         

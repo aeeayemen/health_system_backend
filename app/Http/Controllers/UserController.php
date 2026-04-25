@@ -68,11 +68,15 @@ class UserController extends Controller
             'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => 'sometimes|string|min:8',
             'phone' => 'nullable|string',
-
+            'type' => 'nullable|string',
+            'role' => 'nullable|string',
         ]);
 
         if (isset($validated['name'])) {
             $user->name = $validated['name'];
+        }
+        if (isset($validated['type'])) {
+            $user->type = $validated['type'];
         }
         if (isset($validated['email'])) {
             $user->email = $validated['email'];
