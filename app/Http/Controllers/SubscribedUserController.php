@@ -13,7 +13,19 @@ class SubscribedUserController extends Controller
      */
     public function index()
     {
-        return response()->json(Patient::all());
+        $patients = Patient::with(['user', 'doctor.user'])->get()->map(function($patient) {
+            $data = $patient->toArray();
+            $data['patient_name'] = $patient->user ? $patient->user->name : $patient->fullname;
+            $data['doctor_name'] = $patient->doctor && $patient->doctor->user ? $patient->doctor->user->name : ($patient->doctor->name ?? '-');
+            $data['price'] = $patient->subscription_price;
+            $data['type'] = $patient->subscription_type;
+            $data['start_date'] = $patient->subscription_start_date;
+            $data['end_date'] = $patient->subscription_end_date;
+            $data['receipt_image'] = $patient->subscription_receipt_image;
+            $data['status'] = $patient->subscription_status ?? 'pending';
+            return $data;
+        });
+        return response()->json($patients);
     }
 
     /**
@@ -86,15 +98,42 @@ class SubscribedUserController extends Controller
             'birthdate' => 'nullable|string|max:100',
             'physical_activity' => 'nullable|string|max:100',
             'medical' => 'nullable|string|max:100',
+            
+            // New Subscription fields
+            'type' => 'nullable|string|max:100',
+            'price' => 'nullable|numeric',
+            'doctor_id' => 'nullable|exists:doctors,id',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'status' => 'nullable|string|in:active,pending,expired,cancelled',
+            'receipt_image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($subscribedUser->image) {
                 Storage::disk('public')->delete($subscribedUser->image);
             }
-            $path = $request->file('image')->store('subscribed_users', 'public');
-            $validated['image'] = $path;
+            $validated['image'] = $request->file('image')->store('subscribed_users', 'public');
+        }
+
+        if ($request->hasFile('receipt_image')) {
+            if ($subscribedUser->subscription_receipt_image) {
+                Storage::disk('public')->delete($subscribedUser->subscription_receipt_image);
+            }
+            $validated['subscription_receipt_image'] = $request->file('receipt_image')->store('receipts', 'public');
+        }
+
+        // Map frontend fields to DB columns
+        if (isset($validated['type'])) $validated['subscription_type'] = $validated['type'];
+        if (isset($validated['price'])) $validated['subscription_price'] = $validated['price'];
+        if (isset($validated['doctor_id'])) $validated['current_doctor_id'] = $validated['doctor_id'];
+        if (isset($validated['start_date'])) $validated['subscription_start_date'] = $validated['start_date'];
+        if (isset($validated['end_date'])) $validated['subscription_end_date'] = $validated['end_date'];
+        if (isset($validated['status'])) {
+            $validated['subscription_status'] = $validated['status'];
+            if ($validated['status'] === 'active' && $subscribedUser->user) {
+                $subscribedUser->user->update(['type' => 'payed']);
+            }
         }
 
         $subscribedUser->update($validated);
