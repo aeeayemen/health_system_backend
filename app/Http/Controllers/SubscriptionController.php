@@ -13,7 +13,7 @@ class SubscriptionController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $query = Subscription::with(['doctor', 'patient.user']);
+        $query = Subscription::with(['doctor.user', 'patient.user']);
 
         // 1. Admin sees everything
         if ($user->isAdmin()) {
@@ -45,6 +45,9 @@ class SubscriptionController extends Controller
             $sub->subscription_type = $sub->plan_type;
             if ($sub->patient && $sub->patient->user) {
                 $sub->patient_name = $sub->patient->user->name;
+            }
+            if ($sub->doctor) {
+                $sub->doctor_name = $sub->doctor->user ? $sub->doctor->user->name : ($sub->doctor->name ?? 'غير محدد');
             }
             return $sub;
         });
