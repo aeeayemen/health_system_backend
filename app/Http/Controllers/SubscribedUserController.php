@@ -68,13 +68,17 @@ class SubscribedUserController extends Controller
      */
     public function show($id)
     {
-        $subscribedUser = Patient::find($id);
+        $patient = Patient::with(['user', 'doctor.user'])->find($id);
 
-        if (!$subscribedUser) {
+        if (!$patient) {
             return response()->json(['message' => 'Subscribed user not found'], 404);
         }
 
-        return response()->json($subscribedUser);
+        $data = $patient->toArray();
+        $data['patient_name'] = $patient->user ? $patient->user->name : $patient->fullname;
+        $data['doctor_name'] = $patient->doctor && $patient->doctor->user ? $patient->doctor->user->name : ($patient->doctor->name ?? '-');
+        
+        return response()->json($data);
     }
 
     /**
