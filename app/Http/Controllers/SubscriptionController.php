@@ -42,14 +42,22 @@ class SubscriptionController extends Controller
         }
 
         $subscriptions = $query->latest()->get()->map(function($sub) {
-            $sub->subscription_type = $sub->plan_type;
+            $data = $sub->toArray();
+            $data['subscription_type'] = $sub->plan_type;
+            
             if ($sub->patient && $sub->patient->user) {
-                $sub->patient_name = $sub->patient->user->name;
+                $data['patient_name'] = $sub->patient->user->name;
+            } else {
+                $data['patient_name'] = 'غير محدد';
             }
+            
             if ($sub->doctor) {
-                $sub->doctor_name = $sub->doctor->user ? $sub->doctor->user->name : ($sub->doctor->name ?? 'غير محدد');
+                $data['doctor_name'] = $sub->doctor->user ? $sub->doctor->user->name : ($sub->doctor->name ?? 'غير محدد');
+            } else {
+                $data['doctor_name'] = '-';
             }
-            return $sub;
+            
+            return $data;
         });
 
         return response()->json($subscriptions);
