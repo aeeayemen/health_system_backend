@@ -43,9 +43,10 @@ class MedicalFileController extends Controller
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
 
-                // Generate name
+                // Generate safe name
+                $extension = $file->getClientOriginalExtension();
                 $originalName = $file->getClientOriginalName();
-                $fileName = time() . '_' . str_replace(' ', '_', $originalName);
+                $safeName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
 
                 // Move file
                 $uploadPath = public_path('uploads/medical-files');
@@ -53,12 +54,12 @@ class MedicalFileController extends Controller
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
-                $file->move($uploadPath, $fileName);
+                $file->move($uploadPath, $safeName);
 
-                $validated['file_path'] = 'uploads/medical-files/' . $fileName;
+                $validated['file_path'] = 'uploads/medical-files/' . $safeName;
                 $validated['file_name'] = $request->input('file_name', $originalName);
-                $validated['file_type'] = $file->getClientOriginalExtension();
-                $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $fileName));
+                $validated['file_type'] = $extension;
+                $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $safeName));
             }
 
             $validated['uploaded_at'] = now();
@@ -111,23 +112,23 @@ class MedicalFileController extends Controller
                 unlink(public_path($medicalFile->file_path));
             }
 
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $safeName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
 
             $uploadPath = public_path('uploads/medical-files');
             if (!File::exists($uploadPath)) {
                 File::makeDirectory($uploadPath, 0755, true);
             }
 
-            $file->move($uploadPath, $fileName);
+            $file->move($uploadPath, $safeName);
 
-            $validated['file_path'] = 'uploads/medical-files/' . $fileName;
+            $validated['file_path'] = 'uploads/medical-files/' . $safeName;
 
             if (!isset($validated['file_name'])) {
                 $validated['file_name'] = $file->getClientOriginalName();
             }
-            $validated['file_type'] = $file->getClientOriginalExtension();
-            $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $fileName));
+            $validated['file_type'] = $extension;
+            $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $safeName));
             $validated['uploaded_at'] = now();
         }
 

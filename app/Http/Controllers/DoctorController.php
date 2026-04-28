@@ -61,7 +61,7 @@ class DoctorController extends Controller
         // Handle Degree upload
         if ($request->hasFile('degree')) {
             $degree = $request->file('degree');
-            $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+            $degreeName = time() . '_degree_' . bin2hex(random_bytes(4)) . '.' . $degree->getClientOriginalExtension();
             $degree->move(public_path('uploads/doctors/degree'), $degreeName);
             $validated['degree'] = 'uploads/doctors/degree/' . $degreeName;
         }
@@ -69,7 +69,7 @@ class DoctorController extends Controller
         // Handle CV upload
         if ($request->hasFile('CV')) {
             $cv = $request->file('CV');
-            $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+            $cvName = time() . '_cv_' . bin2hex(random_bytes(4)) . '.' . $cv->getClientOriginalExtension();
             $cv->move(public_path('uploads/doctors/cv'), $cvName);
             $validated['CV'] = 'uploads/doctors/cv/' . $cvName;
         }
@@ -77,7 +77,7 @@ class DoctorController extends Controller
         // Handle profile image upload
         if ($request->hasFile('profile_image')) {
             $image = $request->file('profile_image');
-            $imageName = time() . '_profile_' . $image->getClientOriginalName();
+            $imageName = time() . '_profile_' . bin2hex(random_bytes(4)) . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/doctors/profile'), $imageName);
             $validated['profile_image'] = 'uploads/doctors/profile/' . $imageName;
         }
@@ -126,7 +126,7 @@ class DoctorController extends Controller
                 unlink(public_path($doctor->degree));
             }
             $degree = $request->file('degree');
-            $degreeName = time() . '_degree_' . $degree->getClientOriginalName();
+            $degreeName = time() . '_degree_' . bin2hex(random_bytes(4)) . '.' . $degree->getClientOriginalExtension();
             $degree->move(public_path('uploads/doctors/degree'), $degreeName);
             $validated['degree'] = 'uploads/doctors/degree/' . $degreeName;
         }
@@ -138,7 +138,7 @@ class DoctorController extends Controller
                 unlink(public_path($doctor->CV));
             }
             $cv = $request->file('CV');
-            $cvName = time() . '_cv_' . $cv->getClientOriginalName();
+            $cvName = time() . '_cv_' . bin2hex(random_bytes(4)) . '.' . $cv->getClientOriginalExtension();
             $cv->move(public_path('uploads/doctors/cv'), $cvName);
             $validated['CV'] = 'uploads/doctors/cv/' . $cvName;
         }
@@ -150,7 +150,7 @@ class DoctorController extends Controller
                 unlink(public_path($doctor->profile_image));
             }
             $image = $request->file('profile_image');
-            $imageName = time() . '_profile_' . $image->getClientOriginalName();
+            $imageName = time() . '_profile_' . bin2hex(random_bytes(4)) . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/doctors/profile'), $imageName);
             $validated['profile_image'] = 'uploads/doctors/profile/' . $imageName;
         }
