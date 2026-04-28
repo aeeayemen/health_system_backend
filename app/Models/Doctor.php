@@ -11,6 +11,7 @@ class Doctor extends Model
 
     protected $fillable = [
         'name',
+        'email',
         'gender',
         'degree',
         'bank_account',
@@ -27,6 +28,7 @@ class Doctor extends Model
         'is_verified',
         'rating',
         'consultation_fee',
+        'diet_price',
         'is_available',
     ];
 
@@ -36,6 +38,7 @@ class Doctor extends Model
         'is_available' => 'boolean',
         'rating' => 'decimal:2',
         'consultation_fee' => 'decimal:2',
+        'diet_price' => 'decimal:2',
     ];
 
     public function user()

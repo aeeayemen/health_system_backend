@@ -36,6 +36,7 @@ class DoctorResource extends JsonResource
             'is_verified' => $this->is_verified,
             'rating' => $this->rating,
             'consultation_fee' => $this->consultation_fee,
+            'diet_price' => $this->diet_price,
             'is_available' => $this->is_available,
         ];
     }

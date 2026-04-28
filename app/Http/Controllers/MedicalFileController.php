@@ -12,22 +12,23 @@ class MedicalFileController extends Controller
     {
         $query = MedicalFile::query();
         
-        if ($request->has('patient_id')) {
+        if ($request->has('patient_id') && !empty($request->patient_id)) {
             $query->where('patient_id', $request->patient_id);
-        } elseif ($request->has('user_id')) {
+        } elseif ($request->has('user_id') && !empty($request->user_id)) {
             $query->where('patient_id', $request->user_id);
         } else {
             // Default to global files (admin uploaded files for everyone)
             $query->whereNull('patient_id');
         }
         
-        return response()->json($query->with('patient.user')->latest()->paginate(10));
+        $files = $query->with(['patient', 'patient.user'])->latest()->paginate(50);
+        return response()->json($files);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id' => 'nullable|exists:users,id',
+            'patient_id' => 'nullable',
             'file_name' => 'nullable|string',
             'file' => 'required|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx|max:10240',
             'description' => 'nullable|string',
@@ -35,11 +36,16 @@ class MedicalFileController extends Controller
         ]);
 
         try {
+            // Handle patient_id manually to ensure it's null if empty
+            $patientId = $request->input('patient_id');
+            $validated['patient_id'] = (!empty($patientId)) ? (int)$patientId : null;
+
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
 
                 // Generate name
-                $fileName = time() . '_' . $file->getClientOriginalName();
+                $originalName = $file->getClientOriginalName();
+                $fileName = time() . '_' . str_replace(' ', '_', $originalName);
 
                 // Move file
                 $uploadPath = public_path('uploads/medical-files');
@@ -50,19 +56,27 @@ class MedicalFileController extends Controller
                 $file->move($uploadPath, $fileName);
 
                 $validated['file_path'] = 'uploads/medical-files/' . $fileName;
-                $validated['file_name'] = $request->input('file_name', $file->getClientOriginalName());
+                $validated['file_name'] = $request->input('file_name', $originalName);
                 $validated['file_type'] = $file->getClientOriginalExtension();
                 $validated['file_size'] = File::size(public_path('uploads/medical-files/' . $fileName));
             }
 
             $validated['uploaded_at'] = now();
 
+            // Ensure patient_id is actually null if empty string sent
+            if (isset($validated['patient_id']) && empty($validated['patient_id'])) {
+                $validated['patient_id'] = null;
+            }
+
             $medicalFile = MedicalFile::create($validated);
 
             return response()->json($medicalFile, 201);
         } catch (\Exception $e) {
             \Log::error('Medical File Upload Failed: ' . $e->getMessage());
-            return response()->json(['message' => 'Upload failed: ' . $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Upload failed: ' . $e->getMessage(),
+                'error' => $e->getTraceAsString()
+            ], 500);
         }
     }
 
@@ -77,14 +91,21 @@ class MedicalFileController extends Controller
         $medicalFile = MedicalFile::findOrFail($id);
 
         $validated = $request->validate([
-            'patient_id' => 'nullable|exists:users,id',
+            'patient_id' => 'nullable',
             'file_name' => 'nullable|string',
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx|max:10240',
             'description' => 'nullable|string',
             'status' => 'nullable|string',
         ]);
 
-        if ($request->hasFile('file')) {
+        try {
+            // Handle patient_id manually to ensure it's null if empty
+            if ($request->has('patient_id')) {
+                $patientId = $request->input('patient_id');
+                $validated['patient_id'] = (!empty($patientId)) ? (int)$patientId : null;
+            }
+
+            if ($request->hasFile('file')) {
             // Delete old file if exists
             if ($medicalFile->file_path && file_exists(public_path($medicalFile->file_path))) {
                 unlink(public_path($medicalFile->file_path));
@@ -110,9 +131,16 @@ class MedicalFileController extends Controller
             $validated['uploaded_at'] = now();
         }
 
-        $medicalFile->update($validated);
+            $medicalFile->update($validated);
 
-        return response()->json($medicalFile);
+            return response()->json($medicalFile);
+        } catch (\Exception $e) {
+            \Log::error('Medical File Update Failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Update failed: ' . $e->getMessage(),
+                'error' => $e->getTraceAsString()
+            ], 500);
+        }
     }
 
     public function destroy($id)

@@ -42,11 +42,13 @@ class DoctorController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
             'specialization' => 'required|string',
             'license_number' => 'required|string|unique:doctors',
             'years_of_experience' => 'nullable|integer',
             'bio' => 'nullable|string',
             'consultation_fee' => 'nullable|numeric|max:999999.99',
+            'diet_price' => 'nullable|numeric|max:999999.99',
             'gender' => 'nullable|string',
             'degree' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'bank_account' => 'nullable|string',
@@ -100,9 +102,11 @@ class DoctorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
+            'email' => 'nullable|email|max:255',
             'specialization' => 'sometimes|string',
             'bio' => 'nullable|string',
             'consultation_fee' => 'nullable|numeric|max:999999.99',
+            'diet_price' => 'nullable|numeric|max:999999.99',
             'is_available' => 'sometimes|boolean',
             'years_of_experience' => 'nullable|integer',
             'license_number' => 'sometimes|string',

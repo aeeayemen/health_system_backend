@@ -33,7 +33,9 @@ class AuthController extends Controller
             'cv' => 'nullable|file|mimes:pdf,doc,docx,jpeg,png,jpg|max:5120',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'consultation_fee' => 'nullable|numeric|min:0|max:999999.99',
+            'diet_price' => 'nullable|numeric|min:0|max:999999.99',
             'specialization' => 'nullable|string|max:255',
+            'license_number' => 'nullable|string|max:255',
             'bio' => 'nullable|string|max:1000',
             'years_of_experience' => 'nullable|integer|min:0|max:100',
             'bank_account' => 'nullable|string|max:100',
@@ -85,10 +87,12 @@ class AuthController extends Controller
                 $doctor = new Doctor();
                 $doctor->user_id = $user->id;
                 $doctor->name = $user->name;
+                $doctor->email = $user->email;
                 $doctor->specialization = $request->specialization ?? 'General';
                 $doctor->license_number = $request->license_number ?? 'PENDING-' . time();
                 $doctor->gender = $gender;
                 $doctor->consultation_fee = $request->consultation_fee;
+                $doctor->diet_price = $request->diet_price;
                 $doctor->bio = $request->bio;
                 $doctor->years_of_experience = $request->years_of_experience;
                 $doctor->phone_number = $request->phone_number ?? $validated['phone'] ?? null;

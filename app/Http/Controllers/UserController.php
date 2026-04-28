@@ -30,6 +30,7 @@ class UserController extends Controller
             'phone' => 'nullable|string',
             'type' => 'nullable|string',
             'role' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $user = User::create([
@@ -38,6 +39,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'type' => $validated['type'] ?? 'user',
+            'is_active' => $validated['is_active'] ?? true,
         ]);
 
         if (isset($validated['role'])) {
@@ -70,6 +72,7 @@ class UserController extends Controller
             'phone' => 'nullable|string',
             'type' => 'nullable|string',
             'role' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
         ]);
 
         if (isset($validated['name'])) {
@@ -86,6 +89,9 @@ class UserController extends Controller
         }
         if (isset($validated['phone'])) {
             $user->phone = $validated['phone'];
+        }
+        if (isset($validated['is_active'])) {
+            $user->is_active = $validated['is_active'];
         }
 
         $user->save();
