@@ -301,9 +301,22 @@ class PatientController extends Controller
             return response()->json(['message' => 'Patient profile not found'], 404);
         }
 
-        $doctors = \App\Models\Doctor::whereHas('subscriptions', function ($q) use ($patient) {
-            $q->where('patient_id', $patient->id)->where('status', 'active');
-        })->with('user')->get();
+        // Get unique doctor IDs from subscriptions (allow pending for better UX/Dev testing)
+        $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
+            ->whereIn('status', ['active', 'pending'])
+            ->pluck('doctor_id')
+            ->toArray();
+
+        // Also include doctor linked directly via current_doctor_id
+        if ($patient->current_doctor_id) {
+            $doctorIds[] = $patient->current_doctor_id;
+        }
+
+        $doctorIds = array_unique($doctorIds);
+
+        $doctors = \App\Models\Doctor::whereIn('id', $doctorIds)
+            ->with('user')
+            ->get();
 
         return \App\Http\Resources\DoctorResource::collection($doctors);
     }
