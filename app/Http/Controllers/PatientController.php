@@ -146,7 +146,9 @@ class PatientController extends Controller
     public function myProfile(Request $request)
     {
         $user = $request->user();
-        $patient = Patient::where('user_id', $user->id)->first();
+        $patient = Patient::where(function($query) use ($user) {
+            $query->where('user_id', $user->id)->orWhere('id', $user->id);
+        })->first();
 
         if (!$patient) {
             // Auto-create profile if missing
@@ -166,7 +168,9 @@ class PatientController extends Controller
     public function updateMyProfile(Request $request)
     {
         $user = $request->user();
-        $patient = Patient::where('user_id', $user->id)->first();
+        $patient = Patient::where(function($query) use ($user) {
+            $query->where('user_id', $user->id)->orWhere('id', $user->id);
+        })->first();
 
         if (!$patient) {
             $patient = Patient::create([
@@ -295,10 +299,12 @@ class PatientController extends Controller
     public function myDoctors(Request $request)
     {
         $user = $request->user();
-        $patient = Patient::where('user_id', $user->id)->first();
+        $patient = Patient::where(function($query) use ($user) {
+            $query->where('user_id', $user->id)->orWhere('id', $user->id);
+        })->first();
 
         if (!$patient) {
-            return response()->json(['message' => 'Patient profile not found'], 404);
+            return response()->json([]); // Return empty list instead of 404 to avoid frontend crash
         }
 
         // Get unique doctor IDs from subscriptions (allow pending for better UX/Dev testing)
