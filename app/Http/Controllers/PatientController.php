@@ -146,7 +146,7 @@ class PatientController extends Controller
     public function myProfile(Request $request)
     {
         $user = $request->user();
-        $patient = Patient::where(function($query) use ($user) {
+        $patient = Patient::where(function ($query) use ($user) {
             $query->where('user_id', $user->id)->orWhere('id', $user->id);
         })->first();
 
@@ -168,7 +168,7 @@ class PatientController extends Controller
     public function updateMyProfile(Request $request)
     {
         $user = $request->user();
-        $patient = Patient::where(function($query) use ($user) {
+        $patient = Patient::where(function ($query) use ($user) {
             $query->where('user_id', $user->id)->orWhere('id', $user->id);
         })->first();
 
@@ -195,7 +195,7 @@ class PatientController extends Controller
                 $rawInput = array_merge($rawInput, $dataWrapper);
             }
         }
-        
+
         // Remove the 'data' key itself from validation to avoid confusion
         unset($rawInput['data']);
 
@@ -231,7 +231,7 @@ class PatientController extends Controller
 
         // Only update fields that are ACTUALLY present in the request (even if null)
         // This prevents overwriting existing data if validation 'sometimes' skips it
-        
+
         if (array_key_exists('name', $validated)) {
             $data['fullname'] = $validated['name'];
         }
@@ -239,7 +239,7 @@ class PatientController extends Controller
         if (array_key_exists('gender', $validated)) {
             $data['gender'] = $validated['gender'];
         }
-        
+
         if (array_key_exists('height', $validated)) {
             $data['height'] = $validated['height'];
         }
@@ -294,40 +294,42 @@ class PatientController extends Controller
 
         return new PatientResource($patient->refresh()->load(['user', 'doctor', 'subscriptions.doctor']));
     }
-     /* Get doctors that the patient is currently subscribed to
+    /* Get doctors that the patient is currently subscribed to
      */
-public function myDoctors(Request $request)
-{
-    $user = $request->user();
+    public function myDoctors(Request $request)
+    {
+        $user = $request->user();
 
-    // جلب بيانات المريض
-    $patient = Patient::where('user_id', $user->id)
-        ->orWhere('id', $user->id)
-        ->first();
+        // جلب بيانات المريض
+        $patient = Patient::where('user_id', $user->id)
+            ->orWhere('id', $user->id)
+            ->first();
 
-    if (!$patient) {
-        return response()->json([]);
+        if (!$patient) {
+            return response()->json([]);
+        }
+
+        // 1. جلب كل المعرفات من جدول الاشتراكات لجميع الحالات (active, pending, inactive, expired)
+        // أزلنا الـ whereIn الخاص بالحالة لضمان عرض "كل" الدكاترة المشتركين
+        $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
+            ->pluck('doctor_id')
+            ->toArray();
+
+        // 2. إضافة الدكتور الموجود في العمود القديم current_doctor_id لضمان عدم ضياع أي بيانات
+        // if ($patient->current_doctor_id) {
+        //     $doctorIds[] = $patient->current_doctor_id;
+        // }
+
+        // 3. تنظيف المصفوفة من التكرار والقيم الفارغة
+        $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
+            ->where('status', 'accepted') // هذا هو الأساس
+            ->pluck('doctor_id')
+            ->toArray();
+        // 4. جلب الدكاترة مع بيانات المستخدم (الإسم، الصورة، إلخ)
+        $doctors = \App\Models\Doctor::whereIn('id', $doctorIds)
+            ->with('user')
+            ->get();
+
+        return \App\Http\Resources\DoctorResource::collection($doctors);
     }
-
-    // 1. جلب كل المعرفات من جدول الاشتراكات لجميع الحالات (active, pending, inactive, expired)
-    // أزلنا الـ whereIn الخاص بالحالة لضمان عرض "كل" الدكاترة المشتركين
-    $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
-        ->pluck('doctor_id')
-        ->toArray();
-
-    // 2. إضافة الدكتور الموجود في العمود القديم current_doctor_id لضمان عدم ضياع أي بيانات
-    if ($patient->current_doctor_id) {
-        $doctorIds[] = $patient->current_doctor_id;
-    }
-
-    // 3. تنظيف المصفوفة من التكرار والقيم الفارغة
-    $doctorIds = array_unique(array_filter($doctorIds));
-
-    // 4. جلب الدكاترة مع بيانات المستخدم (الإسم، الصورة، إلخ)
-    $doctors = \App\Models\Doctor::whereIn('id', $doctorIds)
-        ->with('user')
-        ->get();
-
-    return \App\Http\Resources\DoctorResource::collection($doctors);
-}
 }
