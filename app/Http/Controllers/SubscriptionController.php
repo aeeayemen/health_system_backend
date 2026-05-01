@@ -7,6 +7,29 @@ use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
+    private function normalizePlanTypeAndDuration(Request $request): array
+    {
+        $rawPlan = $request->input('type', $request->input('plan_type', 'monthly'));
+        $duration = (int) $request->input('duration_months', 0);
+
+        $planMap = [
+            'monthly' => ['plan_type' => 'basic', 'duration_months' => 1],
+            'quarterly' => ['plan_type' => 'premium', 'duration_months' => 3],
+            'yearly' => ['plan_type' => 'vip', 'duration_months' => 12],
+            'basic' => ['plan_type' => 'basic', 'duration_months' => max($duration, 1)],
+            'premium' => ['plan_type' => 'premium', 'duration_months' => max($duration, 1)],
+            'vip' => ['plan_type' => 'vip', 'duration_months' => max($duration, 1)],
+        ];
+
+        $normalized = $planMap[$rawPlan] ?? ['plan_type' => 'basic', 'duration_months' => max($duration, 1)];
+
+        if ($duration > 0) {
+            $normalized['duration_months'] = $duration;
+        }
+
+        return $normalized;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -72,11 +95,11 @@ class SubscriptionController extends Controller
             'doctor_id' => 'required|exists:doctors,id',
             'plan_type' => 'sometimes|in:basic,premium,vip,monthly,quarterly,yearly',
             'type' => 'sometimes|in:basic,premium,vip,monthly,quarterly,yearly',
-            'price' => 'required|numeric',
+            'price' => 'sometimes|numeric|min:0',
             'duration_months' => 'sometimes|integer|min:1',
             'start_date' => 'required|date',
             'end_date' => 'sometimes|date',
-            'patient_id' => 'sometimes|exists:patients,id',
+            'patient_id' => 'sometimes|exists:subscribed_users,id',
             'status' => 'sometimes|in:active,pending,expired,cancelled',
             'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -120,24 +143,31 @@ class SubscriptionController extends Controller
                     }
                 }
 
-                $planType = $request->input('type', $request->input('plan_type', 'monthly'));
+                $normalized = $this->normalizePlanTypeAndDuration($request);
                 $status = $request->input('status', 'pending');
                 $startDate = $validated['start_date'];
+                $durationMonths = $normalized['duration_months'];
+
+                $doctor = \App\Models\Doctor::findOrFail($validated['doctor_id']);
+                $resolvedPrice = $validated['price'] ?? $doctor->diet_price;
+                if ($resolvedPrice === null) {
+                    return response()->json([
+                        'message' => 'Price is required. Provide price or set doctor diet_price.'
+                    ], 422);
+                }
                 
                 // Calculate end_date based on either duration_months or explicit end_date
                 $endDate = $request->input('end_date');
-                if (!$endDate && $request->has('duration_months')) {
-                    $endDate = date('Y-m-d', strtotime($startDate . ' + ' . $request->duration_months . ' months'));
-                } elseif (!$endDate) {
-                    $endDate = date('Y-m-d', strtotime($startDate . ' + 1 month')); // Fallback
+                if (!$endDate) {
+                    $endDate = date('Y-m-d', strtotime($startDate . ' + ' . $durationMonths . ' months'));
                 }
 
                 $subscription = Subscription::create([
                     'patient_id' => $patient->id,
                     'doctor_id' => $validated['doctor_id'],
-                    'plan_type' => $planType,
-                    'price' => $validated['price'],
-                    'duration_months' => $request->input('duration_months', 1),
+                    'plan_type' => $normalized['plan_type'],
+                    'price' => $resolvedPrice,
+                    'duration_months' => $durationMonths,
                     'start_date' => $startDate,
                     'end_date' => $endDate,
                     'status' => $status,
@@ -172,15 +202,14 @@ class SubscriptionController extends Controller
                 // Create Invoice
                 $subscription->invoices()->create([
                     'invoice_number' => 'INV-' . time(),
-                    'amount' => $validated['price'],
-                    'total_amount' => $validated['price'],
+                    'amount' => $resolvedPrice,
+                    'total_amount' => $resolvedPrice,
                     'due_date' => date('Y-m-d'),
                     'payment_status' => 'pending',
                 ]);
 
                 // Notify the doctor
                 try {
-                    $doctor = \App\Models\Doctor::find($validated['doctor_id']);
                     if ($doctor && $doctor->user) {
                         $doctor->user->notify(new \App\Notifications\NewPatientSubscription($patient));
                     }
@@ -217,13 +246,15 @@ class SubscriptionController extends Controller
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date',
             'status' => 'sometimes|in:active,expired,cancelled,pending',
-            'patient_id' => 'sometimes|exists:patients,id',
+            'patient_id' => 'sometimes|exists:subscribed_users,id',
             'doctor_id' => 'sometimes|exists:doctors,id',
             'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        if ($request->has('type')) {
-            $validated['plan_type'] = $request->type;
+        if ($request->has('type') || $request->has('plan_type') || $request->has('duration_months')) {
+            $normalized = $this->normalizePlanTypeAndDuration($request);
+            $validated['plan_type'] = $normalized['plan_type'];
+            $validated['duration_months'] = $normalized['duration_months'];
             unset($validated['type']);
         }
 
