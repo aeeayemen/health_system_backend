@@ -46,6 +46,7 @@ class SubscribedUserController extends Controller
             'gender' => 'nullable|string|max:100',
             'height' => 'nullable|integer',
             'weight' => 'nullable|integer',
+            'status' => 'nullable|string|in:active,pending,inactive,expired,cancelled',
             'phone_number' => 'nullable|string|max:100',
             'image' => 'nullable|image|max:2048', // Validate image file
             'birthdate' => 'nullable|string|max:100',
@@ -85,89 +86,96 @@ class SubscribedUserController extends Controller
      * Update the specified resource in storage.
      */
 
-    public function update(Request $request, $id)
-    {
-        $subscribedUser = Patient::find($id);
+   public function update(Request $request, $id)
+{
+    $subscribedUser = Patient::find($id);
 
-        if (!$subscribedUser) {
-            return response()->json(['message' => 'Subscribed user not found'], 404);
-        }
-
-        $validated = $request->validate([
-            'fullname' => 'nullable|string|max:100',
-            'gender' => 'nullable|string|max:100',
-            'height' => 'nullable|integer',
-            'weight' => 'nullable|integer',
-            'phone_number' => 'nullable|string|max:100',
-            'image' => 'nullable|image|max:2048',
-            'birthdate' => 'nullable|string|max:100',
-            'physical_activity' => 'nullable|string|max:100',
-            'medical' => 'nullable|string|max:100',
-
-            // حقول الاشتراك القادمة من الفرونت
-            'type' => 'nullable|string|in:basic,premium,vip', // تأكد من مطابقة الـ enum
-            'price' => 'nullable|numeric',
-            'doctor_id' => 'nullable|exists:doctors,id',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
-            'status' => 'nullable|string|in:active,inactive,expired,cancelled',
-            'receipt_image' => 'nullable|image|max:2048',
-        ]);
-
-        // 1. معالجة الصور
-        if ($request->hasFile('image')) {
-            if ($subscribedUser->image)
-                Storage::disk('public')->delete($subscribedUser->image);
-            $validated['image'] = $request->file('image')->store('subscribed_users', 'public');
-        }
-
-        if ($request->hasFile('receipt_image')) {
-            if ($subscribedUser->subscription_receipt_image)
-                Storage::disk('public')->delete($subscribedUser->subscription_receipt_image);
-            $validated['subscription_receipt_image'] = $request->file('receipt_image')->store('receipts', 'public');
-        }
-
-        // 2. تحديث بيانات جدول Patient الحالي (للحفاظ على الفرونت)
-        if (isset($validated['type']))
-            $validated['subscription_type'] = $validated['type'];
-        if (isset($validated['price']))
-            $validated['subscription_price'] = $validated['price'];
-        if (isset($validated['doctor_id']))
-            $validated['current_doctor_id'] = $validated['doctor_id'];
-        if (isset($validated['start_date']))
-            $validated['subscription_start_date'] = $validated['start_date'];
-        if (isset($validated['end_date']))
-            $validated['subscription_end_date'] = $validated['end_date'];
-        if (isset($validated['status'])) {
-            $validated['subscription_status'] = ($validated['status'] == 'inactive') ? 'pending' : $validated['status'];
-            if ($validated['status'] === 'active' && $subscribedUser->user) {
-                $subscribedUser->user->update(['type' => 'payed']);
-            }
-        }
-
-        $subscribedUser->update($validated);
-
-        // 3. المزامنة مع جدول الـ subscriptions (الموجود مسبقاً)
-        // هنا قمت بتعديل المسميات لتطابق الـ Migration الخاص بك (plan_type بدلاً من type)
-        if (isset($validated['current_doctor_id'])) {
-            \App\Models\Subscription::updateOrCreate(
-                [
-                    'patient_id' => $subscribedUser->id,
-                    'doctor_id' => $validated['current_doctor_id'],
-                ],
-                [
-                    'plan_type' => $validated['subscription_type'] ?? 'basic',
-                    'price' => $validated['subscription_price'] ?? 0,
-                    'start_date' => $validated['subscription_start_date'] ?? now(),
-                    'end_date' => $validated['subscription_end_date'] ?? now()->addMonth(),
-                    'status' => $validated['status'] ?? 'active',
-                    // 'duration_months' => 1, // يمكنك حسابها برمجياً إذا أردت
-                ]
-            );
-        }
-
-        return response()->json($subscribedUser);
+    if (!$subscribedUser) {
+        return response()->json(['message' => 'Subscribed user not found'], 404);
     }
+
+    $validated = $request->validate([
+        'fullname' => 'nullable|string|max:100',
+        'gender' => 'nullable|string|max:100',
+        'height' => 'nullable|integer',
+        'weight' => 'nullable|integer',
+        'phone_number' => 'nullable|string|max:100',
+        'image' => 'nullable|image|max:2048',
+        'birthdate' => 'nullable|string|max:100',
+        'physical_activity' => 'nullable|string|max:100',
+        'medical' => 'nullable|string|max:100',
+
+        // حقول الاشتراك القادمة من الفرونت
+        'type' => 'nullable|string|in:basic,premium,vip', 
+        'price' => 'nullable|numeric',
+        'doctor_id' => 'nullable|exists:doctors,id',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date',
+        // تم إضافة 'pending' هنا لحل مشكلة الـ ValidationException
+        'status' => 'nullable|string|in:active,pending,inactive,expired,cancelled',
+        'receipt_image' => 'nullable|image|max:2048',
+    ]);
+
+    // 1. معالجة الصور
+    if ($request->hasFile('image')) {
+        if ($subscribedUser->image)
+            Storage::disk('public')->delete($subscribedUser->image);
+        $validated['image'] = $request->file('image')->store('subscribed_users', 'public');
+    }
+
+    if ($request->hasFile('receipt_image')) {
+        if ($subscribedUser->subscription_receipt_image)
+            Storage::disk('public')->delete($subscribedUser->subscription_receipt_image);
+        $validated['subscription_receipt_image'] = $request->file('receipt_image')->store('receipts', 'public');
+    }
+
+    // 2. تحديث بيانات جدول Patient الحالي (للحفاظ على توافق الفرونت)
+    if (isset($validated['type']))
+        $validated['subscription_type'] = $validated['type'];
+    if (isset($validated['price']))
+        $validated['subscription_price'] = $validated['price'];
+    if (isset($validated['doctor_id']))
+        $validated['current_doctor_id'] = $validated['doctor_id'];
+    if (isset($validated['start_date']))
+        $validated['subscription_start_date'] = $validated['start_date'];
+    if (isset($validated['end_date']))
+        $validated['subscription_end_date'] = $validated['end_date'];
+    
+    if (isset($validated['status'])) {
+        // تحويل الحالة للجدول الحالي
+        $validated['subscription_status'] = ($validated['status'] == 'inactive') ? 'pending' : $validated['status'];
+        
+        if ($validated['status'] === 'active' && $subscribedUser->user) {
+            $subscribedUser->user->update(['type' => 'payed']);
+        }
+    }
+
+    $subscribedUser->update($validated);
+
+    // 3. المزامنة مع جدول الـ subscriptions
+    if (isset($validated['current_doctor_id'])) {
+        // تحديد الحالة المناسبة لجدول الـ subscriptions بناءً على الـ Migration
+        // الـ Migration الخاص بك لا يدعم 'pending'، لذا سنحولها إلى 'inactive'
+        $dbStatus = ($validated['status'] == 'pending') ? 'inactive' : ($validated['status'] ?? 'active');
+
+        \App\Models\Subscription::updateOrCreate(
+            [
+                'patient_id' => $subscribedUser->id,
+                'doctor_id' => $validated['current_doctor_id'],
+            ],
+            [
+                'plan_type' => $validated['subscription_type'] ?? 'basic',
+                'price' => $validated['subscription_price'] ?? 0,
+                'start_date' => $validated['subscription_start_date'] ?? now(),
+                'end_date' => $validated['subscription_end_date'] ?? now()->addYear(), // المزامنة مع الـ Payload الخاص بك (سنة كاملة)
+                'status' => $dbStatus,
+                'duration_months' => 12, // حسب الـ Payload المرسل من الفرونت (سنة)
+            ]
+        );
+    }
+
+    return response()->json($subscribedUser);
+}
 
     //     public function update(Request $request, $id)
 // {
