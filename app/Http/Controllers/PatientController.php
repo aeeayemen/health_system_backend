@@ -322,7 +322,7 @@ class PatientController extends Controller
 
         // 3. تنظيف المصفوفة من التكرار والقيم الفارغة
         $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
-            ->where('status', 'accepted') // هذا هو الأساس
+            ->where('status', 'active') // هذا هو الأساس
             ->pluck('doctor_id')
             ->toArray();
         // 4. جلب الدكاترة مع بيانات المستخدم (الإسم، الصورة، إلخ)
