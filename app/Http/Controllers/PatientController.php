@@ -309,9 +309,9 @@ class PatientController extends Controller
 
         // Get unique doctor IDs from subscriptions (allow pending for better UX/Dev testing)
         $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
-            ->whereIn('status', ['active', 'pending'])
-            ->pluck('doctor_id')
-            ->toArray();
+                ->whereIn('status', ['active', 'pending'])
+                ->pluck('doctor_id')
+                ->toArray();
 
         // Also include doctor linked directly via current_doctor_id
         if ($patient->current_doctor_id) {
