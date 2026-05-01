@@ -311,9 +311,9 @@ class PatientController extends Controller
 
         // 1. جلب كل المعرفات من جدول الاشتراكات لجميع الحالات (active, pending, inactive, expired)
         // أزلنا الـ whereIn الخاص بالحالة لضمان عرض "كل" الدكاترة المشتركين
-        $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
-            ->pluck('doctor_id')
-            ->toArray();
+        // $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
+        //     ->pluck('doctor_id')
+        //     ->toArray();
 
         // 2. إضافة الدكتور الموجود في العمود القديم current_doctor_id لضمان عدم ضياع أي بيانات
         // if ($patient->current_doctor_id) {
@@ -321,15 +321,16 @@ class PatientController extends Controller
         // }
 
         // 3. تنظيف المصفوفة من التكرار والقيم الفارغة
-        $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
-            ->where('status', 'active') // هذا هو الأساس
-            ->pluck('doctor_id')
-            ->toArray();
-        // 4. جلب الدكاترة مع بيانات المستخدم (الإسم، الصورة، إلخ)
-        $doctors = \App\Models\Doctor::whereIn('id', $doctorIds)
-            ->with('user')
-            ->get();
+   $doctorIds = \App\Models\Subscription::where('patient_id', $patient->id)
+    ->where('status', 'active')
+    ->pluck('doctor_id')
+    ->toArray();
 
-        return \App\Http\Resources\DoctorResource::collection($doctors);
+    $doctors = \App\Models\Doctor::whereIn('id', $doctorIds)
+        ->with('user')
+        ->get();
+
+    return \App\Http\Resources\DoctorResource::collection($doctors);
+    
     }
 }
