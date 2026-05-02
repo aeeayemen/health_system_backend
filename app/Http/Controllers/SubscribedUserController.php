@@ -57,7 +57,8 @@ class SubscribedUserController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'user_id' => 'sometimes|required|exists:users,id',  // جديد
+            'patient_id' => 'sometimes|required|exists:patients,id', // قديم
             'doctor_id' => 'required|exists:doctors,id',
             'type' => 'nullable|string',
             'price' => 'nullable|numeric',
@@ -66,28 +67,39 @@ class SubscribedUserController extends Controller
             'receipt_image' => 'nullable|image|max:2048',
         ]);
 
-        // دائمًا يبدأ Pending
-        $data['status'] = 'pending';
+        // إما patient_id مباشر أو user_id يحول إلى patient_id
+        $patientId = null;
+        if (isset($data['patient_id'])) {
+            $patientId = $data['patient_id'];
+        } elseif (isset($data['user_id'])) {
+            $patient = Patient::where('user_id', $data['user_id'])->first();
+            if (!$patient) {
+                return response()->json(['message' => 'Patient not found for this user'], 404);
+            }
+            $patientId = $patient->id;
+        } else {
+            return response()->json(['message' => 'Either patient_id or user_id is required'], 422);
+        }
 
+        // دائمًا يبدأ Pending
+        $receiptPath = null;
         if ($request->hasFile('receipt_image')) {
-            $data['receipt_image'] = $request->file('receipt_image')
-                ->store('receipts', 'public');
+            $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
         }
 
         $subscription = Subscription::create([
-            'patient_id' => $data['patient_id'],
+            'patient_id' => $patientId,
             'doctor_id' => $data['doctor_id'],
             'plan_type' => $data['type'] ?? 'basic',
             'price' => $data['price'] ?? 0,
             'start_date' => $data['start_date'] ?? null,
             'end_date' => $data['end_date'] ?? null,
             'status' => 'pending',
-            'receipt_image' => $data['receipt_image'] ?? null,
+            'receipt_image' => $receiptPath,
         ]);
 
         return response()->json($subscription, 201);
     }
-
     /**
      * عرض اشتراك واحد
      */
