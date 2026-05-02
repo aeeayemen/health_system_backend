@@ -32,7 +32,7 @@ class AdvertisementController extends Controller
             'describtion' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'phone_number' => 'required|string',
-            'type' => 'required|in:عرض,ترويج,إعلان', // حسب القيم في الواجهة
+            'type' => 'required|in:عرض,ترويج,إعلان,ads', // حسب القيم في الواجهة
             'GPS' => 'nullable|string',
         ]);
 
