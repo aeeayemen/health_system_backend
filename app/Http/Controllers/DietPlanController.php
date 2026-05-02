@@ -102,17 +102,19 @@ class DietPlanController extends Controller
             // Add meals - map new format fields to DB columns
             if (isset($validated['meals'])) {
                 foreach ($validated['meals'] as $mealData) {
-                    $dietPlan->meals()->create([
-                        'meal_type' => $mealData['meal_type'],
-                        'meal_name' => $mealData['meal_name'] ?? $mealData['name'] ?? $mealData['meal_type'],
-                        'name' => $mealData['name'] ?? $mealData['meal_name'] ?? $mealData['meal_type'],
-                        'day_number' => $mealData['day_number'] ?? 1,
-                        'calories' => $mealData['calories'] ?? null,
-                        'carbo' => $mealData['carbo'] ?? $mealData['carbs_g'] ?? null,
-                        'protin' => $mealData['protin'] ?? $mealData['protein_g'] ?? null,
-                        'fat' => $mealData['fat'] ?? $mealData['fat_g'] ?? null,
-                        'serving' => $mealData['serving'] ?? $mealData['serving_summary'] ?? null,
-                    ]);
+                    // داخل حلقة الـ foreach لإضافة الوجبات
+                $dietPlan->meals()->create([
+                    'meal_type' => $mealData['meal_type'],
+                    // جرب البحث عن الحقول التي يرسلها تطبيق فلوتر غالباً (name أو meal_name)
+                    'meal_name' => $mealData['name'] ?? $mealData['meal_name'] ?? $mealData['meal_type'],
+                    'name'      => $mealData['name'] ?? $mealData['meal_name'] ?? $mealData['meal_type'],
+                    'day_number'=> $mealData['day_number'] ?? 1,
+                    'calories'  => $mealData['calories'] ?? null,
+                    'carbo'     => $mealData['carbo'] ?? $mealData['carbs_g'] ?? null,
+                    'protin'    => $mealData['protin'] ?? $mealData['protein_g'] ?? null,
+                    'fat'       => $mealData['fat'] ?? $mealData['fat_g'] ?? null,
+                    'serving'   => $mealData['serving'] ?? $mealData['serving_summary'] ?? null,
+                ]);
                 }
             }
 
