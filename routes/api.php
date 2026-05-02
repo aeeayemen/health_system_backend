@@ -263,7 +263,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // === Subscribed Users ===
     Route::apiResource('users-subscribed', \App\Http\Controllers\SubscribedUserController::class);
-
+    Route::get('users-subscribed/user/{userId}', [\App\Http\Controllers\SubscribedUserController::class, 'byUser']);
     // === Main Calculations ===
     Route::apiResource('main-calculations', \App\Http\Controllers\MainCalculationController::class);
 });

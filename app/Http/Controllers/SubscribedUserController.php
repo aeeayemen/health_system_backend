@@ -12,33 +12,41 @@ class SubscribedUserController extends Controller
     /**
      * كل الاشتراكات (المبدئي + المدفوع + المقبول)
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subscriptions = Subscription::with(['patient.user', 'doctor.user'])
-            ->latest()
-            ->get()
-            ->map(function ($sub) {
+        $query = Subscription::with(['patient.user', 'doctor.user'])
+            ->latest();
 
-                return [
-                    'id' => $sub->id,
-
-                    'patient_id' => $sub->patient_id,
-                    'patient_name' => optional($sub->patient->user)->name ?? $sub->patient->fullname,
-
-                    'doctor_id' => $sub->doctor_id,
-                    'doctor_name' => optional($sub->doctor->user)->name ?? $sub->doctor->name,
-
-                    'type' => $sub->plan_type,
-                    'price' => $sub->price,
-
-                    'start_date' => $sub->start_date,
-                    'end_date' => $sub->end_date,
-
-                    'status' => $sub->status, // pending / active / rejected / etc
-    
-                    'receipt_image' => $sub->receipt_image ? Storage::url($sub->receipt_image) : null,
-                ];
+        // فلترة اختيارية
+        if ($request->user_id) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('user_id', $request->user_id);
             });
+        }
+
+        $subscriptions = $query->get()->map(function ($sub) {
+            return [
+                'id' => $sub->id,
+
+                'patient_id' => $sub->patient_id,
+                'patient_name' => optional($sub->patient->user)->name ?? $sub->patient->fullname,
+
+                'doctor_id' => $sub->doctor_id,
+                'doctor_name' => optional($sub->doctor->user)->name ?? $sub->doctor->name,
+
+                'type' => $sub->plan_type,
+                'price' => $sub->price,
+
+                'start_date' => $sub->start_date,
+                'end_date' => $sub->end_date,
+
+                'status' => $sub->status,
+
+                'receipt_image' => $sub->receipt_image
+                    ? \Storage::url($sub->receipt_image)
+                    : null,
+            ];
+        });
 
         return response()->json($subscriptions);
     }
@@ -157,5 +165,24 @@ class SubscribedUserController extends Controller
         $sub->delete();
 
         return response()->json(['message' => 'Deleted']);
+    }
+
+    public function byUser($userId)
+    {
+        return \App\Models\Subscription::with(['patient.user', 'doctor.user'])
+            ->whereHas('patient', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->where('status', 'active')
+            ->get()
+            ->map(function ($sub) {
+                return [
+                    'id' => $sub->id,
+                    'patient_name' => $sub->patient->user->name ?? null,
+                    'doctor_name' => $sub->doctor->user->name ?? null,
+                    'price' => $sub->price,
+                    'status' => $sub->status,
+                ];
+            });
     }
 }
