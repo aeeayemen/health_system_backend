@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class DietPlan extends Model
 {
     use HasFactory;
@@ -22,6 +23,10 @@ class DietPlan extends Model
         'notes',
     ];
 
+    public function meals()
+    {
+        return $this->hasMany(Meal::class, 'diet_plan_id');
+    }
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
@@ -37,8 +42,8 @@ class DietPlan extends Model
         return $this->belongsTo(Patient::class);
     }
 
-    public function meals()
-    {
-        return $this->hasMany(Meal::class);
-    }
+    // public function meals()
+    // {
+    //     return $this->hasMany(Meal::class);
+    // }
 }
