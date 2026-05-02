@@ -56,32 +56,46 @@ class SubscribedUserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'user_id' => 'sometimes|required|exists:users,id',  // جديد
-            'patient_id' => 'sometimes|required|exists:patients,id', // قديم
+        $rules = [
             'doctor_id' => 'required|exists:doctors,id',
             'type' => 'nullable|string',
             'price' => 'nullable|numeric',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'receipt_image' => 'nullable|image|max:2048',
-        ]);
+        ];
 
-        // إما patient_id مباشر أو user_id يحول إلى patient_id
-        $patientId = null;
-        if (isset($data['patient_id'])) {
-            $patientId = $data['patient_id'];
-        } elseif (isset($data['user_id'])) {
-            $patient = Patient::where('user_id', $data['user_id'])->first();
-            if (!$patient) {
-                return response()->json(['message' => 'Patient not found for this user'], 404);
-            }
-            $patientId = $patient->id;
+        // قبول إما user_id أو patient_id
+        if ($request->has('patient_id')) {
+            $rules['patient_id'] = 'required|exists:patients,id';
+        } elseif ($request->has('user_id')) {
+            $rules['user_id'] = 'required|exists:users,id';
         } else {
             return response()->json(['message' => 'Either patient_id or user_id is required'], 422);
         }
 
-        // دائمًا يبدأ Pending
+        $data = $request->validate($rules);
+
+        // استنتاج patient_id الفعلي
+        if (isset($data['patient_id'])) {
+            $patientId = $data['patient_id'];
+        } else {
+            // البحث عن patient المرتبط بـ user_id
+            $patient = \App\Models\Patient::where('user_id', $data['user_id'])->first();
+            if (!$patient) {
+                // إذا لم يوجد patient، قم بإنشائه تلقائياً
+                $user = \App\Models\User::find($data['user_id']);
+                $patient = \App\Models\Patient::create([
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    // يمكن إضافة قيم افتراضية للحقول الأخرى
+                ]);
+            }
+            $patientId = $patient->id;
+        }
+
+        // تخزين الصورة إن وجدت
         $receiptPath = null;
         if ($request->hasFile('receipt_image')) {
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
