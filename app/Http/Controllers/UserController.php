@@ -39,7 +39,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'type' => $validated['type'] ?? 'user',
-            'is_active' => $validated['is_active'] ?? true,
+            
         ]);
 
         if (isset($validated['role'])) {
