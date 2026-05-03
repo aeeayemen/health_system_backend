@@ -38,7 +38,7 @@ try {
         'password' => Hash::make($validated['password']),
         'phone' => $validated['phone'],
         'type' => $validated['role'],
-        'is_active' => $validated['is_active'] ?? false,// This is the fix
+       
     ]);
 
     $user->assignRole($validated['role']);
